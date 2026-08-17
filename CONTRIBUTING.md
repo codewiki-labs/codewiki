@@ -24,6 +24,26 @@ bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
 
 Maintainers with the Codex system skill validators installed should also run `quick_validate.py` for every `skills/*` directory and `validate_plugin.py` for the repository root.
 
+## Commit And PR Title Convention
+
+PRs are squash-merged, so the PR title becomes the commit message on `main`. PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(optional scope): <subject>
+```
+
+Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `ci`, `build`, `revert`.
+
+Examples:
+
+```
+feat(skills): add closeout check to updating-code-wiki
+fix: restore approval-gate phrase in creating-code-wiki
+ci: run contract validation on pull requests
+```
+
+Individual commits inside a PR branch are not checked — only the PR title is, by the "PR title" workflow.
+
 ## Plugin Packaging
 
 The repository root is a Codex plugin package, but each behavior unit still lives in `skills/<name>/SKILL.md`.
