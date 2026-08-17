@@ -1,0 +1,39 @@
+name: Bug report
+description: A skill misbehaves, the contract validator is wrong, or packaging is broken
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Skill behavior (agent did the wrong thing)
+        - Contract validator (scripts/validate_wiki_contract.py)
+        - Plugin packaging / sync script
+        - Docs
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: For skill-behavior bugs, include the prompt you gave the agent and which skill was active.
+      placeholder: The agent wrote files under wiki/ before I approved the proposal...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened according to the skill contract?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Agent/CLI and plugin version.
+      placeholder: |
+        Codex CLI version:
+        code-wiki plugin version: 0.2.0

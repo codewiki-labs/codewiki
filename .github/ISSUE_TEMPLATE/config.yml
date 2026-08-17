@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question / discussion
+    url: https://github.com/codewiki-labs/codewiki/discussions
+    about: Ask questions about using code-wiki before filing an issue.

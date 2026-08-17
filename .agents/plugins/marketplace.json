@@ -10,9 +10,9 @@
       "description": "Persistent project memory and code navigation for Codex agents.",
       "author": {
         "name": "code-wiki contributors",
-        "url": "https://github.com/mong3125/code-wiki"
+        "url": "https://github.com/codewiki-labs/codewiki"
       },
-      "repository": "https://github.com/mong3125/code-wiki",
+      "repository": "https://github.com/codewiki-labs/codewiki",
       "license": "MIT",
       "keywords": [
         "code-wiki",
@@ -23,7 +23,7 @@
       ],
       "source": {
         "source": "url",
-        "url": "https://github.com/mong3125/code-wiki.git",
+        "url": "https://github.com/codewiki-labs/codewiki.git",
         "ref": "main"
       },
       "policy": {

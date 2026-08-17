@@ -9,7 +9,7 @@ It preserves user-approved intent and requirements across sessions, maps those r
 Register the public marketplace and install the plugin:
 
 ```bash
-codex plugin marketplace add mong3125/code-wiki
+codex plugin marketplace add codewiki-labs/codewiki
 codex plugin add code-wiki@code-wiki
 ```
 
@@ -167,8 +167,8 @@ See [Basic workflow examples](examples/basic-workflow.md) for creation, retrieva
 The Codex plugin is the recommended installation method. For another compatible agent or a standalone setup, copy all skill directories into that agent's skill directory:
 
 ```bash
-git clone https://github.com/mong3125/code-wiki.git
-cd code-wiki
+git clone https://github.com/codewiki-labs/codewiki.git
+cd codewiki
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```

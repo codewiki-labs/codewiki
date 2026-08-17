@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a new skill, a boundary change, or an improvement to an existing skill
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What situation do the current skills handle poorly?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should change? If proposing a new skill, note the questions from CONTRIBUTING.md ("Adding A Skill").
+    validations:
+      required: true
+  - type: dropdown
+    id: contract-impact
+    attributes:
+      label: Does this change the V2 contract?
+      description: Authority split, approval gates, Spec/Reference pairing, or the wiki/ layout.
+      options:
+        - "No — wording or docs only"
+        - "Yes — contract phrases or structure change"
+        - "Not sure"
+    validations:
+      required: true
