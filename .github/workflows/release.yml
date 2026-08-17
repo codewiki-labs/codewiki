@@ -1,0 +1,37 @@
+name: Release
+
+# Push a tag like v0.2.1 to publish a GitHub Release.
+# The tag must match the version in .codex-plugin/plugin.json.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify tag matches plugin version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PLUGIN_VERSION="$(python3 -c 'import json; print(json.load(open(".codex-plugin/plugin.json"))["version"])')"
+          if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match plugin.json version $PLUGIN_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Run contract validation
+        run: python3 scripts/validate_wiki_contract.py
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

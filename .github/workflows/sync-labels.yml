@@ -1,0 +1,21 @@
+name: Sync labels
+
+# Applies .github/labels.yml to the repository's label set.
+# Run manually after editing labels.yml (Actions -> Sync labels -> Run workflow).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: crazy-max/ghaction-github-labeler@v5
+        with:
+          yaml-file: .github/labels.yml
+          skip-delete: true

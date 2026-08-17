@@ -1,0 +1,47 @@
+# Label definitions, synced to the repository by the "Sync labels" workflow.
+# Edit here, then run the workflow (Actions -> Sync labels -> Run workflow).
+
+# Type
+- name: bug
+  color: "d73a4a"
+  description: A skill misbehaves or validation is wrong
+- name: enhancement
+  color: "a2eeef"
+  description: New capability or improvement proposal
+- name: question
+  color: "d876e3"
+  description: Usage or design question
+- name: docs
+  color: "0075ca"
+  description: README, examples, or design notes
+
+# Area
+- name: "area: skill-behavior"
+  color: "1d76db"
+  description: How a skill steers the agent
+- name: "area: contract"
+  color: "b60205"
+  description: V2 contract, validator, or contract scenarios
+- name: "area: packaging"
+  color: "5319e7"
+  description: Plugin manifests, marketplace, sync script
+- name: "area: ci"
+  color: "fbca04"
+  description: Workflows, templates, repository tooling
+
+# Workflow
+- name: release
+  color: "0e8a16"
+  description: Version bump and release preparation
+- name: "good first issue"
+  color: "7057ff"
+  description: Small, well-scoped, good entry point
+- name: "help wanted"
+  color: "008672"
+  description: Maintainer would welcome a contribution
+- name: duplicate
+  color: "cfd3d7"
+  description: Already tracked elsewhere
+- name: wontfix
+  color: "ffffff"
+  description: Deliberately out of scope
