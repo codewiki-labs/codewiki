@@ -443,6 +443,23 @@ Required result:
 - Metadata describes persistent project memory, approved Specs, Reference navigation, and source inspection.
 - The skill-centered plugin omits hooks, apps, MCP servers, icons, logos, and screenshots.
 
+## Scenario: Installable Claude Code Plugin
+
+User asks:
+
+```text
+Package Code-Wiki V2 so Claude Code users can install it as a plugin.
+```
+
+Required result:
+
+- `.claude-plugin/plugin.json` exists and omits a `skills` field, because Claude Code discovers `./skills/` automatically.
+- `.claude-plugin/marketplace.json` exposes exactly one plugin entry with a `source`, so `/plugin marketplace add codewiki-labs/codewiki` followed by `/plugin install code-wiki@code-wiki` installs all seven skills.
+- Shared metadata — name, version, description, license, keywords, and author — matches `.codex-plugin/plugin.json`.
+- Codex-only presentation and policy fields (`interface`, `policy`) stay out of the Claude manifests, and the plugin omits hooks, agents, and MCP servers.
+- The same `skills/*/SKILL.md` files serve both platforms without agent-specific edits.
+- Claude packaging files stay out of the Codex sync payload.
+
 ## Scenario: User Forbids Wiki Use
 
 User asks:

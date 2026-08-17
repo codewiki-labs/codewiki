@@ -9,7 +9,7 @@
 - [ ] Skill behavior change (`skills/*/SKILL.md`)
 - [ ] New skill
 - [ ] Contract / validator change (`scripts/validate_wiki_contract.py`, `tests/skill-set-contract.md`)
-- [ ] Plugin packaging (`.codex-plugin/`, `.agents/`, sync script)
+- [ ] Plugin packaging (`.codex-plugin/`, `.agents/`, `.claude-plugin/`, sync script)
 - [ ] Docs only (README, examples, design notes)
 - [ ] CI / repository tooling
 
@@ -53,7 +53,7 @@
 - [ ] `README.md` updated (required if the public skill list or install flow changed)
 - [ ] `docs/skill-set-design.md` updated (required if skill boundaries changed)
 - [ ] `CHANGELOG.md` — entry added under `Unreleased`
-- [ ] Version bumped in **both** `.codex-plugin/plugin.json` and `.agents/plugins/marketplace.json` (only for release PRs)
+- [ ] Version bumped in **all four** manifests — `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` — and in `EXPECTED_VERSION` in `scripts/validate_wiki_contract.py` (only for release PRs)
 
 ## Notes for the reviewer
 

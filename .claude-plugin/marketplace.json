@@ -1,0 +1,33 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "code-wiki",
+  "description": "Persistent project memory and code navigation for coding agents.",
+  "owner": {
+    "name": "code-wiki contributors",
+    "url": "https://github.com/codewiki-labs/codewiki"
+  },
+  "plugins": [
+    {
+      "name": "code-wiki",
+      "version": "0.3.0",
+      "description": "Persistent project memory and code navigation for coding agents.",
+      "author": {
+        "name": "code-wiki contributors",
+        "url": "https://github.com/codewiki-labs/codewiki"
+      },
+      "homepage": "https://github.com/codewiki-labs/codewiki",
+      "repository": "https://github.com/codewiki-labs/codewiki",
+      "license": "MIT",
+      "keywords": [
+        "code-wiki",
+        "skills",
+        "codex",
+        "claude-code",
+        "project-memory",
+        "specifications"
+      ],
+      "category": "development",
+      "source": "./"
+    }
+  ]
+}

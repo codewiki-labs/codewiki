@@ -1,19 +1,28 @@
 # Code-Wiki V2
 
-`code-wiki` is a Codex plugin that gives coding agents **repository-local persistent project memory**.
+`code-wiki` gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
 
 It preserves user-approved intent and requirements across sessions, maps those requirements to the current codebase, and keeps implementation aligned with the approved specification instead of letting code silently redefine it.
 
 ## Quickstart
 
-Register the public marketplace and install the plugin:
+Register the public marketplace and install the plugin.
+
+**Codex plugin**
 
 ```bash
 codex plugin marketplace add codewiki-labs/codewiki
 codex plugin add code-wiki@code-wiki
 ```
 
-Restart Codex, open a repository, start a new thread, and ask:
+**Claude Code plugin** — run these inside Claude Code:
+
+```text
+/plugin marketplace add codewiki-labs/codewiki
+/plugin install code-wiki@code-wiki
+```
+
+Then start a fresh session in a repository and ask:
 
 ```text
 Create a Code-Wiki V2 for this repository.
@@ -190,47 +199,84 @@ See [Basic workflow examples](examples/basic-workflow.md) for creation, retrieva
 
 ## Manual Skills Installation
 
-The Codex plugin is the recommended installation method. For another compatible agent or a standalone setup, copy all skill directories into that agent's skill directory:
+A plugin install is the recommended method. For another compatible agent or a standalone setup, copy all skill directories into that agent's skill directory:
 
 ```bash
 git clone https://github.com/codewiki-labs/codewiki.git
 cd codewiki
+
+# Codex
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
+
+# Claude Code, for every project
+mkdir -p "$HOME/.claude/skills"
+cp -R skills/* "$HOME/.claude/skills/"
+
+# Claude Code, for one project only
+mkdir -p /path/to/project/.claude/skills
+cp -R skills/* /path/to/project/.claude/skills/
 ```
 
 Install all skills so `using-code-wiki` can route to the supporting behaviors. The repository root is a plugin package, not a skill.
 
 Skills-only installation does not copy the bundled validator. Keep the cloned checkout when you want to run `scripts/validate_generated_wiki.py`, or install the full plugin payload.
 
-## Manage The Codex Plugin
+## Manage The Plugin
 
 ### Update
+
+Codex:
 
 ```bash
 codex plugin marketplace upgrade code-wiki
 codex plugin add code-wiki@code-wiki
 ```
 
-Restart Codex and start a new thread so the current skills are loaded.
+Claude Code:
+
+```text
+/plugin marketplace update code-wiki
+/plugin update code-wiki
+```
+
+Start a new session so the current skills are loaded.
 
 ### Remove
+
+Codex:
 
 ```bash
 codex plugin remove code-wiki@code-wiki
 codex plugin marketplace remove code-wiki
 ```
 
+Claude Code:
+
+```text
+/plugin uninstall code-wiki
+/plugin marketplace remove code-wiki
+```
+
 Removing the plugin does not delete project `wiki/` directories.
 
 ### Troubleshooting
+
+Codex:
 
 ```bash
 codex plugin marketplace list
 codex plugin list --available
 ```
 
-If an installed plugin was updated while Codex was running, restart Codex and begin a new thread.
+Claude Code:
+
+```bash
+claude plugin list
+claude plugin details code-wiki
+```
+
+`claude plugin details code-wiki` should list all seven skills. If an installed plugin was updated while the agent was running, run `/reload-plugins` in Claude Code or restart Codex, then begin a new session.
 
 ## Contributing
 

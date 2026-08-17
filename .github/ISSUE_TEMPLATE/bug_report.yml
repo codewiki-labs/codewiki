@@ -36,4 +36,5 @@ body:
       description: Agent/CLI and plugin version.
       placeholder: |
         Codex CLI version:
-        code-wiki plugin version: 0.2.0
+        Claude Code version:
+        code-wiki plugin version: 0.3.0

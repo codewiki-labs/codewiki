@@ -12,6 +12,11 @@ from validate_wiki_quality_fixtures import validate_fixture_contract
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 
+EXPECTED_VERSION = "0.3.0"
+PACKAGE_DESCRIPTION = "Persistent project memory and code navigation for coding agents."
+PACKAGE_REPOSITORY = "https://github.com/codewiki-labs/codewiki"
+AUTHOR_NAME = "code-wiki contributors"
+
 EXPECTED_SKILLS = {
     "using-code-wiki": [
         "Use when starting any conversation in a code repository or project workspace",
@@ -227,6 +232,8 @@ EXPECTED_SKILLS = {
 PACKAGE_FILES = [
     ".codex-plugin/plugin.json",
     ".agents/plugins/marketplace.json",
+    ".claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
     "README.md",
     "LICENSE",
     "CONTRIBUTING.md",
@@ -306,6 +313,7 @@ README_PHRASES = [
     "default workflow",
     "skills",
     "codex plugin",
+    "claude code plugin",
     "contributing",
     "license",
     "feature surface inventory",
@@ -356,6 +364,7 @@ CONTRACT_REQUIRED_PHRASES = [
     "## Scenario: Superpowers Is Not Available",
     "## Scenario: Skill Maintenance",
     "## Scenario: Installable Codex Plugin",
+    "## Scenario: Installable Claude Code Plugin",
     "## Scenario: User Forbids Wiki Use",
     "## Scenario: No Wiki Exists",
     "## Scenario: Codex Plugin Sync",
@@ -364,16 +373,16 @@ CONTRACT_REQUIRED_PHRASES = [
 
 PLUGIN_EXPECTED = {
     "name": "code-wiki",
-    "version": "0.2.0",
-    "description": "Persistent project memory and code navigation for Codex agents.",
+    "version": EXPECTED_VERSION,
+    "description": PACKAGE_DESCRIPTION,
     "skills": "./skills/",
     "license": "MIT",
 }
 
 PLUGIN_INTERFACE_EXPECTED = {
     "displayName": "code-wiki",
-    "shortDescription": "Persistent project memory for Codex agents",
-    "developerName": "code-wiki contributors",
+    "shortDescription": "Persistent project memory for coding agents",
+    "developerName": AUTHOR_NAME,
     "category": "Coding",
     "brandColor": "#2563EB",
 }
@@ -382,6 +391,7 @@ PLUGIN_KEYWORDS = [
     "code-wiki",
     "skills",
     "codex",
+    "claude-code",
     "project-memory",
     "specifications",
 ]
@@ -390,6 +400,25 @@ PLUGIN_FORBIDDEN_KEYS = [
     "hooks",
     "apps",
     "mcpServers",
+]
+
+# Claude Code discovers ./skills/, ./commands/, ./agents/ automatically, so the
+# Claude manifest must stay minimal. Codex presentation fields ('interface') and
+# Codex marketplace policy ('policy') must not leak into it.
+CLAUDE_PLUGIN_SHARED_KEYS = [
+    "name",
+    "version",
+    "description",
+    "license",
+    "keywords",
+]
+
+CLAUDE_PLUGIN_FORBIDDEN_KEYS = PLUGIN_FORBIDDEN_KEYS + [
+    "interface",
+    "policy",
+    "skills",
+    "commands",
+    "agents",
 ]
 
 PLUGIN_FORBIDDEN_INTERFACE_KEYS = [
@@ -514,8 +543,8 @@ def validate_plugin_contract(plugin: object, failures: list[str]) -> None:
             failures.append(f".codex-plugin/plugin.json field {key!r} must be {expected!r}")
 
     author = plugin.get("author")
-    if not isinstance(author, dict) or author.get("name") != "code-wiki contributors":
-        failures.append(".codex-plugin/plugin.json field 'author.name' must be 'code-wiki contributors'")
+    if not isinstance(author, dict) or author.get("name") != AUTHOR_NAME:
+        failures.append(f".codex-plugin/plugin.json field 'author.name' must be {AUTHOR_NAME!r}")
 
     if plugin.get("keywords") != PLUGIN_KEYWORDS:
         failures.append(f".codex-plugin/plugin.json field 'keywords' must be {PLUGIN_KEYWORDS!r}")
@@ -578,6 +607,14 @@ def validate_marketplace_contract(
         if entry.get(key) != plugin.get(key):
             failures.append(f"marketplace plugin field {key!r} must match .codex-plugin/plugin.json")
 
+    plugin_interface_category = plugin.get("interface", {})
+    if isinstance(plugin_interface_category, dict):
+        expected_category = plugin_interface_category.get("category")
+        if entry.get("category") != expected_category:
+            failures.append(
+                "marketplace plugin field 'category' must match .codex-plugin/plugin.json interface.category"
+            )
+
     author = entry.get("author")
     plugin_author = plugin.get("author")
     if not isinstance(author, dict) or not isinstance(plugin_author, dict) or author.get("name") != plugin_author.get("name"):
@@ -593,12 +630,82 @@ def validate_marketplace_contract(
         "shortDescription",
         "longDescription",
         "developerName",
+        "category",
         "capabilities",
         "brandColor",
         "defaultPrompt",
     ]:
         if entry_interface.get(key) != plugin_interface.get(key):
             failures.append(f"marketplace interface field {key!r} must match .codex-plugin/plugin.json")
+
+
+def validate_claude_plugin_contract(
+    claude_plugin: object, codex_plugin: object, failures: list[str]
+) -> None:
+    rel = ".claude-plugin/plugin.json"
+    if not isinstance(claude_plugin, dict):
+        failures.append(f"{rel} must contain an object")
+        return
+
+    if isinstance(codex_plugin, dict):
+        for key in CLAUDE_PLUGIN_SHARED_KEYS:
+            if claude_plugin.get(key) != codex_plugin.get(key):
+                failures.append(f"{rel} field {key!r} must match .codex-plugin/plugin.json")
+
+    author = claude_plugin.get("author")
+    if not isinstance(author, dict) or author.get("name") != AUTHOR_NAME:
+        failures.append(f"{rel} field 'author.name' must be {AUTHOR_NAME!r}")
+
+    for key in ["homepage", "repository"]:
+        if claude_plugin.get(key) != PACKAGE_REPOSITORY:
+            failures.append(f"{rel} field {key!r} must be {PACKAGE_REPOSITORY!r}")
+
+    for key in CLAUDE_PLUGIN_FORBIDDEN_KEYS:
+        if key in claude_plugin:
+            failures.append(
+                f"{rel} must omit {key!r}; Claude Code discovers ./skills/ automatically "
+                "and Codex-only presentation fields do not belong here"
+            )
+
+
+def validate_claude_marketplace_contract(
+    marketplace: object, claude_plugin: object, failures: list[str]
+) -> None:
+    rel = ".claude-plugin/marketplace.json"
+    if not isinstance(marketplace, dict):
+        failures.append(f"{rel} must contain an object")
+        return
+
+    if marketplace.get("name") != "code-wiki":
+        failures.append(f"{rel} field 'name' must be 'code-wiki'")
+
+    owner = marketplace.get("owner")
+    if not isinstance(owner, dict) or owner.get("name") != AUTHOR_NAME:
+        failures.append(f"{rel} field 'owner.name' must be {AUTHOR_NAME!r}")
+
+    plugins = marketplace.get("plugins")
+    if not isinstance(plugins, list) or len(plugins) != 1 or not isinstance(plugins[0], dict):
+        failures.append(f"{rel} must contain exactly one plugin object")
+        return
+    if not isinstance(claude_plugin, dict):
+        return
+
+    entry = plugins[0]
+    for key in CLAUDE_PLUGIN_SHARED_KEYS:
+        if entry.get(key) != claude_plugin.get(key):
+            failures.append(f"{rel} plugin field {key!r} must match .claude-plugin/plugin.json")
+
+    author = entry.get("author")
+    claude_author = claude_plugin.get("author")
+    if not isinstance(author, dict) or not isinstance(claude_author, dict) or author.get("name") != claude_author.get("name"):
+        failures.append(f"{rel} plugin author.name must match .claude-plugin/plugin.json")
+
+    if not entry.get("source"):
+        failures.append(f"{rel} plugin entry must declare a 'source'")
+
+    for key in ["interface", "policy"]:
+        if key in entry:
+            failures.append(f"{rel} plugin entry must omit Codex-only field {key!r}")
 
 
 def validate_sync_test(failures: list[str]) -> None:
@@ -609,8 +716,10 @@ def validate_sync_test(failures: list[str]) -> None:
     for phrase in SYNC_TEST_PHRASES:
         if phrase not in text:
             failures.append(f"{path.relative_to(ROOT)} missing phrase: {phrase}")
-    if 'MANIFEST_VERSION="0.2.0"' not in text:
-        failures.append(f"{path.relative_to(ROOT)} must exercise manifest version 0.2.0")
+    if f'MANIFEST_VERSION="{EXPECTED_VERSION}"' not in text:
+        failures.append(
+            f"{path.relative_to(ROOT)} must exercise manifest version {EXPECTED_VERSION}"
+        )
     if not path.stat().st_mode & 0o111:
         failures.append(f"{path.relative_to(ROOT)} must be executable")
 
@@ -642,6 +751,25 @@ def main() -> int:
             failures.append(f".agents/plugins/marketplace.json is invalid JSON: {exc}")
         else:
             validate_marketplace_contract(marketplace, plugin, failures)
+
+    claude_plugin: object = None
+    claude_plugin_path = ROOT / ".claude-plugin" / "plugin.json"
+    if claude_plugin_path.exists():
+        try:
+            claude_plugin = json.loads(read(claude_plugin_path))
+        except json.JSONDecodeError as exc:
+            failures.append(f".claude-plugin/plugin.json is invalid JSON: {exc}")
+        else:
+            validate_claude_plugin_contract(claude_plugin, plugin, failures)
+
+    claude_marketplace_path = ROOT / ".claude-plugin" / "marketplace.json"
+    if claude_marketplace_path.exists():
+        try:
+            claude_marketplace = json.loads(read(claude_marketplace_path))
+        except json.JSONDecodeError as exc:
+            failures.append(f".claude-plugin/marketplace.json is invalid JSON: {exc}")
+        else:
+            validate_claude_marketplace_contract(claude_marketplace, claude_plugin, failures)
 
     validate_sync_test(failures)
 
