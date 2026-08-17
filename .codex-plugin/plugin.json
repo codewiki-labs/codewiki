@@ -1,0 +1,35 @@
+{
+  "name": "code-wiki",
+  "version": "0.2.0",
+  "description": "Persistent project memory and code navigation for Codex agents.",
+  "author": {
+    "name": "code-wiki contributors"
+  },
+  "license": "MIT",
+  "keywords": [
+    "code-wiki",
+    "skills",
+    "codex",
+    "project-memory",
+    "specifications"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "code-wiki",
+    "shortDescription": "Persistent project memory for Codex agents",
+    "longDescription": "Preserve user-approved Specs across sessions, use Reference to navigate the current implementation, and verify source code against the approved project contract.",
+    "developerName": "code-wiki contributors",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "brandColor": "#2563EB",
+    "defaultPrompt": [
+      "Create a Code-Wiki V2 project memory for this repository.",
+      "Recall approved Specs before changing this project.",
+      "Refresh Code-Wiki Reference after this implementation change."
+    ]
+  }
+}

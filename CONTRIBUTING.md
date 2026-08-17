@@ -1,0 +1,60 @@
+# Contributing
+
+Thank you for improving code-wiki skills.
+
+## Principles
+
+- Keep one skill focused on one use situation.
+- Do not split a skill only for visual symmetry.
+- Do not add broad claims that are not implemented in the skill files.
+- Keep `description` focused on when to use the skill.
+- Preserve the V2 authority split: approved Specs are normative, while source is authoritative for Reference.
+- Preserve exact Spec/Reference domain pairing and selective retrieval through `Related Domains`.
+- Never let code-driven maintenance rewrite canonical Specs without user approval.
+- Add tests or validation for any boundary or structure change.
+
+## Local Checks
+
+Run:
+
+```bash
+python3 scripts/validate_wiki_contract.py
+bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
+```
+
+Maintainers with the Codex system skill validators installed should also run `quick_validate.py` for every `skills/*` directory and `validate_plugin.py` for the repository root.
+
+## Plugin Packaging
+
+The repository root is a Codex plugin package, but each behavior unit still lives in `skills/<name>/SKILL.md`.
+
+- Keep `.codex-plugin/plugin.json` focused on the existing skills payload.
+- Keep plugin and marketplace version, description, keywords, prompts, and shared interface metadata aligned.
+- Do not add `hooks`, `apps`, `mcpServers`, icons, logos, or screenshots unless the referenced files exist and pass validation.
+- Keep `scripts/sync-to-codex-plugin.sh` destination-agnostic. It must accept `--repo owner/name`, `--dest plugins/code-wiki`, and `--local PATH`.
+- Update `tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` when sync payload rules change.
+- Preserve destination-owned `skills/**/agents/openai.yaml` metadata during sync.
+
+## Adding A Skill
+
+Before adding a skill, answer:
+
+- Does it have a distinct use time?
+- Does it need different inputs?
+- Does it make the agent follow a different action path?
+- Does it have different failure modes?
+- Would users invoke it directly?
+- Would keeping it inside another skill cause repeated unnecessary context?
+
+If the answer is no, add a checklist or section to an existing skill instead.
+
+## Pull Request Checklist
+
+- Updated or added `skills/<name>/SKILL.md`.
+- Added or updated a V2 authority, approval, retrieval, or pairing scenario.
+- Updated `README.md` if the public skill list changed.
+- Updated `docs/skill-set-design.md` if boundaries changed.
+- Updated `tests/skill-set-contract.md`.
+- Ran `python3 scripts/validate_wiki_contract.py`.
+- Ran plugin validation if `.codex-plugin/plugin.json` or package structure changed.
+- Ran `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` if sync behavior changed.
