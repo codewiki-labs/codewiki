@@ -221,6 +221,8 @@ EXPECTED_SKILLS = {
         "Page size",
         "larger than 200 lines is flagged as an oversize signal",
         "Size alone never deletes an approved requirement",
+        "do not compact it directly from the audit",
+        "follow the `updating-code-wiki` oversize flow",
     ],
     "writing-code-wiki-skills": [
         "Do not create a new skill",

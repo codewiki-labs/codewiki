@@ -311,6 +311,7 @@ Required behavior:
 - Under delegation, inventory the page into discrete meaning units, classify each as keep, merge, or drop, and drop only source-restated, superseded, duplicated, or historical content.
 - Size alone never deletes an approved requirement; a unit whose meaning would have to change becomes a Proposed Spec Change instead of being compacted.
 - Report the kept, merged, and dropped dispositions in the closeout.
+- When the oversize was found during an audit and the user asks for repair, do not compact directly from the audit: hand off to the `updating-code-wiki` oversize flow and its choices.
 - A domain split maintains exact Spec/Reference pairing at the same relative paths and updates both registries.
 
 ## Scenario: Domain Pairing Audit
