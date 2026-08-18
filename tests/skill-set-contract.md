@@ -289,6 +289,27 @@ Required behavior:
 - Preserve only useful current rationale, such as support for large scanned documents.
 - Do not keep a chronological requirement transcript in the Wiki; Git owns detailed history.
 
+## Scenario: Oversized Wiki Page
+
+Given:
+
+```text
+wiki/specs/domains/billing.md has grown to 340 lines; wiki/reference/commands.md has grown to 260 lines.
+```
+
+Expected selection:
+
+- `auditing-code-wiki` when discovered during an audit
+- `updating-code-wiki` when discovered while completing project work
+
+Required behavior:
+
+- Treat each page larger than 200 lines as an oversize signal that triggers review; size is a review trigger, not an authority.
+- Compact the oversized Reference page directly from verified source, preserving navigation value.
+- For the oversized Spec domain, draft a semantic compaction or a domain split and obtain user approval before editing the canonical file.
+- Size alone never deletes an approved requirement; compaction preserves approved meaning.
+- A domain split maintains exact Spec/Reference pairing at the same relative paths and updates both registries.
+
 ## Scenario: Domain Pairing Audit
 
 User asks:

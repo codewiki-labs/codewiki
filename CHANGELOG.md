@@ -16,6 +16,7 @@
 - Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
 - Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
 - Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
+- Added oversize handling for wiki pages: any page larger than 200 lines is an oversize signal that triggers compaction or a domain-split review — Reference pages compact directly from verified source, Spec-side changes stay approval-gated, and size alone never deletes an approved requirement.
 - Added Claude Code plugin packaging with `.claude-plugin/plugin.json` and a one-plugin `.claude-plugin/marketplace.json`, so the same skill set installs via `/plugin install code-wiki@code-wiki`.
 - Changed plugin metadata to describe coding agents rather than Codex specifically, and added the `claude-code` keyword.
 - Bumped plugin metadata to `0.3.0` across all four manifests.
