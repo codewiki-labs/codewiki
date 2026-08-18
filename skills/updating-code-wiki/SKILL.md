@@ -1,6 +1,6 @@
 ---
 name: updating-code-wiki
-description: Use before completing project-related work when approved intent changed, implementation navigation changed, or Code-Wiki content became stale.
+description: Use before completing project-related work when approved intent changed, implementation navigation changed, or Code-Wiki content became stale. Also use whenever a wiki page needs compaction, cleanup, splitting, or looks oversized or bloated, before editing that page.
 ---
 
 # Updating Code-Wiki
