@@ -181,6 +181,13 @@ EXPECTED_SKILLS = {
         "Size is a review trigger, not an authority",
         "Size alone never deletes an approved requirement",
         "obtain user approval before editing the canonical file",
+        "Report before changing",
+        "do not edit the page first",
+        "Delegated compaction protocol",
+        "Delegation authorizes rewording and restructuring, never meaning change.",
+        "Inventory the page into discrete meaning units",
+        "becomes a Proposed Spec Change instead of being compacted",
+        "units kept, merged, and dropped",
     ],
     "auditing-code-wiki": [
         "Use when the code-wiki appears stale",
