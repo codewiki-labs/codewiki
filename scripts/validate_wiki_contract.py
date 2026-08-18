@@ -129,6 +129,9 @@ EXPECTED_SKILLS = {
         "agent-facing implementation map",
         "requirement IDs",
         "Spec conformance",
+        "larger than 200 lines, always end your response with a one-line oversize note",
+        "even when the user asked for a short answer",
+        "Do not start compacting",
     ],
     "exploring-code-with-wiki": [
         "Use when source-code inspection is needed and a code-wiki exists",

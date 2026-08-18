@@ -299,6 +299,7 @@ wiki/specs/domains/billing.md has grown to 340 lines; wiki/reference/commands.md
 
 Expected selection:
 
+- `reading-code-wiki` when the page is read during any task: end the response with a one-line oversize note, even for a short-answer request, without starting compaction
 - `auditing-code-wiki` when discovered during an audit
 - `updating-code-wiki` when discovered while completing project work
 

@@ -63,4 +63,6 @@ Before planning or editing, be able to state concisely:
 
 For user-facing review, summarize the applicable Spec and eventual Spec conformance. Include Reference navigation details only when the user requests implementation evidence or when they are necessary to explain a mismatch.
 
+If any page you actually read is larger than 200 lines, always end your response with a one-line oversize note naming the page and its line count, even when the user asked for a short answer. Do not start compacting; repair goes through the `updating-code-wiki` oversize flow only when the user asks.
+
 Use `exploring-code-with-wiki` for implementation tracing and `updating-code-wiki` for approved canonical changes or descriptive refreshes.
