@@ -72,9 +72,32 @@ When migrating old content, move genuine approved global policy from top-level `
 
 Wiki pages must stay cheap to read every session. Treat any single wiki page larger than 200 lines as an oversize signal. Size is a review trigger, not an authority; scope judgment decides what actually changes.
 
-- For an oversized Reference page, compact it directly from verified source: keep navigation value, drop restated code and superseded claims, and split a cross-cutting page when it mixes unrelated concerns.
-- For an oversized Spec page, draft a semantic compaction or a domain split and obtain user approval before editing the canonical file. Size alone never deletes an approved requirement; compaction must preserve approved meaning.
-- A domain split changes the normative taxonomy: propose it like any Spec change, create the new Spec and Reference domain pairs at the same relative paths, update both registries, and move requirements without rewording their approved meaning.
+### Report before changing
+
+On detecting an oversize signal, do not edit the page first. Present an oversize report:
+
+- the page, its line count, and what inflates it: restated code, superseded claims, duplicated statements, or mixed concerns
+- which meaning units are involved: requirements, constraints, non-goals, rationale, Acceptance Criteria, navigation pointers
+- a recommended repair: compact, split, or accept the size, with the reason
+
+Then ask the user to choose:
+
+1. **Review together:** present the compacted draft or split proposal and apply it only after approval.
+2. **Split the domain:** a split changes the normative taxonomy — propose it like any Spec change, create the new Spec and Reference domain pairs at the same relative paths, update both registries, and move requirements without rewording their approved meaning.
+3. **Delegate:** apply the delegated compaction protocol below without further review. Recommend this as the default for Reference pages, where verified source remains the authority.
+4. **Accept the size:** leave the page unchanged and record the accepted oversize in the closeout.
+
+For a Spec page, obtain user approval before editing the canonical file; the user's recorded choice is that approval. Size alone never deletes an approved requirement.
+
+### Delegated compaction protocol
+
+Delegation authorizes rewording and restructuring, never meaning change.
+
+1. Inventory the page into discrete meaning units: each requirement, constraint, non-goal, rationale, Acceptance Criterion, and navigation pointer.
+2. Classify every unit as keep, merge, or drop. Drop only what is restated from source code, superseded by current approved intent, duplicated elsewhere in the wiki, or chronological history that Git already preserves.
+3. Rebuild the page from the kept and merged units without weakening any approved requirement, constraint, non-goal, or Acceptance Criterion; keep rationale that still explains a live requirement beside it.
+4. A unit whose meaning would have to change to get smaller becomes a Proposed Spec Change instead of being compacted.
+5. Verify the rebuilt page against the inventory, then report the disposition in the closeout: units kept, merged, and dropped, with reasons.
 
 ## Closeout
 
@@ -82,7 +105,7 @@ State separately:
 
 - which Specs changed and where user approval came from
 - which old intent was semantically compacted
-- which oversized pages were compacted or split, and where approval came from for Spec-side changes
+- which oversized pages were compacted, split, or accepted, which choice the user made, and the kept, merged, and dropped dispositions for delegated compactions
 - which Reference pages changed from verified implementation evidence
 - which feature surfaces and end-to-end traces changed and how the coverage gate was rechecked
 - which coverage-manifest features or concern applicability entries changed and what source evidence supports them
