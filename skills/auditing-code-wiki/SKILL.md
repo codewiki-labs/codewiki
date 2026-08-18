@@ -30,6 +30,7 @@ Audit whether a user can validate desired behavior from Specs alone and whether 
 - **Registry closure:** `wiki/specs/index.md` lists domain responsibilities; recursive `Required Context` resolves without broken links or unnecessary expansion, while `See Also` remains nonrecursive and directly relevant. Legacy `Related Domains` is a one-hop migration defect.
 - **Cross-cutting pairs:** check project-to-overview, index-to-index, and policy-to-view counterparts. Reference-only concern views are allowed when manifest-listed as applicable; operational pages remain independently optional.
 - **Freshness:** referenced paths and symbols still exist, documented commands remain plausible, and high-risk runtime claims are spot-checked.
+- **Page size:** any single wiki page larger than 200 lines is flagged as an oversize signal with a repair proposal in the correct authority direction — Reference pages may be compacted from verified source, while Spec compaction or a domain split requires user approval. Size alone never deletes an approved requirement.
 
 The canonical location is the approval assertion; the audit does not reconstruct raw conversations or add lifecycle metadata. Flag visible draft markers, contradictions, or disputed provenance for user confirmation instead of silently demoting or deleting requirements.
 
