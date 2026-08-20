@@ -46,12 +46,12 @@ Required behavior:
 - Inspect the current checkout before drafting any Wiki content, including repository instructions, source, configuration, manifests, routes, schemas, runtime composition, and focused tests.
 - Record the inspected revision and relevant working-tree state so the proposal can be checked for source drift before it is written.
 - Derive Reference from current source code, configuration, runtime evidence, and nearby tests.
-- Build one complete Wiki proposal outside canonical `wiki/`, including the exact file tree and complete router, registry, Spec, and Reference content.
+- Build one complete Spec proposal outside canonical `wiki/`, including the exact taxonomy and complete router, Spec registry, project memory, and domain Spec content.
 - Distinguish code-backed Reference facts from candidate durable requirements inferred from code; inferred behavior becomes normative only through approval as Spec content.
-- Present the complete Wiki proposal for one user approval covering canonical creation and the proposed Specs and taxonomy.
+- Present the complete Spec proposal for one user approval covering canonical creation and the proposed Specs and taxonomy; do not require Reference review.
 - Do not write any files under `wiki/` before user approval, including empty skeletons, Reference pages, or persistent drafts.
-- If relevant source evidence changes before canonical creation, update affected Reference facts and Spec candidates and re-present the revised proposal for approval.
-- After approval, write the complete proposal into the `specs/` and `reference/` structure, not a mixed code-description tree.
+- If source drift changes proposed desired behavior, re-present the affected Spec content; if it changes implementation evidence only, refresh Reference without reopening unchanged Specs.
+- After approval, write the approved Specs and taxonomy, then generate source-grounded Reference into the paired `specs/` and `reference/` structure.
 - Pair every `specs/domains/<domain>.md` with exactly one `reference/domains/<domain>.md`.
 - Pair `specs/project.md` with `reference/overview.md`, pair the two indexes, and pair architecture or security Specs when present.
 - Keep `specs/project.md` short enough to read every session.
@@ -71,6 +71,37 @@ Given a repository with an active user tool, an administrator configuration surf
 - Treat any unassigned important feature as a creation blocker.
 - Keep the inventory outside canonical `wiki/` until the complete proposal is approved.
 
+## Scenario: Spec-Only User Approval
+
+The user wants to review and approve only durable product behavior, while Reference remains an agent-facing implementation map.
+
+Required behavior:
+
+- Present the complete proposed Specs and domain taxonomy as the user-facing approval artifact.
+- Do not require the user to read or approve Reference content.
+- Make each domain Spec behaviorally complete enough to reimplement and validate its actor permissions, calculation and policy rules, invariants, lifecycle, failures, audit or retention semantics, and observable Acceptance Criteria without reading Reference.
+- Give normative requirements stable requirement IDs so implementation and verification evidence can map back without restating the policy in Reference.
+- Generate or refresh Reference from verified source after Spec approval; Reference freshness remains an agent quality gate rather than a user approval gate.
+
+## Scenario: Usage Calculation Is Normative
+
+Given provider-specific cache tokens, image tokens, web-search counts, per-token prices, and per-request prices, required behavior is:
+
+- Put canonical usage dimensions, non-overlap rules, calculation units, pricing formulas, precedence and exclusivity, terminal-failure handling, authoritative-ledger semantics, and hand-computed acceptance vectors in the approved Spec.
+- Keep provider SDK field names, internal type and function names, source paths, table and column names, call flow, and exact test paths in Reference unless the user explicitly makes one a stable external contract.
+- Ensure the Spec alone determines whether 300 cache-write tokens at 1 USD per million cost 0.0003 USD and whether image-token pricing excludes duplicate per-image charging.
+- Treat a calculation or billing rule found only in Reference as authority leakage and a candidate Proposed Spec Change, not as approved behavior.
+
+## Scenario: Agent-Facing Reference Mapping
+
+Given an approved Spec and current implementation, required behavior is:
+
+- Map each important Reference feature to its approved requirement IDs under `Spec Basis`.
+- Describe current enforcement under implementation-shaped sections such as Authorization Enforcement, Invariant Enforcement, Lifecycle Implementation, Failure Implementation, and Usage, Cost And Audit Implementation.
+- Use paths, symbols, routes, schemas, configuration, and exact tests as implementation evidence rather than repeating the desired rule as a second contract.
+- Report conformance as `requirement ID → implementation evidence → verification result → mismatch` so the user can review Spec conformance without reading Reference.
+- Allow observed implementation with no approved requirement only when labeled as observed state or `Confirm needed`; never let it silently become normative.
+
 ## Scenario: Deep Domain Reference
 
 Given an important feature assigned to a domain, required behavior is:
@@ -79,6 +110,7 @@ Given an important feature assigned to a domain, required behavior is:
 - Record authentication, role, permission, ownership, validation, and limit enforcement when applicable.
 - Trace service branches, provider contracts, persistence and lifecycle, usage, cost and audit, failure, interruption, retry and deletion semantics, and exact tests when applicable.
 - Use repository-root-relative source paths, exact symbols, exact routes, and exact test files.
+- Link each risk-bearing trace to stable approved requirement IDs under `Spec Basis`.
 - Mark a trace dimension `N/A` only with a concrete reason.
 - Reject wildcard symbols, vague folder references, generic test labels, and one-sentence flows as sufficient evidence for important features.
 - Keep approved desired behavior in Specs and code-backed implementation detail in Reference.

@@ -22,6 +22,13 @@ If the user explicitly says not to read or update the Wiki, honor that instructi
 - **Source code is authoritative over Reference.** Code and observed runtime state answer what is currently true.
 - Reference answers where and how the current implementation is organized. It is a navigation layer, not an authority.
 
+## User And Agent Boundary
+
+- Specs are the user-facing contract. A user must be able to approve desired behavior and review Spec conformance without reading Reference.
+- Reference is the agent-facing implementation map. Agents use it to find current enforcement, source, configuration, storage, and tests quickly, then verify those claims in source.
+- User approval applies to Spec content and taxonomy. Reference creation and freshness checks are source-grounded agent work and do not ask the user to approve implementation prose.
+- High-risk behavior such as actor permissions, calculations, pricing precedence, invariants, lifecycle outcomes, failure policy, retention, and audit meaning belongs in Specs. Reference maps stable requirement IDs to current implementation evidence.
+
 Apply mismatches in the correct direction:
 
 - Approved Spec differs from code: report the mismatch and change code to conform when implementation is in scope.
@@ -52,7 +59,7 @@ Do not read the entire Wiki by default. The two always-read pages are `wiki/inde
 
 Before implementation, decide whether the request changes what should remain true after this task.
 
-Store durable user intent such as final behavior, project-wide direction, architectural constraints, security invariants, important rationale, non-goals, and Acceptance Criteria. Do not store one-off debugging commands, temporary test instructions, implementation plans, transient workarounds, or raw conversation history.
+Store durable user intent such as final behavior, project-wide direction, architectural constraints, actor permissions, calculation and policy rules, security invariants, lifecycle and failure outcomes, retention and audit meaning, important rationale, non-goals, and Acceptance Criteria. Do not store one-off debugging commands, temporary test instructions, implementation plans, transient workarounds, or raw conversation history.
 
 When the request adds, removes, or conflicts with a durable requirement:
 
@@ -96,3 +103,5 @@ Before completing project work:
 4. Refresh Reference only from verified current implementation.
 5. Confirm that every affected Spec domain still has its paired Reference domain.
 6. Report whether Specs changed with approval, Reference changed from code, or no durable Wiki update was needed.
+
+Lead user-facing closeout with a Spec conformance matrix: `requirement ID → verification result → mismatch or pass`. Keep Reference paths and freshness details available for agent traceability, but do not require the user to read Reference to decide whether the requested behavior was implemented.

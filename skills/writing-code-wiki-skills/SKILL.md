@@ -34,8 +34,11 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 ## V2 Invariants
 
 - Approved Specs are normative over implementation.
+- Specs are the behaviorally complete user-facing contract; users approve Specs and taxonomy without reviewing Reference content.
 - Source code is authoritative for Reference.
-- Reference navigates to source and never replaces inspection.
+- Reference is the agent-facing implementation map; it navigates to source and never replaces inspection.
+- Stable requirement IDs connect Reference `Spec Basis`, implementation evidence, tests, and user-facing Spec conformance results.
+- Calculations, permissions, policy precedence, invariants, lifecycle and failure outcomes, retention, and audit meaning cannot exist only in Reference as authority leakage.
 - Specs and Reference share one logical domain taxonomy and exact domain pairing by relative path.
 - Reference-only domain files are invalid. The two domain trees have identical relative file sets.
 - Code changes never silently change Specs.
@@ -63,7 +66,7 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 
 For every behavior change, update `scripts/validate_wiki_contract.py` and at least one scenario in `tests/skill-set-contract.md`; test scenarios are part of the contract, not optional notes.
 
-When a change affects feature discovery, Reference depth, evidence specificity, or audit completeness, update the semantic quality fixture manifest, at least one shallow or complete candidate, and `scripts/validate_wiki_quality_fixtures.py` as applicable. Phrase presence alone is not sufficient evidence for these behaviors.
+When a change affects Spec sufficiency, feature discovery, Reference depth, evidence specificity, authority leakage, or audit completeness, update the semantic quality fixture manifest, paired Spec and Reference fixtures for shallow, complete, or authority-leakage candidates, and `scripts/validate_wiki_quality_fixtures.py` as applicable. Phrase presence alone is not sufficient evidence for these behaviors.
 
 Scenarios must cover, when relevant:
 
@@ -76,3 +79,6 @@ Scenarios must cover, when relevant:
 - semantic compaction of current intent
 - Superpowers or other workflow integration
 - verifiable outputs and Reference freshness
+- Spec-only user approval and user-facing conformance review
+- behaviorally complete calculations, permissions, invariants, lifecycle, failure, retention, and audit rules
+- requirement-ID mapping from approved Specs to agent-facing Reference evidence

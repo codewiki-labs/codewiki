@@ -5,18 +5,23 @@ description: Use when initializing or substantially regenerating a repository-lo
 
 # Creating Code-Wiki
 
-Create a V2 Wiki from the current checkout, then obtain one user approval for the complete proposal before writing canonical project memory.
+Create a V2 Wiki whose Specs are a behaviorally complete user-facing contract and whose Reference is an agent-facing implementation map. Users approve Specs and taxonomy, not Reference content.
 
 ## Separate The Evidence
 
 Use different evidence for different questions:
 
-- Specs describe desired state and may contain only user-approved intent.
-- Reference describes the current implementation and must be grounded in source code, configuration, manifests, schemas, routes, runtime composition, or runtime evidence observed during the task.
+- Specs describe desired state, contain only user-approved intent, and must let a reviewer determine correct behavior without reading Reference.
+- Reference describes the current implementation for agents and must be grounded in source code, configuration, manifests, schemas, routes, runtime composition, or runtime evidence observed during the task.
 - Tests support verification paths and expected behavior candidates, but do not override active source or runtime evidence.
 - Existing prose docs, comments, and an older Wiki are discovery hints. They are not automatically approved requirements or confirmed implementation facts.
 
 Mark uncertain descriptive claims as `Confirm needed`. Do not use that label to place unapproved requirements in canonical Specs.
+
+Use the replaceability test for every detail:
+
+- If changing the detail would change an actor's allowed behavior, a calculation result, a policy decision, an invariant, a lifecycle outcome, failure handling, retention, audit meaning, or an observable Acceptance Criterion, it belongs in Spec.
+- If the implementation can replace the detail while preserving all approved outcomes, it belongs in Reference. Typical examples are internal function and type names, source paths, provider SDK field paths, table and column names, call graphs, and exact test locations.
 
 ## Canonical Structure
 
@@ -124,6 +129,20 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ## Requirements
 
+### Requirement: `<DOMAIN>-R001`
+
+## Actor And Permission Requirements
+
+## Calculation And Policy Contracts
+
+## Domain Invariants
+
+## Lifecycle And Side Effects
+
+## Failure And Recovery Requirements
+
+## Data, Retention And Audit Requirements
+
 ## Constraints
 
 ## Rationale
@@ -132,37 +151,43 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ## Acceptance Criteria
 
+### Acceptance Criterion: `<DOMAIN>-AC001`
+
 ## Related Domains
 ```
 
-Record only the current approved semantic state. Replace superseded requirements rather than accumulating a transcript.
+Use stable requirement IDs and Acceptance Criterion IDs so agents can map implementation and verification evidence back to the approved contract without restating it in Reference. The risk-driven sections are required when applicable and may be omitted when the domain genuinely has no such behavior.
+
+Calculation and policy contracts describe canonical dimensions, meanings, units, formulas, precedence, exclusivity, defaults, rounding, missing or invalid inputs, failure behavior, authoritative data, and hand-calculated acceptance vectors when those choices affect correctness. Internal identifiers belong in Reference unless the user explicitly approves them as a stable external contract.
+
+Record only the current approved semantic state. Replace superseded requirements rather than accumulating a transcript. A domain Spec is sufficient only when a reviewer can determine correct behavior and verify the Acceptance Criteria without Reference or source inspection.
 
 ## Pre-approval Boundary
 
 Inspect the current checkout before drafting any Wiki content. Record the inspected revision and the relevant working-tree state so the evidence can be checked again immediately before canonical creation.
 
-Keep the complete Wiki proposal in the active conversation or the workflow system's design artifact until approval. Do not create empty canonical Spec skeletons, candidate requirements under `wiki/specs/`, code-backed Reference pages, or a persistent draft tree inside the Wiki. A request to create project memory authorizes inspection and proposal; it does not approve requirements inferred from code or old prose.
+Keep the complete Spec proposal and any internal Reference draft in the active conversation or workflow artifacts until approval. Do not create empty canonical Spec skeletons, candidate requirements under `wiki/specs/`, code-backed Reference pages, or a persistent draft tree inside the Wiki. A request to create project memory authorizes inspection and proposal; it does not approve requirements inferred from code or old prose.
 
 **Do not write any files under `wiki/` before user approval.** Canonical placement asserts that the user approved the proposed Specs and taxonomy and authorized creation of the complete Wiki.
 
-Exact Spec content already supplied by the user may be identified as already approved inside the proposal, but still present the complete creation package once so the user can approve canonical creation without a second, separate Spec gate. Avoid status machinery that would force future agents to distinguish draft and approved files inside `wiki/specs/`.
+Exact Spec content already supplied by the user may be identified as already approved inside the proposal, but still present the complete user-facing Spec package once so the user can approve canonical creation without a second, separate Spec gate. Avoid status machinery that would force future agents to distinguish draft and approved files inside `wiki/specs/`.
 
-## Complete Proposal And Approval
+## Spec Proposal And Approval
 
-Present one complete Wiki proposal with:
+Present one complete user-facing Spec proposal with:
 
 - the inspected revision, relevant working-tree state, and evidence scope
 - the Feature Surface Inventory, its important-feature assignments, and evidence-backed exclusions
-- the exact file tree and complete content of every proposed router, registry, Spec, and Reference page
-- code-backed Reference facts with precise source paths, symbols, routes, jobs, models, configuration, and tests
-- an end-to-end feature trace for every important feature assigned to a domain
+- the proposed domain taxonomy and exact complete content of the router, Spec registry, project memory, and every proposed Spec
+- behaviorally complete actor, calculation, policy, invariant, lifecycle, failure, retention, audit, and Acceptance Criterion content for each applicable important feature
 - candidate durable requirements inferred from code clearly separated from intent already supplied or approved by the user
 - `Confirm needed` uncertainties and known Spec/code or Reference/code mismatches
-- one explicit request to approve canonical creation plus the proposed Specs and taxonomy
+- a concise statement of planned Reference coverage without requiring the user to inspect its paths, symbols, flows, or tests
+- one explicit request to approve canonical creation plus the proposed Specs and taxonomy only
 
-Approval authorizes writing the whole proposal and makes its exact Spec and taxonomy content normative. It does not make Reference authoritative over source. If the user corrects an observed-state claim, verify that correction against the current code; if the correction instead states desired behavior, represent it as Spec intent and record any implementation mismatch.
+Approval authorizes writing the approved Specs and taxonomy and makes only that content normative. Reference is generated or refreshed separately from verified source and does not require user approval. If the user corrects an observed-state claim, verify that correction against the current code; if the correction instead states desired behavior, represent it as Spec intent and record any implementation mismatch.
 
-Before writing, compare the current revision and relevant working-tree state with the recorded evidence snapshot. If a change affects evidence used by the proposal, re-inspect it, update affected Reference facts and Spec candidates, and re-present the revised proposal for approval. Unrelated source changes do not invalidate approval.
+Before writing, compare the current revision and relevant working-tree state with the recorded evidence snapshot. If a change affects a proposed requirement or Acceptance Criterion, re-inspect it and re-present the affected Spec content for approval. If it affects implementation evidence only, refresh Reference after approval without reopening unchanged Specs.
 
 ## Domain Reference Template
 
@@ -177,15 +202,17 @@ Before writing, compare the current revision and relevant working-tree state wit
 
 ## Internal Flow
 
-## Actor / Permission Contract
+## Spec Implementation Map
 
-## Domain Invariants
+## Authorization Enforcement
 
-## Lifecycle And Side Effects
+## Invariant Enforcement
 
-## Failure Semantics
+## Lifecycle Implementation
 
-## Usage, Cost And Audit Contract
+## Failure Implementation
+
+## Usage, Cost And Audit Implementation
 
 ## Dependencies
 
@@ -198,25 +225,38 @@ Before writing, compare the current revision and relevant working-tree state wit
 ## Related Source
 ```
 
-The permission, invariant, lifecycle, failure, usage/cost/audit, dependency, and contract-artifact sections are risk-driven. Include each section when a covered feature has that dimension. Otherwise omit it or write `N/A` with a concrete reason; never fill it with generic prose.
+The enforcement and implementation sections are risk-driven. Include each section when a covered feature has that dimension. Otherwise omit it or write `N/A` with a concrete reason; never fill it with generic prose or desired-state policy.
 
-Under `Feature Coverage`, name every important feature assigned by the inventory. For each important feature, provide an end-to-end feature trace covering the applicable sequence:
+Under `Feature Coverage`, name every important feature assigned by the inventory. Each feature starts with `Spec Basis` listing its stable approved requirement IDs, followed by an end-to-end feature trace covering the applicable sequence:
 
 `user/operator surface → API method/path or event → authentication/permission/ownership/validation/limit → service branches → provider contract → persistence/lifecycle → usage/cost/audit → failure/interruption/retry/delete → exact tests`.
 
 Every implementation claim must point to repository-root-relative paths and exact routes, symbols, models, jobs, configuration keys, or test files. `modules/jobs-image`, `normalize*Usage`, and `related tests` are examples of insufficient evidence.
+
+`Spec Implementation Map` uses `requirement ID → current enforcement → source and test evidence → conformance or mismatch`. Authorization Enforcement and the other implementation sections explain how current code realizes the linked Spec; they never create a second permission, billing, retention, or invariant contract. Observed behavior without an approved requirement must be labeled `Observed only` or `Confirm needed` and raised as a candidate Proposed Spec Change when it should govern future work.
+
+## Authority-Leakage Gate
+
+Fail the authority-leakage gate when Reference is the sole location for an actor permission, calculation rule, price unit or precedence, invariant, lifecycle guarantee, failure policy, retention rule, audit meaning, or other durable behavior. Repair it by either:
+
+- placing the exact desired behavior and testable outcome in the user-approved Spec, then linking Reference through `Spec Basis`; or
+- keeping it explicitly descriptive as observed implementation when no durable requirement is approved.
+
+Do not satisfy this gate by copying the same policy prose into both layers. Spec owns the rule; Reference owns current enforcement evidence.
 
 ## Coverage Gate
 
 Do not present the complete proposal for approval until:
 
 - every important inventory feature is assigned to one primary domain or explicitly excluded with evidence
+- every applicable behavior-affecting decision is present in a behaviorally complete Spec with stable requirement IDs and testable Acceptance Criteria
 - every assigned important feature has a complete applicable trace
-- risk-bearing features describe their actor/permission, invariant, lifecycle, failure, and usage/cost/audit contracts
+- every Reference feature names its approved `Spec Basis` and maps risk-bearing behavior to current enforcement
 - all cited source paths are repository-root-relative and exist in the inspected checkout
 - exact routes, symbols, configuration keys, models, jobs, and test files replace wildcard or generic references
 - success, failure, interruption, deletion, and retention behavior are distinguished when present
 - Specs contain approved desired state only; inferred implementation facts remain in Reference or `Confirm needed`
+- no durable permission, calculation, invariant, lifecycle, failure, retention, or audit rule exists only in Reference
 
 This coverage gate measures important-feature coverage, trace completeness, and evidence specificity. Do not substitute page length, line count, token count, domain count, or file count.
 
@@ -227,22 +267,27 @@ This coverage gate measures important-feature coverage, trace completeness, and 
 3. Build the Feature Surface Inventory and classify, assign, or explicitly exclude every discovered surface.
 4. Identify logical domain candidates and plan paired Spec and Reference paths from important-feature responsibilities and change boundaries.
 5. Gather candidate durable intent from the user and the current conversation. Treat code and older prose as prompts for confirmation, not requirement approval.
-6. Draft the exact complete Wiki outside canonical `wiki/`, including the router, registries, project memory, justified cross-cutting Specs, domain Specs, taxonomy, and every Reference page.
-7. Run the coverage gate and repair unassigned features, incomplete traces, and vague evidence before presenting the proposal.
-8. Present the complete proposal and obtain one user approval for canonical creation, proposed Specs, and taxonomy.
-9. Recheck the recorded source state. When relevant evidence changed, refresh the inventory and affected draft content, rerun the coverage gate, and re-present the revised proposal; when it did not, continue with the approved proposal.
-10. Write the approved proposal to canonical `wiki/`. Omit unapproved or empty architecture and security Specs rather than creating placeholders.
-11. Cross-link the router, registries, related domains, paired Reference pages, and source paths.
-12. Validate exact domain pairing, concise always-read pages, current code paths, coverage-gate completion, and absence of raw history.
+6. Draft the complete router, Spec registries, project memory, justified cross-cutting Specs, domain Specs, and taxonomy outside canonical `wiki/`.
+7. Draft or plan agent-facing Reference traces internally, use them to surface candidate missing requirements, and run Spec sufficiency plus the authority-leakage gate.
+8. Present only the complete Specs and taxonomy as the user-facing approval artifact and obtain one approval for canonical creation.
+9. Recheck the recorded source state. Re-present only affected Spec content when desired behavior changed; refresh implementation-only evidence without reopening unchanged Specs.
+10. Write the approved Specs and taxonomy, then generate paired Reference and cross-cutting maps from verified current source. Omit unapproved or empty architecture and security Specs rather than creating placeholders.
+11. Link every Reference feature to requirement IDs through `Spec Basis`, then cross-link the router, registries, related domains, paired pages, and source paths.
+12. Validate Spec sufficiency, authority leakage, exact domain pairing, concise always-read pages, current code paths, Reference coverage and freshness, and absence of raw history.
 
 When regenerating a V1 or stale Wiki, preserve any demonstrably user-approved current intent. Re-propose uncertain requirement-like prose before canonicalizing it, and rebuild descriptive Reference from current source.
 
 ## Quality Bar
 
-A useful V2 Wiki lets a future agent answer:
+A useful V2 Wiki lets a user answer from Specs alone:
 
 - Why does this project exist and where is it going?
 - What must remain true for this task and why?
+- What calculation, permission, invariant, lifecycle, failure, retention, and audit results define correctness?
+- Which hand-computed examples and Acceptance Criteria prove conformance?
+
+It lets an agent answer from paired Reference and source:
+
 - Which related requirements also apply?
 - Where should implementation inspection start?
 - Which important feature surfaces belong to this domain, and are any unassigned?

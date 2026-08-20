@@ -5,7 +5,7 @@ description: Use when source-code inspection is needed and a code-wiki exists, e
 
 # Exploring Code With Wiki
 
-Use approved Specs as the desired-state contract and Reference as a navigation map into current source. Reference narrows inspection; it never replaces it.
+Use approved Specs as the desired-state contract and agent-facing Reference as a navigation map into current source. Reference narrows inspection; it never replaces it or becomes part of the user's review burden.
 
 ## Preconditions
 
@@ -13,12 +13,14 @@ Use `reading-code-wiki` first so project memory, matched Specs, their `Related D
 
 ## Inspection Process
 
-1. Extract the selected domain's Feature Coverage and concrete entry points, paths, routes, events, symbols, models, jobs, tests, dependencies, and Contract Artifacts.
-2. Use Actor / Permission Contract, Domain Invariants, Lifecycle And Side Effects, Failure Semantics, and Usage, Cost And Audit Contract to choose the smallest complete source trace.
-3. Inspect every cited production path and the exact focused tests before relying on the Reference claim.
-4. Trace only named callers, dependencies, schemas, generated artifacts, events, jobs, storage layers, and runtime composition needed to establish behavior.
-5. Use broad repository search only when Reference is missing, paths no longer exist, a feature trace is incomplete, or the task crosses an undocumented boundary.
-6. Compare the verified implementation with each affected Spec requirement and Acceptance Criteria.
+1. Extract every selected stable requirement ID and Acceptance Criterion from the Spec.
+2. Extract the paired Reference domain's Feature Coverage, `Spec Basis`, Spec Implementation Map, entry points, paths, routes, events, symbols, models, jobs, tests, dependencies, and Contract Artifacts.
+3. Use Authorization Enforcement, Invariant Enforcement, Lifecycle Implementation, Failure Implementation, and Usage, Cost And Audit Implementation to choose the smallest complete source trace.
+4. Inspect every cited production path and exact focused test before relying on the Reference claim.
+5. Trace only named callers, dependencies, schemas, generated artifacts, events, jobs, storage layers, and runtime composition needed to establish behavior.
+6. Use broad repository search only when Reference is missing, paths no longer exist, a feature trace is incomplete, `Spec Basis` is absent, or the task crosses an undocumented boundary.
+7. Compare verified implementation and test results with each affected Spec requirement and Acceptance Criterion.
+8. Build a Spec conformance matrix: `requirement ID → implementation evidence → verification result → pass or mismatch`.
 
 If tracing reveals an undocumented logical domain, pause before making decisions in that domain, load its Spec if one exists, and record the missing Related Domains or Reference link. If no approved Spec exists and durable intent is needed, use the approval gate instead of inferring it from source.
 
@@ -41,13 +43,17 @@ The repair direction does not expand the user's requested scope. For read-only a
 
 ## Output
 
-Report:
+Lead with:
 
-- Specs and Acceptance Criteria used as the contract
+- the applicable approved requirements and Acceptance Criteria
+- the Spec conformance matrix
+- any Spec/code nonconformance or remaining uncertainty
+
+Do not require the user to read Reference. Provide the following agent evidence only when useful or requested:
+
 - Reference pages used as navigation
 - source and test files inspected
 - verified current behavior
-- Spec/code nonconformance
 - stale or missing Reference
 - missing Feature Coverage, incomplete feature traces, or vague evidence
 - exact verification commands or remaining uncertainty
