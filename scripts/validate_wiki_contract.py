@@ -160,6 +160,7 @@ EXPECTED_SKILLS = {
         "Reference-only domain files are invalid.",
         "approval gate",
         "test scenarios",
+        "semantic quality fixture",
     ],
 }
 
@@ -227,6 +228,9 @@ README_PHRASES = [
     "codex plugin",
     "contributing",
     "license",
+    "feature surface inventory",
+    "deep reference",
+    "coverage gate",
 ]
 
 CONTRACT_REQUIRED_PHRASES = [

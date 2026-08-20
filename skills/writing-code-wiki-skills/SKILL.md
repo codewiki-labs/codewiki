@@ -63,6 +63,8 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 
 For every behavior change, update `scripts/validate_wiki_contract.py` and at least one scenario in `tests/skill-set-contract.md`; test scenarios are part of the contract, not optional notes.
 
+When a change affects feature discovery, Reference depth, evidence specificity, or audit completeness, update the semantic quality fixture manifest, at least one shallow or complete candidate, and `scripts/validate_wiki_quality_fixtures.py` as applicable. Phrase presence alone is not sufficient evidence for these behaviors.
+
 Scenarios must cover, when relevant:
 
 - trigger clarity and boundary confusion

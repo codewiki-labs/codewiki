@@ -37,6 +37,8 @@ Code-Wiki treats that missing context as project memory:
 
 It stores **current intent**, not a transcript of everything a user once said. Git retains detailed change history.
 
+Initial creation also builds a noncanonical **Feature Surface Inventory** before the proposed taxonomy is finalized. Every important feature must be assigned to one primary domain or explicitly excluded with source-backed reasoning. A **coverage gate** blocks approval proposals that leave important features unassigned, shallow, or supported only by vague evidence.
+
 ## Authority Model
 
 Code-Wiki V2 has different authorities for different questions:
@@ -109,13 +111,18 @@ Canonical Specs contain approved current requirements only. During initial creat
 
 Reference maps approved domains to the current implementation:
 
+- Important feature coverage and end-to-end traces
 - Entry points and source paths
 - Important symbols, routes, jobs, and data models
-- Runtime flow
+- Actor and permission enforcement, invariants, runtime flow, lifecycle, and failure semantics when applicable
+- Usage, cost, audit, provider, retention, cancellation, and deletion boundaries when applicable
+- Code-backed contract artifacts and pre-change checks
 - Tests and verification locations
 - Implementation details that make future inspection faster
 
 Every Spec has a corresponding Reference: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and the Spec and Reference domain trees have identical relative file sets. Reference-only domain files are invalid. A logical domain may point to many packages, services, frontend areas, and tests. Cross-cutting Reference-only pages such as commands, configuration, testing, dependencies, and glossary do not need Specs.
+
+Deep Reference remains descriptive. It records code-backed implementation contracts without promoting observed behavior into approved intent. The creation and audit skills judge depth by important-feature coverage, complete applicable traces, and exact evidence rather than by page length, domain count, or file count.
 
 ## Default Workflow
 

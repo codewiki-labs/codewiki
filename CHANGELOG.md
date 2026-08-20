@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
+- Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
+- Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
 - Changed initial Wiki creation to inspect the current checkout, present one complete Spec-and-Reference proposal, and wait for user approval before writing any canonical Wiki files.
 - Reframed Code-Wiki as repository-local persistent project memory.
 - Added normative user-approved Specs and descriptive code-backed Reference with separate authority rules.

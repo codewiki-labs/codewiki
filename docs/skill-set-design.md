@@ -78,13 +78,38 @@ Specs and Reference share a logical domain taxonomy. Their domain trees have ide
 
 Every Spec has a counterpart: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and domains pair by exact relative path. Operational pages such as commands, configuration, testing, dependencies, data flow, data models, API surface, gotchas, and glossary may be Reference-only.
 
+## Feature Coverage And Deep Reference Contract
+
+Before initial taxonomy approval, creation builds a noncanonical Feature Surface Inventory from active user and operator surfaces, routes and events, jobs and providers, schemas and persistence, configuration, security and ownership boundaries, usage and cost, failure paths, and focused tests. Each surface is classified as important, supporting, placeholder, or excluded. Every important feature has one primary proposed domain or an explicit evidence-backed exclusion; unassigned important features block the proposal.
+
+The inventory remains in the active conversation, workflow artifact, or a temporary path outside canonical `wiki/` until approval. It is observed-state scaffolding, not approved intent.
+
+Each important feature in a domain Reference receives an applicable end-to-end trace:
+
+```text
+user or operator surface
+→ API method/path or event
+→ authentication, permission, ownership, validation, and limit
+→ service branches and provider contract
+→ persistence, lifecycle, and side effects
+→ usage, cost, and audit
+→ failure, interruption, retry, deletion, and retention
+→ exact tests
+```
+
+Deep Reference restores the useful operational depth of the earlier module format inside the V2 authority model: actor and permission contracts, domain invariants, lifecycle and side effects, failure semantics, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
+
+The coverage gate checks important-feature assignment, trace completeness, high-risk contracts, repository-root-relative paths, and exact evidence. It does not use arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
+
 ## Initial Creation Contract
 
 Initial creation follows:
 
 ```text
 Current checkout and relevant working-tree state
+→ noncanonical Feature Surface Inventory and domain assignment
 → complete Wiki proposal outside canonical wiki/
+→ coverage gate
 → one user approval for creation, Specs, and taxonomy
 → source-evidence recheck
 → canonical Wiki creation
@@ -134,6 +159,15 @@ The sync script publishes the manifest, skills, public docs, and examples while 
 - plugin manifest fields and shared marketplace metadata
 - sync regression-test presence and release version alignment
 
+`scripts/validate_wiki_quality_fixtures.py` checks the deterministic semantic subset:
+
+- every important fixture feature has a domain Reference trace
+- every required trace dimension is present
+- exact evidence cannot be replaced by vague folders, wildcard symbols, one-line flows, or generic test labels
+- intentionally shallow candidates fail while complete candidates pass
+
 `tests/skill-set-contract.md` records behavioral scenarios that are not fully captured by structural validation. Skill changes must update both deterministic checks and at least one relevant scenario.
+
+The fixture does not prove discovery completeness or factual truth for an arbitrary repository. Creation and audit still inspect current source and apply judgment; the fixture protects the explicit coverage and output contract from regression.
 
 Fixture-driven sync tests continue to verify payload boundaries, dry runs, dirty-tree protection, no-op convergence, and preservation of destination-owned metadata.

@@ -19,6 +19,7 @@ Run:
 
 ```bash
 python3 scripts/validate_wiki_contract.py
+python3 scripts/validate_wiki_quality_fixtures.py
 bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
 ```
 
@@ -55,6 +56,8 @@ If the answer is no, add a checklist or section to an existing skill instead.
 - Updated `README.md` if the public skill list changed.
 - Updated `docs/skill-set-design.md` if boundaries changed.
 - Updated `tests/skill-set-contract.md`.
+- Updated the semantic quality manifest and shallow or complete fixtures when feature discovery, Reference depth, evidence specificity, or audit completeness changed.
 - Ran `python3 scripts/validate_wiki_contract.py`.
+- Ran `python3 scripts/validate_wiki_quality_fixtures.py`.
 - Ran plugin validation if `.codex-plugin/plugin.json` or package structure changed.
 - Ran `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` if sync behavior changed.

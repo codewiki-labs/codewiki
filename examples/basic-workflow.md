@@ -28,8 +28,12 @@ Expected behavior:
 
 - Inspect the current checkout before drafting, including source, configuration, routes, schemas, runtime composition, and focused tests.
 - Record the inspected revision and relevant working-tree state.
+- Build a noncanonical Feature Surface Inventory across active surfaces, routes, providers, persistence, configuration, security, usage or audit, failure paths, and focused tests.
+- Assign every important feature to one primary domain or provide an explicit evidence-backed exclusion.
 - Identify logical domains by user responsibility and change boundary rather than folder names.
 - Build one complete proposal containing the exact Wiki tree and all Spec and Reference content outside canonical `wiki/`.
+- Give every important feature a complete applicable trace with repository-root-relative paths, exact symbols, routes, contracts, and test files.
+- Pass the coverage gate before presenting the proposal for approval.
 - Separate code-backed Reference facts from candidate durable requirements inferred from code.
 - Obtain one user approval for canonical creation, Specs, and taxonomy before writing any files under `wiki/`.
 - If relevant code changes before creation, refresh the affected proposal and obtain approval again.
@@ -138,7 +142,9 @@ Expected behavior:
 - Check authority direction, approval integrity, current-intent compaction, and concise always-read memory.
 - Compare Spec and Reference domain paths exactly.
 - Verify Related Domains and registries.
-- Spot-check Reference paths and high-risk implementation claims against source.
+- Reconstruct a risk-weighted Feature Surface Inventory and compare important source features with domain coverage.
+- Reject wildcard symbols, vague folders, one-line flows, generic tests, and missing permission, invariant, lifecycle, failure, usage, cost, audit, or retention contracts when those dimensions apply.
+- Spot-check Reference paths, complete traces, and high-risk implementation claims against source.
 - Propose user-approved Spec fixes separately from safe code-grounded Reference repairs.
 
 ## With Superpowers
