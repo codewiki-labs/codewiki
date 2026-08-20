@@ -31,12 +31,13 @@ Expected behavior:
 - Build a noncanonical Feature Surface Inventory across active surfaces, routes, providers, persistence, configuration, security, usage or audit, failure paths, and focused tests.
 - Assign every important feature to one primary domain or provide an explicit evidence-backed exclusion.
 - Identify logical domains by user responsibility and change boundary rather than folder names.
-- Build one complete proposal containing the exact Wiki tree and all Spec and Reference content outside canonical `wiki/`.
-- Give every important feature a complete applicable trace with repository-root-relative paths, exact symbols, routes, contracts, and test files.
-- Pass the coverage gate before presenting the proposal for approval.
+- Build one complete user-facing proposal containing the taxonomy and all behaviorally complete Spec content outside canonical `wiki/`.
+- Put actor permissions, calculations, policy precedence, invariants, lifecycle and failure outcomes, retention, audit meaning, and testable examples in Specs with stable requirement IDs.
+- Give every important Reference feature a `Spec Basis` and complete applicable trace with repository-root-relative paths, exact symbols, routes, implementation evidence, and test files.
+- Pass the Spec sufficiency, authority-leakage, and Reference coverage gates before creation.
 - Separate code-backed Reference facts from candidate durable requirements inferred from code.
 - Obtain one user approval for canonical creation, Specs, and taxonomy before writing any files under `wiki/`.
-- If relevant code changes before creation, refresh the affected proposal and obtain approval again.
+- If desired behavior changes before creation, refresh affected Specs and obtain approval again; refresh implementation-only Reference evidence without asking the user to approve it.
 - Create identical Spec and Reference domain file sets at the same relative paths; do not create Reference-only domain files.
 - Keep `specs/project.md` concise and keep important rationale next to its requirement.
 
@@ -55,6 +56,22 @@ Expected behavior:
 - Follow their Related Domains, such as authentication or roles.
 - Read each selected Spec completely, then its paired Reference page.
 - Inspect only the source paths, symbols, routes, and tests needed to establish current behavior.
+- Report completion as a requirement-ID Spec conformance matrix; do not require the user to read Reference.
+
+## Usage Calculation Contract
+
+Prompt:
+
+```text
+Define and implement provider usage accounting so I only need to review the Spec.
+```
+
+Expected behavior:
+
+- Put canonical usage dimensions, non-overlap rules, calculation units, price formulas, image-token versus per-image precedence, terminal usage, ledger meaning, and hand-computed vectors in the Spec.
+- Keep provider raw fields, normalizer names, database identifiers, paths, and test locations in agent-facing Reference.
+- Verify examples such as 300 cache-write tokens at 1 USD per million producing 0.0003 USD.
+- Link current implementation and exact tests to the approved calculation requirement IDs through `Spec Basis`.
 
 ## Spec And Code Conflict
 
@@ -143,7 +160,8 @@ Expected behavior:
 - Compare Spec and Reference domain paths exactly.
 - Verify Related Domains and registries.
 - Reconstruct a risk-weighted Feature Surface Inventory and compare important source features with domain coverage.
-- Reject wildcard symbols, vague folders, one-line flows, generic tests, and missing permission, invariant, lifecycle, failure, usage, cost, audit, or retention contracts when those dimensions apply.
+- Reject Specs that need Reference to determine permissions, calculations, invariants, lifecycle, failures, usage, cost, audit, or retention outcomes.
+- Reject Reference-only durable policy as authority leakage and reject wildcard symbols, vague folders, one-line flows, and generic tests as insufficient implementation evidence.
 - Spot-check Reference paths, complete traces, and high-risk implementation claims against source.
 - Propose user-approved Spec fixes separately from safe code-grounded Reference repairs.
 

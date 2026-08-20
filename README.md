@@ -19,7 +19,7 @@ Restart Codex, open a repository, start a new thread, and ask:
 Create a Code-Wiki V2 for this repository.
 ```
 
-The agent will inspect the current checkout, present a complete Spec-and-Reference Wiki proposal, and wait for one user approval before creating any files under `wiki/`.
+The agent will inspect the current checkout, present complete proposed Specs and the domain taxonomy, and wait for one user approval before creating any files under `wiki/`. The user does not need to review Reference content.
 
 ## Problem
 
@@ -38,6 +38,8 @@ Code-Wiki treats that missing context as project memory:
 It stores **current intent**, not a transcript of everything a user once said. Git retains detailed change history.
 
 Initial creation also builds a noncanonical **Feature Surface Inventory** before the proposed taxonomy is finalized. Every important feature must be assigned to one primary domain or explicitly excluded with source-backed reasoning. A **coverage gate** blocks approval proposals that leave important features unassigned, shallow, or supported only by vague evidence.
+
+Code-Wiki uses **spec-only approval**: users approve behaviorally complete Specs and taxonomy, while agents generate and maintain source-grounded Reference. A separate **authority-leakage gate** rejects durable permissions, calculations, pricing precedence, invariants, lifecycle guarantees, failure policy, retention, or audit meaning that appears only in Reference.
 
 ## Authority Model
 
@@ -97,32 +99,32 @@ wiki/
 
 ### Specs
 
-Specs preserve approved meaning:
+Specs preserve approved meaning and determine correctness without requiring Reference:
 
 - Project purpose, priorities, global intent, constraints, and non-goals
-- Domain Intent, Requirements, Constraints, and Rationale
+- Stable requirement IDs plus domain Intent, actor permissions, calculations and policies, invariants, lifecycle and failure outcomes, retention and audit meaning, Constraints, and Rationale
 - Architecture and security policies
-- Non-goals and testable Acceptance Criteria
+- Non-goals and testable Acceptance Criteria, including hand-computed vectors for calculations when useful
 - Minimal `Related Domains` links
 
-Canonical Specs contain approved current requirements only. During initial creation, the complete Wiki proposal stays in the active design or approval flow until accepted; no Spec, Reference, empty skeleton, or persistent draft is written under `wiki/` first. Architecture and security Specs are omitted when no corresponding global intent has been approved; empty canonical placeholders are not created.
+Canonical Specs contain approved current requirements only. During initial creation, the complete Spec proposal stays in the active design or approval flow until accepted; no Spec, Reference, empty skeleton, or persistent draft is written under `wiki/` first. Architecture and security Specs are omitted when no corresponding global intent has been approved; empty canonical placeholders are not created.
 
 ### Reference
 
-Reference maps approved domains to the current implementation:
+Agent-facing Reference maps approved domains to the current implementation:
 
 - Important feature coverage and end-to-end traces
 - Entry points and source paths
 - Important symbols, routes, jobs, and data models
-- Actor and permission enforcement, invariants, runtime flow, lifecycle, and failure semantics when applicable
-- Usage, cost, audit, provider, retention, cancellation, and deletion boundaries when applicable
+- `Spec Basis` links from stable requirement IDs to authorization and invariant enforcement
+- Runtime flow plus lifecycle, failure, usage, cost, audit, provider, retention, cancellation, and deletion implementation when applicable
 - Code-backed contract artifacts and pre-change checks
 - Tests and verification locations
 - Implementation details that make future inspection faster
 
 Every Spec has a corresponding Reference: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and the Spec and Reference domain trees have identical relative file sets. Reference-only domain files are invalid. A logical domain may point to many packages, services, frontend areas, and tests. Cross-cutting Reference-only pages such as commands, configuration, testing, dependencies, and glossary do not need Specs.
 
-Deep Reference remains descriptive. It records code-backed implementation contracts without promoting observed behavior into approved intent. The creation and audit skills judge depth by important-feature coverage, complete applicable traces, and exact evidence rather than by page length, domain count, or file count.
+Deep Reference remains descriptive. It records code-backed implementation evidence without promoting observed behavior into approved intent. The creation and audit skills judge depth by important-feature coverage, complete applicable traces, `Spec Basis`, and exact evidence rather than by page length, domain count, or file count.
 
 ## Default Workflow
 
@@ -137,6 +139,8 @@ For project-related work, the plugin follows this retrieval and change protocol:
 7. If needed, draft the exact Spec change and obtain user approval.
 8. Update canonical Specs, implement, and verify Acceptance Criteria.
 9. Refresh Reference when verified implementation organization changed.
+
+User-facing completion is a **Spec conformance matrix**: `requirement ID → verification result → pass or mismatch`. Agents may include source and Reference evidence when requested, but users do not need to inspect Reference to decide whether the implementation conforms.
 
 Only the router and project memory are always read. Architecture, security, domains, and Reference pages are loaded when the task requires them.
 

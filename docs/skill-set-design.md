@@ -9,8 +9,8 @@ Its layers answer different questions:
 | Layer | Responsibility |
 | --- | --- |
 | `specs/project.md` | Why the project exists and where it is going |
-| Specs | What must be true |
-| Reference | Where and how the current implementation is organized |
+| Specs | What must be true and how a user decides whether the result is correct |
+| Reference | Where and how an agent finds the current implementation |
 | Code | What currently exists |
 
 ## Authority
@@ -20,6 +20,15 @@ Its layers answer different questions:
 - Reference is a navigation map, not a factual replacement for source inspection.
 - Code changes may refresh Reference but cannot silently update Specs.
 - Durable requirement changes require user approval before canonical Spec edits and implementation.
+- Users approve Specs and taxonomy only; source-grounded Reference is an agent-maintained map rather than part of the approval artifact.
+
+## User And Agent Contract
+
+Domain Specs are behaviorally complete user-facing contracts. A Spec must define every applicable actor permission, calculation and unit, policy precedence, invariant, lifecycle and failure outcome, retention and audit meaning, and observable Acceptance Criterion needed to reimplement and validate behavior without Reference. Stable requirement IDs support conformance reporting.
+
+Reference is agent-facing. It maps each important feature's `Spec Basis` to current enforcement, paths, symbols, schemas, configuration, call flow, and exact tests. The replaceability rule sets the boundary: outcome-changing decisions belong in Spec; replaceable implementation details belong in Reference.
+
+For example, canonical usage dimensions, non-overlap rules, per-million-token formulas, per-request prices, image-token versus per-image exclusivity, terminal-usage policy, ledger meaning, and hand-computed examples belong in Spec. `NormalizedLlmUsage`, provider SDK fields, normalizer function names, DB table names, and test paths belong in Reference unless explicitly approved as stable external contracts.
 
 ## Why The Skill Set Stays Split
 
@@ -78,13 +87,13 @@ Specs and Reference share a logical domain taxonomy. Their domain trees have ide
 
 Every Spec has a counterpart: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and domains pair by exact relative path. Operational pages such as commands, configuration, testing, dependencies, data flow, data models, API surface, gotchas, and glossary may be Reference-only.
 
-## Feature Coverage And Deep Reference Contract
+## Feature Coverage, Spec Sufficiency, And Deep Reference Contract
 
 Before initial taxonomy approval, creation builds a noncanonical Feature Surface Inventory from active user and operator surfaces, routes and events, jobs and providers, schemas and persistence, configuration, security and ownership boundaries, usage and cost, failure paths, and focused tests. Each surface is classified as important, supporting, placeholder, or excluded. Every important feature has one primary proposed domain or an explicit evidence-backed exclusion; unassigned important features block the proposal.
 
 The inventory remains in the active conversation, workflow artifact, or a temporary path outside canonical `wiki/` until approval. It is observed-state scaffolding, not approved intent.
 
-Each important feature in a domain Reference receives an applicable end-to-end trace:
+Each important feature first receives behaviorally complete requirements and Acceptance Criteria in its domain Spec. Its domain Reference then receives `Spec Basis` plus an applicable end-to-end trace:
 
 ```text
 user or operator surface
@@ -97,9 +106,9 @@ user or operator surface
 → exact tests
 ```
 
-Deep Reference restores the useful operational depth of the earlier module format inside the V2 authority model: actor and permission contracts, domain invariants, lifecycle and side effects, failure semantics, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
+Deep Reference restores the useful operational depth of the earlier module format inside the V2 authority model: authorization and invariant enforcement, lifecycle and failure implementation, usage/cost/audit implementation, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
 
-The coverage gate checks important-feature assignment, trace completeness, high-risk contracts, repository-root-relative paths, and exact evidence. It does not use arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
+The Spec sufficiency gate checks whether users can determine correct behavior without Reference. The authority-leakage gate rejects durable policy found only in Reference. The Reference coverage gate checks important-feature assignment, `Spec Basis`, trace completeness, repository-root-relative paths, and exact evidence. None uses arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
 
 ## Initial Creation Contract
 
@@ -108,14 +117,14 @@ Initial creation follows:
 ```text
 Current checkout and relevant working-tree state
 → noncanonical Feature Surface Inventory and domain assignment
-→ complete Wiki proposal outside canonical wiki/
-→ coverage gate
-→ one user approval for creation, Specs, and taxonomy
+→ complete Spec proposal outside canonical wiki/
+→ Spec sufficiency and authority-leakage gates
+→ one user approval for creation, Specs, and taxonomy only
 → source-evidence recheck
-→ canonical Wiki creation
+→ canonical Specs plus agent-facing Reference creation
 ```
 
-The proposal contains the exact tree and complete Spec and Reference content. Nothing is written under `wiki/` before approval. If relevant evidence changes before creation, the affected proposal is refreshed and re-approved. Approval makes proposed Specs and taxonomy normative, while current source remains authoritative for Reference facts.
+The user-facing proposal contains the exact taxonomy and complete Spec content, not Reference prose. Nothing is written under `wiki/` before approval. If desired behavior changes before creation, affected Specs are refreshed and re-approved; implementation-only evidence refreshes Reference without reopening unchanged Specs. Approval makes proposed Specs and taxonomy normative, while current source remains authoritative for Reference facts.
 
 ## Update Contract
 
@@ -162,9 +171,11 @@ The sync script publishes the manifest, skills, public docs, and examples while 
 `scripts/validate_wiki_quality_fixtures.py` checks the deterministic semantic subset:
 
 - every important fixture feature has a domain Reference trace
+- every important feature has paired approved Spec requirements with stable IDs and behavioral evidence
+- every Reference feature maps those IDs through `Spec Basis`
 - every required trace dimension is present
 - exact evidence cannot be replaced by vague folders, wildcard symbols, one-line flows, or generic test labels
-- intentionally shallow candidates fail while complete candidates pass
+- intentionally shallow and authority-leakage candidates fail while complete candidates pass
 
 `tests/skill-set-contract.md` records behavioral scenarios that are not fully captured by structural validation. Skill changes must update both deterministic checks and at least one relevant scenario.
 

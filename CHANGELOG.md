@@ -2,10 +2,14 @@
 
 ## Unreleased
 
+- Made domain Specs behaviorally complete user-facing contracts for permissions, calculations, policy precedence, invariants, lifecycle, failures, retention, audit meaning, and Spec-only conformance review.
+- Reframed Reference as an agent-facing implementation map using stable requirement IDs and `Spec Basis`, with no user approval requirement for source-grounded refreshes.
+- Added authority-leakage fixtures that reject billing or other durable rules present only in Reference.
+- Changed initial approval from a complete Spec-and-Reference review to user approval of Specs and taxonomy only.
 - Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
 - Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
 - Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
-- Changed initial Wiki creation to inspect the current checkout, present one complete Spec-and-Reference proposal, and wait for user approval before writing any canonical Wiki files.
+- Changed initial Wiki creation to inspect the current checkout and wait for user approval before writing any canonical Wiki files.
 - Reframed Code-Wiki as repository-local persistent project memory.
 - Added normative user-approved Specs and descriptive code-backed Reference with separate authority rules.
 - Replaced the mixed Wiki layout with `specs/` and `reference/` trees plus exact domain pairing.

@@ -9,6 +9,8 @@ Thank you for improving code-wiki skills.
 - Do not add broad claims that are not implemented in the skill files.
 - Keep `description` focused on when to use the skill.
 - Preserve the V2 authority split: approved Specs are normative, while source is authoritative for Reference.
+- Keep Specs behaviorally complete for user-only review and Reference agent-facing with requirement-ID implementation mappings.
+- Treat permissions, calculations, policy precedence, invariants, lifecycle and failure outcomes, retention, and audit meaning found only in Reference as authority leakage.
 - Preserve exact Spec/Reference domain pairing and selective retrieval through `Related Domains`.
 - Never let code-driven maintenance rewrite canonical Specs without user approval.
 - Add tests or validation for any boundary or structure change.
@@ -56,7 +58,7 @@ If the answer is no, add a checklist or section to an existing skill instead.
 - Updated `README.md` if the public skill list changed.
 - Updated `docs/skill-set-design.md` if boundaries changed.
 - Updated `tests/skill-set-contract.md`.
-- Updated the semantic quality manifest and shallow or complete fixtures when feature discovery, Reference depth, evidence specificity, or audit completeness changed.
+- Updated the semantic quality manifest and paired Spec/Reference shallow, complete, or authority-leakage fixtures when Spec sufficiency, feature discovery, Reference depth, evidence specificity, or audit completeness changed.
 - Ran `python3 scripts/validate_wiki_contract.py`.
 - Ran `python3 scripts/validate_wiki_quality_fixtures.py`.
 - Ran plugin validation if `.codex-plugin/plugin.json` or package structure changed.
