@@ -60,6 +60,29 @@ Required behavior:
 - Treat the proposed domain taxonomy as part of the Spec set the user approves; descriptive Reference scaffolding alone is not requirement approval.
 - Omit architecture or security Specs when no corresponding global intent has been approved; create and pair them when approved.
 
+## Scenario: Feature Surface Coverage During Creation
+
+Given a repository with an active user tool, an administrator configuration surface, provider usage normalization, persistence, and permission guards, required behavior is:
+
+- Build a noncanonical Feature Surface Inventory before finalizing the domain taxonomy.
+- Inspect user and operator UI or catalogs, routes and events, services and providers, persistence and lifecycle, configuration and defaults, authentication and ownership, limits and usage or audit boundaries, failures and cancellation, and focused tests.
+- Classify each discovered surface as important, supporting, placeholder, or excluded.
+- Assign every important feature to one primary domain or provide an explicit evidence-backed exclusion reason.
+- Treat any unassigned important feature as a creation blocker.
+- Keep the inventory outside canonical `wiki/` until the complete proposal is approved.
+
+## Scenario: Deep Domain Reference
+
+Given an important feature assigned to a domain, required behavior is:
+
+- Trace its user or operator surface to its API method, route, or event contract.
+- Record authentication, role, permission, ownership, validation, and limit enforcement when applicable.
+- Trace service branches, provider contracts, persistence and lifecycle, usage, cost and audit, failure, interruption, retry and deletion semantics, and exact tests when applicable.
+- Use repository-root-relative source paths, exact symbols, exact routes, and exact test files.
+- Mark a trace dimension `N/A` only with a concrete reason.
+- Reject wildcard symbols, vague folder references, generic test labels, and one-sentence flows as sufficient evidence for important features.
+- Keep approved desired behavior in Specs and code-backed implementation detail in Reference.
+
 ## Scenario: Session Recall And Domain Closure
 
 User asks:
