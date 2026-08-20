@@ -6,6 +6,8 @@ import json
 import re
 import sys
 
+from validate_wiki_quality_fixtures import validate_fixture_contract
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
@@ -173,6 +175,17 @@ PACKAGE_FILES = [
     "examples/basic-workflow.md",
     "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh",
     "tests/skill-set-contract.md",
+    "scripts/validate_wiki_quality_fixtures.py",
+    "tests/test_wiki_quality_fixtures.py",
+    "tests/test_wiki_contract_semantic_integration.py",
+    "tests/wiki-quality-contract.md",
+    "tests/fixtures/wiki-quality/feature-surfaces.json",
+    "tests/fixtures/wiki-quality/shallow/reference/domains/workplace-tools.md",
+    "tests/fixtures/wiki-quality/shallow/reference/domains/model-usage.md",
+    "tests/fixtures/wiki-quality/shallow/reference/domains/identity-access.md",
+    "tests/fixtures/wiki-quality/complete/reference/domains/workplace-tools.md",
+    "tests/fixtures/wiki-quality/complete/reference/domains/model-usage.md",
+    "tests/fixtures/wiki-quality/complete/reference/domains/identity-access.md",
 ]
 
 FORBIDDEN_FILES = [
@@ -382,6 +395,11 @@ def validate_behavioral_contract(failures: list[str]) -> None:
             failures.append(f"{path.relative_to(ROOT)} missing contract scenario: {phrase}")
 
 
+def validate_semantic_fixture_contract(failures: list[str]) -> None:
+    for failure in validate_fixture_contract():
+        failures.append(f"semantic quality fixture: {failure}")
+
+
 def validate_plugin_contract(plugin: object, failures: list[str]) -> None:
     if not isinstance(plugin, dict):
         failures.append(".codex-plugin/plugin.json must contain an object")
@@ -500,6 +518,7 @@ def main() -> int:
     validate_package_files(failures)
     validate_readme(failures)
     validate_behavioral_contract(failures)
+    validate_semantic_fixture_contract(failures)
 
     plugin: object = None
     plugin_path = ROOT / ".codex-plugin" / "plugin.json"
