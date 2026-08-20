@@ -154,6 +154,15 @@ Required behavior:
 - Refresh Reference paths, symbols, and flow to match verified code.
 - Do not infer a requirement change from this descriptive correction.
 
+## Scenario: Deep Reference Refresh
+
+When verified implementation changes an important feature surface, required behavior is:
+
+- Refresh the affected feature coverage and end-to-end trace from current source.
+- Update actor or permission, invariant, lifecycle, failure, usage or cost, contract-artifact, and verification details that changed.
+- Preserve the approved Spec unless the user separately approved a durable requirement change.
+- Re-run the coverage gate for the affected domain and its cross-domain trace before closeout.
+
 ## Scenario: New Durable Requirement
 
 User asks:
@@ -269,6 +278,16 @@ Required behavior:
 - Treat canonical placement as an approval assertion, while flagging visible draft markers or disputed provenance instead of inventing lifecycle metadata.
 - Classify findings as desired-state, observed-state, or Wiki contract/representation defects.
 - Report durable-intent approval and mutation authorization separately.
+
+## Scenario: Coverage And Trace Audit
+
+Given a structurally valid Wiki whose domain pairs and links are correct but whose active image, summary, poster, usage-accounting, or permission features are missing or shallow, required behavior is:
+
+- Reconstruct a risk-weighted Feature Surface Inventory from current UI or catalogs, routes, jobs, providers, schemas, guards, configuration, persistence, and focused tests.
+- Compare important source features with registry assignments and domain Reference coverage.
+- Report unassigned important features, incomplete traces, vague evidence, and missing high-risk contracts as Wiki contract or representation defects.
+- Treat symbol presence without field mappings, formulas, precedence, lifecycle, failure, or tests as insufficient evidence.
+- Do not repair Specs from source behavior and do not mutate any file during a read-only audit.
 
 ## Scenario: Source And Runtime Disagree
 

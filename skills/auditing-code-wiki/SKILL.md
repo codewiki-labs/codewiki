@@ -16,6 +16,10 @@ Audit whether a future agent can recover approved intent, navigate to current im
 - **Current intent:** superseded requirements and raw conversation history are semantically compacted; important rationale stays beside the requirement it explains.
 - **Always-read memory:** `wiki/index.md` and `wiki/specs/project.md` are present, concise, non-duplicative, and sufficient to recover authority plus global direction.
 - **Navigation quality:** Reference pages point to concrete entry points, paths, symbols, models, flows, tests, commands, and dependencies without replacing source inspection.
+- **Feature coverage:** every important current feature is assigned to a logical domain or has an explicit evidence-backed exclusion.
+- **Trace completeness:** each important feature covers applicable surfaces, API or events, authorization and limits, service or provider behavior, persistence and lifecycle, usage or audit, failures, and exact tests.
+- **Evidence specificity:** paths are repository-root-relative and current; routes, symbols, configuration keys, models, jobs, and test files are exact rather than wildcards or generic labels.
+- **High-risk contracts:** security and permission, cost and usage, storage and retention, external provider, streaming and background work, and deletion paths receive focused checks when present.
 - **Requirement quality:** domain Specs contain clear Intent, Requirements, Constraints, Rationale when important, Non-goals, testable Acceptance Criteria, and minimal Related Domains.
 - **Registry closure:** `wiki/specs/index.md` lists domain responsibilities, and Related Domains resolve without broken links or unnecessary context expansion.
 - **Cross-cutting pairs:** check project-to-overview, index-to-index, architecture, and security counterparts; Reference-only operational pages are allowed.
@@ -25,15 +29,19 @@ The canonical location is the approval assertion; the audit does not reconstruct
 
 Judge `project.md` by scope rather than an arbitrary token limit: it should contain only purpose, priorities, global intent, project-wide constraints, and non-goals that apply broadly. Domain behavior, source paths, APIs, and repeated details belong elsewhere.
 
+A valid file tree, exact domain pairing, existing links, and named symbols do not establish semantic completeness. Treat symbol presence without the behavior contract it represents as a coverage defect when a future agent could not recover the feature's enforcement, calculation, lifecycle, failure, or verification path.
+
 ## Audit Process
 
 1. Inventory every file under `wiki/`, including noncanonical history, draft, decision, backup, or orphan files.
 2. Read the two always-read pages and both registries.
 3. Compare the complete Spec and Reference domain file lists by relative path.
 4. Read all Specs to inspect authority, approval, current-intent compaction, rationale locality, Acceptance Criteria, and related-domain links.
-5. Review Reference pages for navigation usefulness and stale claims.
-6. Spot-check source, configuration, runtime composition, and focused tests where accuracy or risk matters.
-7. Produce findings by severity with evidence and the correct repair direction.
+5. Reconstruct a risk-weighted Feature Surface Inventory from active UI or catalogs, routes, jobs, providers, schemas, guards, configuration, persistence, and focused tests.
+6. Compare important source features with registry assignments and domain Reference coverage.
+7. Review Reference pages for trace completeness, evidence specificity, navigation usefulness, and stale claims.
+8. Spot-check source, configuration, runtime composition, and focused tests where accuracy or risk matters.
+9. Produce findings by severity with evidence and the correct repair direction.
 
 ## Safe Repair Boundary
 
@@ -50,6 +58,7 @@ For each finding, include:
 - classification: desired state, observed state, or Wiki contract/representation
 - evidence
 - affected Spec, Reference, and source paths
+- affected important features and missing trace dimensions
 - whether desired state or observed state is wrong
 - suggested repair
 - whether durable-intent approval is required

@@ -13,11 +13,12 @@ Use `reading-code-wiki` first so project memory, matched Specs, their `Related D
 
 ## Inspection Process
 
-1. Extract concrete entry points, source paths, routes, symbols, models, jobs, tests, commands, dependencies, and gotchas from the paired Reference pages.
-2. Inspect those source locations and nearby tests first.
-3. Trace only named callers, dependencies, schemas, generated artifacts, events, jobs, storage layers, and runtime composition needed to establish behavior.
-4. Use broad repository search only when Reference is missing, paths no longer exist, or the task crosses an undocumented boundary.
-5. Compare the verified implementation with each affected Spec requirement and Acceptance Criteria.
+1. Extract the selected domain's Feature Coverage and concrete entry points, paths, routes, events, symbols, models, jobs, tests, dependencies, and Contract Artifacts.
+2. Use Actor / Permission Contract, Domain Invariants, Lifecycle And Side Effects, Failure Semantics, and Usage, Cost And Audit Contract to choose the smallest complete source trace.
+3. Inspect every cited production path and the exact focused tests before relying on the Reference claim.
+4. Trace only named callers, dependencies, schemas, generated artifacts, events, jobs, storage layers, and runtime composition needed to establish behavior.
+5. Use broad repository search only when Reference is missing, paths no longer exist, a feature trace is incomplete, or the task crosses an undocumented boundary.
+6. Compare the verified implementation with each affected Spec requirement and Acceptance Criteria.
 
 If tracing reveals an undocumented logical domain, pause before making decisions in that domain, load its Spec if one exists, and record the missing Related Domains or Reference link. If no approved Spec exists and durable intent is needed, use the approval gate instead of inferring it from source.
 
@@ -48,6 +49,7 @@ Report:
 - verified current behavior
 - Spec/code nonconformance
 - stale or missing Reference
+- missing Feature Coverage, incomplete feature traces, or vague evidence
 - exact verification commands or remaining uncertainty
 
 After implementation, use `updating-code-wiki` to refresh descriptive navigation without silently changing approved intent.

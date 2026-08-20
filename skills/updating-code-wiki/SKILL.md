@@ -17,7 +17,7 @@ Do not store one-off debugging requests, temporary test instructions, transient 
 
 ### Current implementation
 
-Refresh Reference when verified source code, configuration, runtime flow, entry points, symbols, models, APIs, commands, dependencies, tests, security behavior, or gotchas change.
+Refresh Reference when verified source code, configuration, runtime flow, entry points, symbols, models, APIs, commands, dependencies, tests, security behavior, or gotchas change. First determine whether the change adds, removes, or alters an important feature surface.
 
 ## Updating Specs
 
@@ -38,11 +38,16 @@ Do not add draft status machinery inside canonical Specs. Keep drafts in the act
 Update Reference from verified source code and observed runtime state:
 
 1. Start from changed source, configuration, tests, and runtime evidence.
-2. Map them to affected paired domain pages and Reference-only cross-cutting pages.
-3. Verify paths, symbols, routes, models, commands, flows, and test locations before writing.
-4. Keep pages concise and navigation-oriented.
-5. Update `wiki/reference/index.md` when pages are added, removed, split, merged, or renamed.
-6. Preserve the domain taxonomy shared with Specs.
+2. Determine whether the change adds, removes, or alters an important feature surface, its primary domain assignment, or a cross-domain trace.
+3. Map the change to affected paired domain pages and Reference-only cross-cutting pages.
+4. Refresh the affected end-to-end trace: feature assignment and entry points; actor, authentication, permission, ownership, validation, and limits; configuration precedence and invariants; service and provider branches; persistence, lifecycle, side effects, retention, and deletion; usage, cost, audit, failure, interruption, cancellation, and retry; Contract Artifacts and exact verification paths.
+5. Verify paths, symbols, routes, models, commands, flows, and test locations before writing.
+6. Keep pages concise without collapsing applicable behavior contracts into wildcard symbols, vague folders, or one-sentence flows.
+7. Update `wiki/reference/index.md` when pages are added, removed, split, merged, or renamed.
+8. Preserve the domain taxonomy shared with Specs.
+9. Rerun the coverage gate for each affected domain and cross-domain trace before closeout.
+
+This Reference refresh is descriptive. A feature surface or end-to-end trace discovered from code never grants permission to change a canonical Spec.
 
 If implementation changed but violates an approved Spec, document the verified mismatch for the task; do not normalize either the Spec or Reference into a false statement. The Spec continues to describe the desired state, and Reference may accurately describe the nonconforming current state.
 
@@ -60,5 +65,6 @@ State separately:
 - which Specs changed and where user approval came from
 - which old intent was semantically compacted
 - which Reference pages changed from verified implementation evidence
+- which feature surfaces and end-to-end traces changed and how the coverage gate was rechecked
 - which Acceptance Criteria were verified
 - any remaining Spec/code nonconformance, stale Reference, or missing pair
