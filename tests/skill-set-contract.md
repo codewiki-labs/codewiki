@@ -21,11 +21,10 @@ Required behavior:
 - Check for project memory before broad code search.
 - Read `wiki/index.md` and concise `wiki/specs/project.md` first.
 - Identify relevant domains from `wiki/specs/index.md`.
-- Read matched Specs and their `Related Domains` closure in full.
-- Read paired Reference domains, then inspect source.
-- When architecture or security Specs are selected, read their paired cross-cutting Reference page before source inspection.
-- For architecture work, always include `reference/architecture.md` whether or not an approved architecture Spec exists; include the Spec when present.
-- For permission or security work, always include `reference/security.md` whether or not an approved security Spec exists; include the Spec when present.
+- Read matched Specs and their recursive `Required Context` closure in full; follow `See Also` only when directly relevant and never recursively.
+- For a feature, architecture, permission, or security task, inspect `reference/coverage.json` for applicability, owning domains, policy paths, and view paths.
+- Read paired Reference domains and only the manifest-listed cross-domain views needed by the task, then inspect source.
+- Do not require a security policy, security view, or security domain when the concern is evidence-backed `not_applicable` or fully owned and traced by domains.
 - For implementation or bug-fix work, include `reference/testing.md` unless selected domains already provide complete verification paths.
 - Before completion, verify the implementation against approved Acceptance Criteria and refresh stale Reference.
 
@@ -53,12 +52,13 @@ Required behavior:
 - If source drift changes proposed desired behavior, re-present the affected Spec content; if it changes implementation evidence only, refresh Reference without reopening unchanged Specs.
 - After approval, write the approved Specs and taxonomy, then generate source-grounded Reference into the paired `specs/` and `reference/` structure.
 - Pair every `specs/domains/<domain>.md` with exactly one `reference/domains/<domain>.md`.
-- Pair `specs/project.md` with `reference/overview.md`, pair the two indexes, and pair architecture or security Specs when present.
+- Pair `specs/project.md` with `reference/overview.md`, pair the two indexes, pair every `specs/policies/<concern>.md` with `reference/views/<concern>.md`, and allow a manifest-listed descriptive view without a policy.
 - Keep `specs/project.md` short enough to read every session.
 - Store important rationale beside its requirement.
 - Do not create a chronological conversation/change history or a separate ADR store.
 - Treat the proposed domain taxonomy as part of the Spec set the user approves; descriptive Reference scaffolding alone is not requirement approval.
-- Omit architecture or security Specs when no corresponding global intent has been approved; create and pair them when approved.
+- Treat security as a concern owned by domains, not a mandatory domain. Create a global policy only for approved cross-domain intent.
+- Generate `reference/coverage.json` and any applicable cross-domain views from current source; omit placeholder policy and view files for evidence-backed `not_applicable` concerns.
 
 ## Scenario: Feature Surface Coverage During Creation
 
@@ -70,6 +70,8 @@ Given a repository with an active user tool, an administrator configuration surf
 - Assign every important feature to one primary domain or provide an explicit evidence-backed exclusion reason.
 - Treat any unassigned important feature as a creation blocker.
 - Keep the inventory outside canonical `wiki/` until the complete proposal is approved.
+- After approval, persist its source-derived feature assignments, exact evidence, exclusions, source revision, and security and architecture applicability in `reference/coverage.json`.
+- Use an immutable full Git commit ID for `source_revision`; allow later Wiki-only commits, reject committed non-Wiki changes, and warn that uncommitted source requires separate inspection.
 
 ## Scenario: Spec-Only User Approval
 
@@ -132,9 +134,10 @@ Required behavior:
 
 - Always recover project purpose, priorities, global intent, constraints, and non-goals from `specs/project.md`.
 - Use the domain registry to match `public` and `search`.
-- Follow each selected Spec's `Related Domains`, such as `auth-and-current-user` or `roles-and-permissions`.
+- Recursively follow each selected Spec's `Required Context`, such as `auth-and-current-user` or `roles-and-permissions`.
+- Read `See Also` pages only when directly relevant and do not recurse through them.
 - Deduplicate the closure and read every selected Spec in full before Reference or source.
-- Always read `reference/security.md` for this permission task, whether or not an approved security Spec exists; read the Spec too when present.
+- Read `reference/coverage.json`, the owning security-relevant domains, and `reference/views/security.md` only when the manifest lists it. Read `specs/policies/security.md` too when an approved global policy applies.
 - Read each paired domain Reference and the relevant testing map before inspecting the scoped source paths.
 
 ## Scenario: Targeted Source Inspection
@@ -154,7 +157,7 @@ Required behavior:
 - Start with the paired Reference domain's entry points, symbols, runtime flow, data models, tests, and implementation details.
 - Follow concrete source paths instead of treating Reference prose as implementation truth.
 - Expand only through named callers, dependencies, schemas, routes, jobs, or tests.
-- If source tracing reveals an undocumented logical domain, load its approved Spec before making decisions in that domain and record the missing Related Domains or Reference link.
+- If source tracing reveals an undocumented logical domain, load its approved Spec before making decisions in that domain and record the missing `Required Context`, `See Also`, coverage-manifest assignment, or Reference link.
 
 ## Scenario: Approved Spec Conflicts With Code
 
@@ -302,8 +305,8 @@ Required behavior:
 
 - Check that every Spec domain has exactly one Reference domain at the same relative path.
 - Reject orphan files in either domain tree; Reference-only domain files are invalid.
-- Check project-to-overview, index-to-index, architecture, and security Spec counterparts so every Spec has a corresponding Reference.
-- Allow Reference-only cross-cutting pages such as commands, testing, dependencies, and glossary.
+- Check project-to-overview, index-to-index, and policy-to-view counterparts so every Spec has a corresponding Reference.
+- Allow a source-derived cross-domain view without a policy only when the coverage manifest lists it, every `Spec Basis` ID resolves exactly in an owning domain Spec, and observed-only content is explicitly labeled instead of creating durable intent; allow operational pages such as commands, testing, dependencies, and glossary.
 - Check that domain taxonomy describes logical change boundaries rather than mirroring source modules.
 - Check authority direction, approval integrity, current-intent compaction, concise always-read memory, and source-navigation quality.
 - Inventory every Wiki file so noncanonical history, draft, or decision stores cannot escape the audit.
@@ -317,9 +320,56 @@ Given a structurally valid Wiki whose domain pairs and links are correct but who
 
 - Reconstruct a risk-weighted Feature Surface Inventory from current UI or catalogs, routes, jobs, providers, schemas, guards, configuration, persistence, and focused tests.
 - Compare important source features with registry assignments and domain Reference coverage.
+- Compare the reconstructed inventory with `reference/coverage.json`, including its recorded source revision, exact evidence, exclusions, and concern applicability.
 - Report unassigned important features, incomplete traces, vague evidence, and missing high-risk contracts as Wiki contract or representation defects.
 - Treat symbol presence without field mappings, formulas, precedence, lifecycle, failure, or tests as insufficient evidence.
 - Do not repair Specs from source behavior and do not mutate any file during a read-only audit.
+
+## Scenario: Security Is Not Applicable
+
+Given a local-only utility with no authentication, authorization, ownership boundary, public or network exposure, secrets, sensitive data, untrusted input, or privileged side effect, required behavior is:
+
+- Inspect the relevant entry points, configuration, data flow, and tests rather than assuming absence from file names.
+- Record `security.applicability` as `not_applicable` in `reference/coverage.json` with a non-empty reason and exact repository-root-relative evidence.
+- Leave `owning_domains`, `policy_path`, and `view_path` empty and omit `specs/policies/security.md` plus `reference/views/security.md`.
+- Treat `not_applicable` as an evidence-backed scoped finding, not a claim that the project is risk-free.
+
+## Scenario: Domain-Owned Security
+
+Given authentication, authorization, ownership, or trust-boundary behavior that belongs to one or more product domains but has no approved global rule, required behavior is:
+
+- Put the durable requirements and Acceptance Criteria in the owning domain Specs under Security And Trust Boundaries and related risk-driven sections.
+- Map current enforcement in the paired domain Reference and list owning domains plus exact evidence in `reference/coverage.json`.
+- Do not create a mandatory `security` domain or `specs/policies/security.md` placeholder.
+- Create `reference/views/security.md` only when a cross-domain source map materially improves navigation; if created, list it in the manifest and keep unapproved observations descriptive.
+
+## Scenario: Global Security Policy And View
+
+Given an approved security rule that genuinely spans multiple domains, required behavior is:
+
+- Store the normative rule, scope, stable IDs, invariants, failure or audit meaning, and Acceptance Criteria in `specs/policies/security.md`.
+- Create the paired `reference/views/security.md` and map the policy plus owning-domain requirement IDs to exact current enforcement and verification evidence.
+- Record both paths, owning domains, applicability reason, and exact evidence in `reference/coverage.json`.
+- Reject a policy without its paired view and reject durable policy that exists only in the view as authority leakage.
+
+## Scenario: Typed Domain Retrieval
+
+Given Specs that cross-link multiple domains, required behavior is:
+
+- Recursively traverse `Required Context`, deduplicate cycles, and read the complete resulting Spec closure.
+- Treat `See Also` as nonrecursive navigation and load only directly relevant pages.
+- Treat Legacy `Related Domains` as one-hop migration input, classify every link into one of the typed sections, and report the stale representation.
+- Reject broken required links and excessive context expansion caused by recursive adjacency links.
+
+## Scenario: Generated-Wiki Artifact Validation
+
+Given a generated repository-local Wiki, required behavior is:
+
+- Run the bundled `scripts/validate_generated_wiki.py` with `--repo-root <repository-root> --wiki-root <repository-root>/wiki`.
+- Reject missing core files, unequal domain trees, invalid policy/view pairing, missing manifest evidence, unresolved feature traces or `Spec Basis`, inconsistent security or architecture applicability, broken typed links, and Legacy `Related Domains`.
+- Accept an evidence-backed securityless Wiki, domain-owned security without a global policy, a manifest-listed view without a policy, and a paired approved global policy/view.
+- Run the semantic authority-leakage fixture separately to reject durable policy that appears only in a view.
+- Treat validator success as Wiki-contract evidence only; still inspect source and run product verification for implementation claims.
 
 ## Scenario: Source And Runtime Disagree
 
@@ -432,7 +482,7 @@ Required result:
 
 - `scripts/sync-to-codex-plugin.sh` accepts `--repo owner/name`, `--dest plugins/code-wiki`, `--local PATH`, `--base`, and `--bootstrap`.
 - Dry-run previews the payload without mutating the destination checkout.
-- The payload includes the manifest, skills, README, license, changelog, code of conduct, contributing guide, docs, and examples.
-- Repo-local scripts, tests, Git data, ignored untracked files, and unrelated manifests stay excluded.
+- The payload includes the manifest, skills, generated-Wiki validator, README, license, changelog, code of conduct, contributing guide, public design doc, and examples.
+- Internal implementation plans, development-only scripts, tests, Git data, ignored untracked files, and unrelated manifests stay excluded.
 - Destination-owned `skills/**/agents/openai.yaml` metadata is preserved.
 - Dirty destination plugin paths block apply mode, while a clean no-op apply exits without creating a sync branch.

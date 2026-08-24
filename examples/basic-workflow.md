@@ -12,8 +12,8 @@ Expected behavior:
 
 - `using-code-wiki` checks for project memory.
 - The agent reads `wiki/index.md` and `wiki/specs/project.md` first.
-- It selects authentication domains from `wiki/specs/index.md`, follows `Related Domains`, and reads the selected Specs in full.
-- It reads paired Reference pages before inspecting current source and tests.
+- It selects authentication domains from `wiki/specs/index.md`, recursively follows `Required Context`, and reads directly relevant `See Also` pages without recursing.
+- It consults `reference/coverage.json`, reads paired domain Reference plus any manifest-listed security view needed by the task, then inspects current source and tests.
 - It verifies the fix against approved Acceptance Criteria and refreshes stale Reference if needed.
 
 ## Create A Wiki
@@ -30,6 +30,7 @@ Expected behavior:
 - Record the inspected revision and relevant working-tree state.
 - Build a noncanonical Feature Surface Inventory across active surfaces, routes, providers, persistence, configuration, security, usage or audit, failure paths, and focused tests.
 - Assign every important feature to one primary domain or provide an explicit evidence-backed exclusion.
+- Determine security and architecture applicability from exact source evidence rather than requiring fixed domains or pages.
 - Identify logical domains by user responsibility and change boundary rather than folder names.
 - Build one complete user-facing proposal containing the taxonomy and all behaviorally complete Spec content outside canonical `wiki/`.
 - Put actor permissions, calculations, policy precedence, invariants, lifecycle and failure outcomes, retention, audit meaning, and testable examples in Specs with stable requirement IDs.
@@ -39,6 +40,7 @@ Expected behavior:
 - Obtain one user approval for canonical creation, Specs, and taxonomy before writing any files under `wiki/`.
 - If desired behavior changes before creation, refresh affected Specs and obtain approval again; refresh implementation-only Reference evidence without asking the user to approve it.
 - Create identical Spec and Reference domain file sets at the same relative paths; do not create Reference-only domain files.
+- Persist approved-proposal coverage as source-derived `reference/coverage.json`; pair every approved `specs/policies/<concern>.md` with `reference/views/<concern>.md`.
 - Keep `specs/project.md` concise and keep important rationale next to its requirement.
 
 ## Read Before Editing
@@ -53,8 +55,9 @@ Expected behavior:
 
 - Recover global purpose, priorities, intent, constraints, and non-goals.
 - Match `public` and `search` in the domain registry.
-- Follow their Related Domains, such as authentication or roles.
+- Recursively follow their `Required Context`, such as authentication or roles, and load `See Also` only when directly relevant.
 - Read each selected Spec completely, then its paired Reference page.
+- Use the coverage manifest to select applicable concern views; do not invent a security page when evidence says `not_applicable`.
 - Inspect only the source paths, symbols, routes, and tests needed to establish current behavior.
 - Report completion as a requirement-ID Spec conformance matrix; do not require the user to read Reference.
 
@@ -158,12 +161,29 @@ Expected behavior:
 
 - Check authority direction, approval integrity, current-intent compaction, and concise always-read memory.
 - Compare Spec and Reference domain paths exactly.
-- Verify Related Domains and registries.
+- Verify recursive `Required Context`, nonrecursive `See Also`, registries, policy/view pairs, and `reference/coverage.json`.
 - Reconstruct a risk-weighted Feature Surface Inventory and compare important source features with domain coverage.
 - Reject Specs that need Reference to determine permissions, calculations, invariants, lifecycle, failures, usage, cost, audit, or retention outcomes.
 - Reject Reference-only durable policy as authority leakage and reject wildcard symbols, vague folders, one-line flows, and generic tests as insufficient implementation evidence.
 - Spot-check Reference paths, complete traces, and high-risk implementation claims against source.
 - Propose user-approved Spec fixes separately from safe code-grounded Reference repairs.
+
+## Security Without A Fixed Domain
+
+Prompt:
+
+```text
+Create the Wiki and account for security even if this project has no global security policy.
+```
+
+Expected behavior:
+
+- Inspect authentication, authorization, ownership, exposure, untrusted input, secrets, sensitive data, and privileged side effects.
+- Put applicable durable behavior in its owning domain Spec and current enforcement in the paired domain Reference.
+- Create `specs/policies/security.md` only for an approved rule shared across domains; pair it with `reference/views/security.md`.
+- Allow a manifest-listed security view without a global policy when cross-domain source navigation is useful.
+- For a genuinely securityless scope, record evidence-backed `not_applicable` in `reference/coverage.json` and omit both files.
+- Run the plugin's bundled `scripts/validate_generated_wiki.py` with the target repository and Wiki paths after generation.
 
 ## With Superpowers
 

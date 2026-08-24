@@ -19,3 +19,9 @@ The complete Reference describes observed implementation only. Desired behavior 
 ## Authority-Leakage Candidate Must Fail
 
 The authority-leakage candidate puts image-token versus per-image pricing exclusivity in Reference while omitting its approved Spec requirement. The validator must report `MU-USAGE-003` as missing even though the Reference trace is otherwise deep and exact.
+
+It also places a cross-domain authentication-secret logging rule in
+`reference/views/security.md` without an approved
+`specs/policies/security.md`. The validator must reject the missing policy even
+though the Security view supplies `Spec Basis` and a complete implementation
+trace.

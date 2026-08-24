@@ -25,7 +25,7 @@ Use the replaceability test for every detail:
 
 ## Canonical Structure
 
-Create the core structure below. Architecture and security Specs are optional until corresponding global intent is approved; when present, pair them with Reference pages.
+Create the core structure below. Domains own product behavior. Optional policy Specs own approved rules that genuinely span domains, while optional Reference views summarize source-derived implementation across those domains.
 
 ```text
 wiki/
@@ -33,14 +33,18 @@ wiki/
 ├── specs/
 │   ├── index.md
 │   ├── project.md
-│   ├── architecture.md        # when approved
-│   ├── security.md            # when approved
+│   ├── policies/               # only approved cross-domain policy
+│   │   ├── architecture.md        # when approved
+│   │   └── security.md            # when approved
 │   └── domains/
 │       └── <domain>.md
 └── reference/
     ├── index.md
     ├── overview.md
-    ├── architecture.md
+    ├── coverage.json
+    ├── views/                  # only applicable, useful cross-domain views
+    │   ├── architecture.md
+    │   └── security.md
     ├── data-flow.md
     ├── data-models.md
     ├── api-surface.md
@@ -48,20 +52,21 @@ wiki/
     ├── dependencies.md
     ├── commands.md
     ├── testing.md
-    ├── security.md
     ├── gotchas.md
     ├── glossary.md
     └── domains/
         └── <domain>.md
 ```
 
-Every Spec has a corresponding Reference, but only domain pairs require identical relative paths. `wiki/specs/project.md` is paired with `wiki/reference/overview.md`; `wiki/specs/index.md` is paired with `wiki/reference/index.md`; architecture and security Specs pair with the same-named Reference pages when those Specs exist. Other useful Reference-only pages do not require Specs.
+Every Spec has a corresponding Reference, but only domain pairs require identical relative paths. `wiki/specs/project.md` is paired with `wiki/reference/overview.md`; `wiki/specs/index.md` is paired with `wiki/reference/index.md`; `wiki/specs/policies/<concern>.md` is paired with `wiki/reference/views/<concern>.md`. A policy Spec therefore requires its same-named view. A source-derived view may exist without a policy Spec when it is useful and `coverage.json` identifies it; the view must label durable behavior as approved `Spec Basis`, `Observed only`, or `Confirm needed` rather than inventing policy. View-only `Spec Basis` IDs must resolve exactly in one of the concern's owning domain Specs. Other useful Reference-only operational pages do not require Specs.
 
 **Every Spec domain has exactly one Reference domain with the same relative path.** For example, `wiki/specs/domains/search.md` pairs with `wiki/reference/domains/search.md`.
 
 Reference-only domain files are invalid. The two domain trees must have identical relative file sets; the Reference-only allowance applies to cross-cutting operational pages outside `domains/`.
 
 The generic pair is `wiki/specs/domains/<domain>.md` and `wiki/reference/domains/<domain>.md`.
+
+Security is a concern, not a mandatory domain. Put authentication, authorization, ownership, public-access, secret-handling, sensitive-data, and trust-boundary requirements in the domain that owns the behavior. Create `wiki/specs/policies/security.md` only for approved rules shared by multiple domains. Create `wiki/reference/views/security.md` only when source shows an applicable project-specific security concern and a cross-domain navigation view is useful, or when the paired policy exists.
 
 Do not create a chronological history file or a standalone decision store. Git retains detailed history; important reasons stay in the relevant Spec's Intent or Rationale.
 
@@ -90,9 +95,61 @@ Before finalizing domain candidates, build a noncanonical Feature Surface Invent
 
 Classify each surface as `important`, `supporting`, `placeholder`, or `excluded`. An important feature has an independently meaningful actor or entry point, permission or security boundary, data lifecycle, external provider, usage or cost effect, asynchronous or streaming behavior, or material failure semantics.
 
-Assign every important feature to one primary proposed domain. Supporting surfaces may attach to that domain. Placeholder and excluded surfaces require an explicit exclusion reason backed by evidence. An unassigned important feature blocks completion of the proposal.
+Assign every important feature to one primary proposed domain. Supporting features also name their owning domain but may attach to an important feature's domain trace instead of requiring an independent trace. Placeholder and excluded surfaces require an explicit exclusion reason backed by evidence. An unassigned important feature blocks completion of the proposal.
 
-Keep this inventory in the active conversation, workflow artifact, or a temporary file outside `wiki/`. It is implementation evidence and proposal scaffolding, not approved intent.
+Before approval, keep this inventory in the active conversation, workflow artifact, or a temporary file outside `wiki/`. It is implementation evidence and proposal scaffolding, not approved intent. After approval, persist its source-derived coverage state in `wiki/reference/coverage.json`; that manifest is Reference evidence and does not require user approval.
+
+## Coverage Manifest And Concern Applicability
+
+`wiki/reference/coverage.json` makes feature closure and cross-domain concern applicability durable and machine-checkable. It must record the inspected source revision, every important feature's classification and primary domain, its exact source surfaces, and the Spec basis or evidence-backed observed/excluded reason. It must also contain explicit `security` and `architecture` concern entries.
+
+Use `applicable` when active source contains a material project-specific boundary such as authentication, authorization, ownership, public/network exposure, untrusted input, secrets, sensitive data, privileged side effects, isolation, or a cross-domain architectural constraint. Use `not_applicable` only after inspecting those surfaces. It means no important project-specific concern was found in scope; it does not mean the project is risk-free.
+
+Each concern records `applicability`, `owning_domains`, `policy_path`, `view_path`, `reason`, and exact `evidence`. For `not_applicable`, require a non-empty reason and evidence, leave ownership and paths empty, and omit the view and policy files. For `applicable`, name at least one owning domain. A policy path is valid only when the paired view path exists.
+
+```json
+{
+  "source_revision": "<verified revision>",
+  "features": [
+    {
+      "feature_id": "account-sign-in",
+      "classification": "important",
+      "primary_domain": "identity-access",
+      "spec_basis": ["IDENTITY-R001"],
+      "surfaces": {
+        "ui": [],
+        "api": ["src/auth/login.ts"],
+        "jobs": [],
+        "providers": [],
+        "schemas": [],
+        "tests": ["tests/auth/login.test.ts"]
+      }
+    }
+  ],
+  "concerns": {
+    "security": {
+      "applicability": "applicable",
+      "owning_domains": ["identity-access"],
+      "policy_path": null,
+      "view_path": "reference/views/security.md",
+      "reason": "Authentication and session trust boundaries are active.",
+      "evidence": ["src/auth/login.ts"]
+    },
+    "architecture": {
+      "applicability": "not_applicable",
+      "owning_domains": [],
+      "policy_path": null,
+      "view_path": null,
+      "reason": "No material cross-domain architectural constraint was found.",
+      "evidence": ["src/main.ts"]
+    }
+  }
+}
+```
+
+Each `surfaces` key is one of `ui`, `api`, `jobs`, `providers`, `schemas`, or `tests`, and its value is an array of repository-root-relative files. Evidence paths must exist. Important and supporting features require a primary domain plus exactly one of `spec_basis` or a concrete `observed_only_reason`; every supplied requirement ID must resolve exactly in the owning Spec. Important features require an independent paired-Reference feature trace. A supporting trace is optional, but when present its basis or observed-only label must agree with the manifest. Placeholders and exclusions require an explicit exclusion reason.
+
+For a Git checkout, set `source_revision` to the immutable full commit ID inspected during generation. The validator permits later commits confined to `wiki/`, but marks the manifest stale when committed paths outside `wiki/` changed. It warns separately when uncommitted non-Wiki paths exist because a commit ID cannot certify those contents. For a non-Git source, use the repository's stable revision identifier and verify freshness through the available source mechanism.
 
 ## Domain Taxonomy
 
@@ -133,6 +190,8 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ## Actor And Permission Requirements
 
+## Security And Trust Boundaries
+
 ## Calculation And Policy Contracts
 
 ## Domain Invariants
@@ -153,10 +212,64 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ### Acceptance Criterion: `<DOMAIN>-AC001`
 
-## Related Domains
+## Required Context
+
+## See Also
 ```
 
-Use stable requirement IDs and Acceptance Criterion IDs so agents can map implementation and verification evidence back to the approved contract without restating it in Reference. The risk-driven sections are required when applicable and may be omitted when the domain genuinely has no such behavior.
+Use stable requirement IDs and Acceptance Criterion IDs so agents can map implementation and verification evidence back to the approved contract without restating it in Reference. The risk-driven sections are required when applicable and may be omitted when the domain genuinely has no such behavior. `Required Context` lists only Specs that must also be read to determine correctness and is traversed recursively. `See Also` is nonrecursive navigation for adjacent but non-required context. Keep both selective.
+
+## Policy Spec And Concern View Templates
+
+Use a policy only for approved behavior that genuinely spans domains:
+
+```markdown
+# Concern Policy
+
+## Intent
+
+## Requirements
+
+### Requirement: `<POLICY>-R001`
+
+## Scope And Owning Domains
+
+## Invariants
+
+## Failure And Audit Requirements
+
+## Acceptance Criteria
+
+### Acceptance Criterion: `<POLICY>-AC001`
+
+## Required Context
+
+## See Also
+```
+
+Its paired source-derived view maps the policy and domain requirements to implementation without becoming another contract:
+
+```markdown
+# Concern View
+
+## Applicability And Scope
+
+## Owning Domains
+
+## Spec Basis
+
+## Entry Points And Trust Boundaries
+
+## Enforcement Map
+
+## Data And Secret Flow
+
+## Failure, Audit And Verification
+
+## Evidence
+```
+
+When no policy exists, the view may map domain requirement IDs and clearly marked observed behavior. It may not state a durable global rule as if source observation were approved intent.
 
 Calculation and policy contracts describe canonical dimensions, meanings, units, formulas, precedence, exclusivity, defaults, rounding, missing or invalid inputs, failure behavior, authoritative data, and hand-calculated acceptance vectors when those choices affect correctness. Internal identifiers belong in Reference unless the user explicitly approves them as a stable external contract.
 
@@ -185,6 +298,8 @@ Present one complete user-facing Spec proposal with:
 - a concise statement of planned Reference coverage without requiring the user to inspect its paths, symbols, flows, or tests
 - one explicit request to approve canonical creation plus the proposed Specs and taxonomy only
 
+Also report the source-derived feature inventory and concern applicability so the user can evaluate proposal completeness, but do not ask them to approve Reference prose or `coverage.json`.
+
 Approval authorizes writing the approved Specs and taxonomy and makes only that content normative. Reference is generated or refreshed separately from verified source and does not require user approval. If the user corrects an observed-state claim, verify that correction against the current code; if the correction instead states desired behavior, represent it as Spec intent and record any implementation mismatch.
 
 Before writing, compare the current revision and relevant working-tree state with the recorded evidence snapshot. If a change affects a proposed requirement or Acceptance Criterion, re-inspect it and re-present the affected Spec content for approval. If it affects implementation evidence only, refresh Reference after approval without reopening unchanged Specs.
@@ -195,6 +310,10 @@ Before writing, compare the current revision and relevant working-tree state wit
 # Domain Name
 
 ## Feature Coverage
+
+### Feature: `<feature_id>`
+
+- Spec Basis: `<DOMAIN>-R001`
 
 ## Entry Points
 
@@ -227,7 +346,7 @@ Before writing, compare the current revision and relevant working-tree state wit
 
 The enforcement and implementation sections are risk-driven. Include each section when a covered feature has that dimension. Otherwise omit it or write `N/A` with a concrete reason; never fill it with generic prose or desired-state policy.
 
-Under `Feature Coverage`, name every important feature assigned by the inventory. Each feature starts with `Spec Basis` listing its stable approved requirement IDs, followed by an end-to-end feature trace covering the applicable sequence:
+Under `Feature Coverage`, use the exact feature-heading shape shown above and match the manifest's `feature_id`. Each feature starts with `- Spec Basis:` listing its stable approved requirement IDs, or an explicit `Observed only`/`Confirm needed` label when the manifest has an observed-only reason, followed by an end-to-end feature trace covering the applicable sequence:
 
 `user/operator surface → API method/path or event → authentication/permission/ownership/validation/limit → service branches → provider contract → persistence/lifecycle → usage/cost/audit → failure/interruption/retry/delete → exact tests`.
 
@@ -253,6 +372,10 @@ Do not present the complete proposal for approval until:
 - every assigned important feature has a complete applicable trace
 - every Reference feature names its approved `Spec Basis` and maps risk-bearing behavior to current enforcement
 - all cited source paths are repository-root-relative and exist in the inspected checkout
+- `wiki/reference/coverage.json` accounts for every inventory feature and records evidence-backed security and architecture applicability
+- every approved policy has a paired same-named view, every view is manifest-listed, and a `not_applicable` concern has neither file
+- each security-relevant behavior is owned by a domain even when no global security policy exists
+- recursive `Required Context` links resolve; `See Also` remains nonrecursive and selective
 - exact routes, symbols, configuration keys, models, jobs, and test files replace wildcard or generic references
 - success, failure, interruption, deletion, and retention behavior are distinguished when present
 - Specs contain approved desired state only; inferred implementation facts remain in Reference or `Confirm needed`
@@ -267,13 +390,15 @@ This coverage gate measures important-feature coverage, trace completeness, and 
 3. Build the Feature Surface Inventory and classify, assign, or explicitly exclude every discovered surface.
 4. Identify logical domain candidates and plan paired Spec and Reference paths from important-feature responsibilities and change boundaries.
 5. Gather candidate durable intent from the user and the current conversation. Treat code and older prose as prompts for confirmation, not requirement approval.
-6. Draft the complete router, Spec registries, project memory, justified cross-cutting Specs, domain Specs, and taxonomy outside canonical `wiki/`.
+6. Draft the complete router, Spec registries, project memory, justified policy Specs, domain Specs, and taxonomy outside canonical `wiki/`.
 7. Draft or plan agent-facing Reference traces internally, use them to surface candidate missing requirements, and run Spec sufficiency plus the authority-leakage gate.
 8. Present only the complete Specs and taxonomy as the user-facing approval artifact and obtain one approval for canonical creation.
 9. Recheck the recorded source state. Re-present only affected Spec content when desired behavior changed; refresh implementation-only evidence without reopening unchanged Specs.
-10. Write the approved Specs and taxonomy, then generate paired Reference and cross-cutting maps from verified current source. Omit unapproved or empty architecture and security Specs rather than creating placeholders.
-11. Link every Reference feature to requirement IDs through `Spec Basis`, then cross-link the router, registries, related domains, paired pages, and source paths.
-12. Validate Spec sufficiency, authority leakage, exact domain pairing, concise always-read pages, current code paths, Reference coverage and freshness, and absence of raw history.
+10. Write the approved Specs and taxonomy, then generate paired Reference, `wiki/reference/coverage.json`, and applicable views from verified current source. Omit unapproved or empty policy Specs. Omit a concern view only when the manifest records evidence-backed `not_applicable` or when an applicable concern is completely owned and navigable through domain Reference without needing a cross-domain view.
+11. Link every Reference feature to requirement IDs through `Spec Basis`, then cross-link the router, registries, `Required Context`, nonrecursive `See Also`, paired pages, and source paths.
+12. Validate Spec sufficiency, authority leakage, exact domain pairing, policy and view pairing, concern applicability, typed links, current code paths, Reference coverage and freshness, and absence of raw history. Run the bundled generated-Wiki validator when available.
+
+When migrating an older Wiki, move approved top-level `specs/security.md` or `specs/architecture.md` content into `specs/policies/` only if it is truly cross-domain policy. Move source-derived cross-domain material into `reference/views/`; domain-owned behavior stays in domain pairs. Treat Legacy `Related Domains` as one-hop input: classify each link as recursive `Required Context` or nonrecursive `See Also`, then remove the legacy section.
 
 When regenerating a V1 or stale Wiki, preserve any demonstrably user-approved current intent. Re-propose uncertain requirement-like prose before canonicalizing it, and rebuild descriptive Reference from current source.
 

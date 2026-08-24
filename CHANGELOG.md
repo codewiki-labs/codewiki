@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Made security and architecture source-derived concerns owned by product domains instead of mandatory Wiki domains or pages.
+- Added optional approved cross-domain policy Specs under `specs/policies/` and source-derived concern maps under `reference/views/`, with mandatory policy-to-view pairing and manifest-listed view-only support.
+- Added persistent `reference/coverage.json` feature closure and evidence-backed concern applicability, including valid securityless projects through `not_applicable`.
+- Replaced recursive `Related Domains` retrieval with recursive `Required Context` and nonrecursive `See Also`, retaining legacy links only as one-hop migration input.
+- Added a generated-Wiki validator and fixtures for no-security, domain-owned security, global policy/view, typed-link, pairing, and authority-leakage cases.
+- Included the generated-Wiki validator in the Codex plugin sync payload while continuing to exclude development-only scripts and tests.
+- Kept internal implementation plans out of the runtime plugin payload.
 - Made domain Specs behaviorally complete user-facing contracts for permissions, calculations, policy precedence, invariants, lifecycle, failures, retention, audit meaning, and Spec-only conformance review.
 - Reframed Reference as an agent-facing implementation map using stable requirement IDs and `Spec Basis`, with no user approval requirement for source-grounded refreshes.
 - Added authority-leakage fixtures that reject billing or other durable rules present only in Reference.
@@ -13,7 +20,7 @@
 - Reframed Code-Wiki as repository-local persistent project memory.
 - Added normative user-approved Specs and descriptive code-backed Reference with separate authority rules.
 - Replaced the mixed Wiki layout with `specs/` and `reference/` trees plus exact domain pairing.
-- Added concise always-read project memory, domain registries, Related Domains closure, and Reference-guided source retrieval.
+- Added concise always-read project memory, domain registries, typed context closure, and Reference-guided source retrieval.
 - Added approval-gated durable requirement changes, current-intent semantic compaction, and Acceptance Criteria verification.
 - Removed chronological Wiki history and standalone decision-store guidance in favor of Git history and requirement-local rationale.
 - Defined the boundary where Code-Wiki owns WHAT/WHY/WHERE and Superpowers owns HOW.

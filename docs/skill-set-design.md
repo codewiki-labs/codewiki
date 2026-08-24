@@ -60,7 +60,7 @@ skills/
 | --- | --- | --- |
 | `using-code-wiki` | bootstrap, authority routing, durable-intent detection, sub-skill selection, closeout | detailed page writing or source tracing |
 | `creating-code-wiki` | first creation, substantial regeneration, V2 structure, initial approval boundary | ordinary post-change maintenance |
-| `reading-code-wiki` | always-read memory, domain registry selection, Related Domains closure | implementation truth |
+| `reading-code-wiki` | always-read memory, domain registry selection, typed context closure, concern applicability | implementation truth |
 | `exploring-code-with-wiki` | Reference-guided source inspection and two-direction mismatch handling | approving or inferring requirements |
 | `updating-code-wiki` | approved Spec compaction and code-grounded Reference refresh | broad quality audits |
 | `auditing-code-wiki` | authority, approval, taxonomy, pairing, freshness, and usefulness review | silent Spec repair |
@@ -74,10 +74,11 @@ The bootstrap and reading skills recover context in this order:
 2. `wiki/specs/project.md`
 3. `wiki/specs/index.md`
 4. directly matched Specs
-5. recursive `Related Domains` closure
-6. paired Reference domains
-7. relevant Reference-only pages
-8. actual source and runtime evidence
+5. recursive `Required Context` closure and directly relevant nonrecursive `See Also`
+6. `wiki/reference/coverage.json` when feature or concern evidence is needed
+7. paired Reference domains and applicable policy/view pages
+8. relevant Reference-only operational pages
+9. actual source and runtime evidence
 
 Only the first two pages are always read. This protects global memory without loading the entire Wiki.
 
@@ -85,13 +86,19 @@ Only the first two pages are always read. This protects global memory without lo
 
 Specs and Reference share a logical domain taxonomy. Their domain trees have identical relative file sets; Reference-only domain files are invalid. A Reference domain may point to many code modules, packages, services, UI areas, models, and tests.
 
-Every Spec has a counterpart: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and domains pair by exact relative path. Operational pages such as commands, configuration, testing, dependencies, data flow, data models, API surface, gotchas, and glossary may be Reference-only.
+Every Spec has a counterpart: project pairs with overview, the registries pair with each other, `specs/policies/<concern>.md` pairs with `reference/views/<concern>.md`, and domains pair by exact relative path. A source-derived view may exist without a policy only when the coverage manifest lists it and it does not create durable intent. Operational pages such as commands, configuration, testing, dependencies, data flow, data models, API surface, gotchas, and glossary may be Reference-only.
+
+Security is a concern, not a mandatory domain. Authentication, authorization, ownership, exposure, secrets, sensitive data, and trust-boundary behavior belongs to the logical domain that owns it. A global security policy exists only for approved rules that genuinely span domains; a security view exists only when source evidence makes the concern applicable and a cross-domain map is useful, or when its paired policy requires it.
 
 ## Feature Coverage, Spec Sufficiency, And Deep Reference Contract
 
 Before initial taxonomy approval, creation builds a noncanonical Feature Surface Inventory from active user and operator surfaces, routes and events, jobs and providers, schemas and persistence, configuration, security and ownership boundaries, usage and cost, failure paths, and focused tests. Each surface is classified as important, supporting, placeholder, or excluded. Every important feature has one primary proposed domain or an explicit evidence-backed exclusion; unassigned important features block the proposal.
 
-The inventory remains in the active conversation, workflow artifact, or a temporary path outside canonical `wiki/` until approval. It is observed-state scaffolding, not approved intent.
+The inventory remains in the active conversation, workflow artifact, or a temporary path outside canonical `wiki/` until approval. It is observed-state scaffolding, not approved intent. After approval, its verified closure persists in `wiki/reference/coverage.json` with source revision, classifications, domain assignments, exact `Spec Basis` IDs or observed-only reasons, exclusions, exact evidence, and explicit security and architecture applicability. Supporting features retain an owner and basis/reason but may attach to an important feature's domain trace rather than requiring an independent trace.
+
+In Git repositories, `source_revision` is the immutable full commit ID inspected during generation. Freshness validation allows later Wiki-only commits and rejects committed changes elsewhere. Uncommitted non-Wiki paths produce an explicit warning because the revision cannot certify their content; source inspection remains responsible for that state.
+
+Concern applicability is triaged from source rather than file-name convention. `applicable` records owning domains, a reason, exact evidence, and optional policy/view paths. Evidence-backed `not_applicable` records the inspected reason and evidence but has no owning domain, policy, view, or placeholder file. This is a scoped coverage statement, not an assertion that software has no risk.
 
 Each important feature first receives behaviorally complete requirements and Acceptance Criteria in its domain Spec. Its domain Reference then receives `Spec Basis` plus an applicable end-to-end trace:
 
@@ -108,7 +115,7 @@ user or operator surface
 
 Deep Reference restores the useful operational depth of the earlier module format inside the V2 authority model: authorization and invariant enforcement, lifecycle and failure implementation, usage/cost/audit implementation, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
 
-The Spec sufficiency gate checks whether users can determine correct behavior without Reference. The authority-leakage gate rejects durable policy found only in Reference. The Reference coverage gate checks important-feature assignment, `Spec Basis`, trace completeness, repository-root-relative paths, and exact evidence. None uses arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
+The Spec sufficiency gate checks whether users can determine correct behavior without Reference. The authority-leakage gate rejects durable policy found only in Reference, including concern views. The Reference coverage gate checks important-feature assignment, `Spec Basis`, trace completeness, repository-root-relative paths, exact evidence, concern applicability, policy/view pairing, and typed links. None uses arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
 
 ## Initial Creation Contract
 
@@ -121,7 +128,7 @@ Current checkout and relevant working-tree state
 → Spec sufficiency and authority-leakage gates
 → one user approval for creation, Specs, and taxonomy only
 → source-evidence recheck
-→ canonical Specs plus agent-facing Reference creation
+→ canonical Specs plus coverage manifest and agent-facing Reference creation
 ```
 
 The user-facing proposal contains the exact taxonomy and complete Spec content, not Reference prose. Nothing is written under `wiki/` before approval. If desired behavior changes before creation, affected Specs are refreshed and re-approved; implementation-only evidence refreshes Reference without reopening unchanged Specs. Approval makes proposed Specs and taxonomy normative, while current source remains authoritative for Reference facts.
@@ -143,8 +150,8 @@ Reference updates follow:
 
 ```text
 Verified code or runtime change
-→ affected navigation map
-→ Reference refresh
+→ affected feature or concern applicability
+→ Reference, coverage manifest, and view refresh
 ```
 
 Canonical Specs contain approved current intent only. They do not carry draft lifecycle metadata or chronological transcripts. Important rationale stays next to the relevant requirement; Git owns historical detail.
@@ -157,7 +164,7 @@ Code-Wiki owns persistent WHAT, WHY, and WHERE. Superpowers owns HOW: brainstorm
 
 The repository root is the Codex plugin package. `.codex-plugin/plugin.json` points to `./skills/`, while `.agents/plugins/marketplace.json` exposes the repository-backed plugin. The package remains skill-centered and does not declare hooks, apps, MCP servers, or visual assets that are not present.
 
-The sync script publishes the manifest, skills, public docs, and examples while preserving destination-owned skill UI metadata.
+The sync script publishes the manifest, skills, generated-Wiki validator, public docs, and examples while preserving destination-owned skill UI metadata and excluding development-only scripts and tests.
 
 ## Validation Strategy
 
@@ -176,6 +183,13 @@ The sync script publishes the manifest, skills, public docs, and examples while 
 - every required trace dimension is present
 - exact evidence cannot be replaced by vague folders, wildcard symbols, one-line flows, or generic test labels
 - intentionally shallow and authority-leakage candidates fail while complete candidates pass
+
+`scripts/validate_generated_wiki.py` validates actual generated Wiki artifacts:
+
+- core routers and registries plus exact Spec/Reference domain pairs
+- coverage-manifest source revision, feature assignment, exclusions, exact evidence, and required concern entries
+- policy/view pairing, manifest-listed view-only cases, and evidence-backed `not_applicable`
+- recursive `Required Context`, nonrecursive `See Also`, and rejection of legacy ambiguous links
 
 `tests/skill-set-contract.md` records behavioral scenarios that are not fully captured by structural validation. Skill changes must update both deterministic checks and at least one relevant scenario.
 

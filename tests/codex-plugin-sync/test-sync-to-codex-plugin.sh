@@ -175,6 +175,7 @@ write_upstream_fixture() {
         "$repo/.private-notes" \
         "$repo/.kimi-plugin" \
         "$repo/docs" \
+        "$repo/docs/superpowers/plans" \
         "$repo/examples" \
         "$repo/scripts" \
         "$repo/skills/using-code-wiki" \
@@ -224,6 +225,10 @@ EOF
 # Skill Set Design
 EOF
 
+    cat > "$repo/docs/superpowers/plans/internal-plan.md" <<'EOF'
+# Internal Implementation Plan
+EOF
+
     cat > "$repo/examples/basic-workflow.md" <<'EOF'
 # Basic Workflow
 EOF
@@ -231,6 +236,11 @@ EOF
     cat > "$repo/scripts/dev-helper.sh" <<'EOF'
 #!/usr/bin/env sh
 echo dev helper
+EOF
+
+    cat > "$repo/scripts/validate_generated_wiki.py" <<'EOF'
+#!/usr/bin/env python3
+print("generated Wiki validator")
 EOF
 
     cat > "$repo/tests/codex-plugin-sync/test-sync-to-codex-plugin.sh" <<'EOF'
@@ -262,8 +272,10 @@ EOF
         LICENSE \
         README.md \
         docs/skill-set-design.md \
+        docs/superpowers/plans/internal-plan.md \
         examples/basic-workflow.md \
         scripts/dev-helper.sh \
+        scripts/validate_generated_wiki.py \
         scripts/sync-to-codex-plugin.sh \
         skills/using-code-wiki/SKILL.md \
         tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
@@ -329,6 +341,7 @@ write_synced_destination_fixture() {
         "$repo/plugins/code-wiki/.codex-plugin" \
         "$repo/plugins/code-wiki/docs" \
         "$repo/plugins/code-wiki/examples" \
+        "$repo/plugins/code-wiki/scripts" \
         "$repo/plugins/code-wiki/skills/using-code-wiki/agents"
 
     cat > "$repo/plugins/code-wiki/.codex-plugin/plugin.json" <<EOF
@@ -364,6 +377,11 @@ EOF
 
     cat > "$repo/plugins/code-wiki/examples/basic-workflow.md" <<'EOF'
 # Basic Workflow
+EOF
+
+    cat > "$repo/plugins/code-wiki/scripts/validate_generated_wiki.py" <<'EOF'
+#!/usr/bin/env python3
+print("generated Wiki validator")
 EOF
 
     cat > "$repo/plugins/code-wiki/skills/using-code-wiki/SKILL.md" <<'EOF'
@@ -587,8 +605,10 @@ main() {
     assert_contains "$preview_section" "README.md" "Preview includes README"
     assert_contains "$preview_section" "LICENSE" "Preview includes license"
     assert_contains "$preview_section" "docs/skill-set-design.md" "Preview includes docs"
+    assert_not_contains "$preview_section" "docs/superpowers/plans/internal-plan.md" "Preview excludes internal implementation plans"
     assert_contains "$preview_section" "examples/basic-workflow.md" "Preview includes examples"
-    assert_not_contains "$preview_section" "scripts/dev-helper.sh" "Preview excludes scripts"
+    assert_contains "$preview_section" "scripts/validate_generated_wiki.py" "Preview includes generated-Wiki validator"
+    assert_not_contains "$preview_section" "scripts/dev-helper.sh" "Preview excludes development scripts"
     assert_not_contains "$preview_section" "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh" "Preview excludes tests"
     assert_not_contains "$preview_section" ".kimi-plugin/plugin.json" "Preview excludes unrelated manifests"
     assert_not_contains "$preview_section" ".private-notes/leak.txt" "Preview excludes ignored untracked files"

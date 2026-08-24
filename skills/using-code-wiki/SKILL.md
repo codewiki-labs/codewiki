@@ -49,8 +49,9 @@ Before a project-related answer, plan, edit, debug session, or source search:
    - the authority and navigation rules in `wiki/index.md`
    - the concise global memory in `wiki/specs/project.md`
    - relevant domains selected from `wiki/specs/index.md`
-   - directly matched Specs plus their recursive `Related Domains` closure
-   - paired Reference pages
+   - directly matched Specs plus their recursive `Required Context` closure
+   - directly relevant, nonrecursive `See Also` pages
+   - paired Reference pages and source-derived concern applicability from `wiki/reference/coverage.json` when relevant
 4. Invoke `exploring-code-with-wiki` before relying on implementation claims or editing source.
 
 Do not read the entire Wiki by default. The two always-read pages are `wiki/index.md` and `wiki/specs/project.md`; everything else is selected by task intent.
@@ -60,6 +61,8 @@ Do not read the entire Wiki by default. The two always-read pages are `wiki/inde
 Before implementation, decide whether the request changes what should remain true after this task.
 
 Store durable user intent such as final behavior, project-wide direction, architectural constraints, actor permissions, calculation and policy rules, security invariants, lifecycle and failure outcomes, retention and audit meaning, important rationale, non-goals, and Acceptance Criteria. Do not store one-off debugging commands, temporary test instructions, implementation plans, transient workarounds, or raw conversation history.
+
+Put product behavior in its owning domain Spec. Use `wiki/specs/policies/` only for approved rules that genuinely span domains. Security is a concern rather than a required domain or page: authentication, authorization, ownership, exposure, secrets, sensitive data, and trust boundaries stay with their owning domains unless an approved global policy is necessary.
 
 When the request adds, removes, or conflicts with a durable requirement:
 
@@ -102,6 +105,8 @@ Before completing project work:
 3. Invoke `updating-code-wiki` when edits are authorized and verified code organization, runtime flow, commands, tests, configuration, dependencies, models, APIs, security behavior, or gotchas changed. Otherwise report the needed Reference refresh.
 4. Refresh Reference only from verified current implementation.
 5. Confirm that every affected Spec domain still has its paired Reference domain.
-6. Report whether Specs changed with approval, Reference changed from code, or no durable Wiki update was needed.
+6. Refresh `wiki/reference/coverage.json` when feature assignments, source evidence, or security/architecture applicability changed. Confirm every policy has a same-named view, every view is manifest-listed, and evidence-backed `not_applicable` concerns do not have placeholder policy or view files.
+7. Confirm recursive `Required Context` and nonrecursive `See Also` links remain selective and resolve.
+8. Report whether Specs changed with approval, Reference changed from code, or no durable Wiki update was needed.
 
 Lead user-facing closeout with a Spec conformance matrix: `requirement ID → verification result → mismatch or pass`. Keep Reference paths and freshness details available for agent traceability, but do not require the user to read Reference to decide whether the requested behavior was implemented.

@@ -23,8 +23,8 @@ Refresh Reference when verified source code, configuration, runtime flow, entry 
 
 Canonical Specs contain current approved intent only and remain behaviorally complete enough for a user to determine correct outcomes without Reference.
 
-1. Identify affected project, architecture, security, or domain Specs.
-2. Draft the exact semantic change with stable requirement IDs: current behavior, proposed behavior, permissions, calculations or policies, invariants, lifecycle and failures, retention or audit meaning, constraints, important rationale, non-goals, hand-computed examples when useful, Acceptance Criteria, and Related Domains.
+1. Identify affected project, domain, or cross-domain `specs/policies` Specs. Security-relevant product behavior normally belongs to its owning domain; add a policy only when an approved rule genuinely spans domains.
+2. Draft the exact semantic change with stable requirement IDs: current behavior, proposed behavior, permissions, calculations or policies, security and trust boundaries, invariants, lifecycle and failures, retention or audit meaning, constraints, important rationale, non-goals, hand-computed examples when useful, Acceptance Criteria, recursive `Required Context`, and nonrecursive `See Also`.
 3. Obtain user approval before editing canonical Specs or implementing a new requirement. Exact Spec content explicitly supplied with an implementation instruction is already approved.
 4. Apply semantic compaction: replace superseded requirements with the current approved intent and retain only rationale still useful for understanding it.
 5. Update `wiki/specs/index.md` when the domain registry changes.
@@ -41,13 +41,16 @@ Reference refresh does not require user approval because it changes the agent-fa
 
 1. Start from changed source, configuration, tests, and runtime evidence.
 2. Determine whether the change adds, removes, or alters an important feature surface, its primary domain assignment, or a cross-domain trace.
-3. Map the change to affected paired domain pages and Reference-only cross-cutting pages.
+3. Map the change to affected paired domain pages, `reference/views`, and Reference-only operational pages.
 4. Refresh each feature's `Spec Basis` and implementation evidence: feature assignment and entry points; authorization and invariant enforcement; configuration and service branches; provider adapters; persistence and lifecycle implementation; usage, cost and audit implementation; failure, interruption, cancellation, retry, retention, and deletion implementation; Contract Artifacts and exact verification paths.
 5. Verify paths, symbols, routes, models, commands, flows, and test locations before writing.
 6. Keep pages concise without collapsing implementation evidence into wildcard symbols, vague folders, or one-sentence flows and without restating desired policy as a second contract.
 7. Update `wiki/reference/index.md` when pages are added, removed, split, merged, or renamed.
 8. Preserve the domain taxonomy shared with Specs.
 9. Rerun the coverage gate for each affected domain and cross-domain trace before closeout.
+10. Refresh `wiki/reference/coverage.json` when its source revision, feature classification, primary domain, `Spec Basis`, evidence, exclusion reason, or security/architecture applicability changed.
+
+Concern applicability is source-derived. Record `applicable` with owning domains and exact evidence when a material project-specific concern exists. Record `not_applicable` only with a non-empty reason and exact inspected evidence, with no policy or view path and no placeholder files. A change from either state to the other is a Reference refresh; it becomes a Spec change only when approved durable intent also changes.
 
 This Reference refresh is descriptive. A feature surface or end-to-end trace discovered from code never grants permission to change a canonical Spec.
 
@@ -57,10 +60,13 @@ If implementation changed but violates an approved Spec, document the verified m
 
 ## Pairing And Cross-Cutting Pages
 
-- Every Spec has a corresponding Reference: project-to-overview, index-to-index, same-named architecture and security pages when their Specs exist, and exact relative paths for domains.
+- Every Spec has a corresponding Reference: project-to-overview, index-to-index, same-named policy-to-view pages, and exact relative paths for domains.
 - Reference-only domain files are invalid. The Spec and Reference domain trees must contain identical relative file sets.
-- Reference-only pages such as data flow, data models, API surface, configuration, dependencies, commands, testing, gotchas, and glossary do not need Specs.
+- A policy under `wiki/specs/policies/<concern>.md` requires `wiki/reference/views/<concern>.md`. A source-derived view may exist without a policy when it is listed in the coverage manifest and does not create durable intent.
+- Reference-only pages such as concern views, data flow, data models, API surface, configuration, dependencies, commands, testing, gotchas, and glossary do not otherwise need Specs.
 - A logical domain may navigate to many source modules; do not rename domains merely to mirror folders.
+
+When migrating old content, move genuine approved global policy from top-level `specs/security.md` or `specs/architecture.md` into `specs/policies/`; otherwise return the behavior to owning domains. Move source-derived cross-domain maps into `reference/views/`. Classify each legacy `Related Domains` link as `Required Context` or `See Also` rather than preserving recursive ambiguity.
 
 ## Closeout
 
@@ -70,6 +76,8 @@ State separately:
 - which old intent was semantically compacted
 - which Reference pages changed from verified implementation evidence
 - which feature surfaces and end-to-end traces changed and how the coverage gate was rechecked
+- which coverage-manifest features or concern applicability entries changed and what source evidence supports them
+- which policy/view pairs or typed context links changed
 - which Acceptance Criteria were verified
 - the user-facing Spec conformance result by requirement ID
 - any remaining Spec/code nonconformance, stale Reference, or missing pair

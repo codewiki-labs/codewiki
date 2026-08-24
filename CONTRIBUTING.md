@@ -11,7 +11,9 @@ Thank you for improving code-wiki skills.
 - Preserve the V2 authority split: approved Specs are normative, while source is authoritative for Reference.
 - Keep Specs behaviorally complete for user-only review and Reference agent-facing with requirement-ID implementation mappings.
 - Treat permissions, calculations, policy precedence, invariants, lifecycle and failure outcomes, retention, and audit meaning found only in Reference as authority leakage.
-- Preserve exact Spec/Reference domain pairing and selective retrieval through `Related Domains`.
+- Preserve exact Spec/Reference domain pairing, policy/view pairing, and source-derived feature and concern coverage in `reference/coverage.json`.
+- Keep security and trust-boundary behavior in owning domains; use `specs/policies/` only for approved cross-domain rules and `reference/views/` only for manifest-listed source maps.
+- Preserve selective retrieval: recurse through `Required Context`, never through `See Also`, and treat legacy `Related Domains` as one-hop migration input.
 - Never let code-driven maintenance rewrite canonical Specs without user approval.
 - Add tests or validation for any boundary or structure change.
 
@@ -21,7 +23,7 @@ Run:
 
 ```bash
 python3 scripts/validate_wiki_contract.py
-python3 scripts/validate_wiki_quality_fixtures.py
+python3 -m unittest tests/test_generated_wiki_validator.py tests/test_wiki_quality_fixtures.py tests/test_wiki_contract_semantic_integration.py
 bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
 ```
 
@@ -35,6 +37,8 @@ The repository root is a Codex plugin package, but each behavior unit still live
 - Keep plugin and marketplace version, description, keywords, prompts, and shared interface metadata aligned.
 - Do not add `hooks`, `apps`, `mcpServers`, icons, logos, or screenshots unless the referenced files exist and pass validation.
 - Keep `scripts/sync-to-codex-plugin.sh` destination-agnostic. It must accept `--repo owner/name`, `--dest plugins/code-wiki`, and `--local PATH`.
+- Keep `scripts/validate_generated_wiki.py` in the synced runtime payload while excluding development-only scripts and tests.
+- Sync `docs/skill-set-design.md` as public documentation without shipping internal implementation plans.
 - Update `tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` when sync payload rules change.
 - Preserve destination-owned `skills/**/agents/openai.yaml` metadata during sync.
 
@@ -59,7 +63,8 @@ If the answer is no, add a checklist or section to an existing skill instead.
 - Updated `docs/skill-set-design.md` if boundaries changed.
 - Updated `tests/skill-set-contract.md`.
 - Updated the semantic quality manifest and paired Spec/Reference shallow, complete, or authority-leakage fixtures when Spec sufficiency, feature discovery, Reference depth, evidence specificity, or audit completeness changed.
+- Updated generated-Wiki validator cases when domain pairing, policy/view pairing, typed links, coverage evidence, or concern applicability changed.
 - Ran `python3 scripts/validate_wiki_contract.py`.
-- Ran `python3 scripts/validate_wiki_quality_fixtures.py`.
+- Ran the generated-Wiki and semantic-quality unit tests.
 - Ran plugin validation if `.codex-plugin/plugin.json` or package structure changed.
 - Ran `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` if sync behavior changed.

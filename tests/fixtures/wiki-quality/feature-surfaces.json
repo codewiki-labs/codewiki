@@ -100,5 +100,24 @@
         "tests/require-menu-stepup.test.ts"
       ]
     }
+  ],
+  "policies": [
+    {
+      "id": "security-baseline",
+      "policy": "security",
+      "feature_id": "security-enforcement-view",
+      "spec_requirements": [
+        {
+          "id": "SEC-R001",
+          "evidence": [
+            "Authentication secrets must never be written to application logs."
+          ]
+        }
+      ],
+      "evidence": [
+        "src/auth/guards.ts",
+        "redactSensitiveHeaders"
+      ]
+    }
   ]
 }
