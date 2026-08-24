@@ -36,3 +36,4 @@
 - Split the previous single wiki skill into a public code-wiki skill set.
 - Added focused skills for routing, creating, reading, code exploration, updating, auditing, and skill-set maintenance.
 - Added open-source package docs: README, contributing guide, code of conduct, license, examples, design notes, and validation contract.
+- Enforced Anthropic's 500-line SKILL.md budget in contract validation and moved the coverage manifest example into `skills/creating-code-wiki/references/`, which is read on demand while drafting `wiki/reference/coverage.json`.

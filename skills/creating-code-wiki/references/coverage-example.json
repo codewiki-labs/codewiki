@@ -1,0 +1,37 @@
+{
+  "source_revision": "<verified revision>",
+  "features": [
+    {
+      "feature_id": "account-sign-in",
+      "classification": "important",
+      "primary_domain": "identity-access",
+      "spec_basis": ["IDENTITY-R001"],
+      "surfaces": {
+        "ui": [],
+        "api": ["src/auth/login.ts"],
+        "jobs": [],
+        "providers": [],
+        "schemas": [],
+        "tests": ["tests/auth/login.test.ts"]
+      }
+    }
+  ],
+  "concerns": {
+    "security": {
+      "applicability": "applicable",
+      "owning_domains": ["identity-access"],
+      "policy_path": null,
+      "view_path": "reference/views/security.md",
+      "reason": "Authentication and session trust boundaries are active.",
+      "evidence": ["src/auth/login.ts"]
+    },
+    "architecture": {
+      "applicability": "not_applicable",
+      "owning_domains": [],
+      "policy_path": null,
+      "view_path": null,
+      "reason": "No material cross-domain architectural constraint was found.",
+      "evidence": ["src/main.ts"]
+    }
+  }
+}

@@ -426,6 +426,12 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return fields
 
 
+# Anthropic's skill-authoring guidance: "Keep SKILL.md body under 500 lines for
+# optimal performance. Split content into separate files when approaching this
+# limit." Bundled reference files load on demand and carry no cost until read.
+# https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+MAX_SKILL_MD_LINES = 500
+
 def validate_skills(failures: list[str]) -> None:
     if not SKILLS.is_dir():
         failures.append("missing skills directory: skills")
@@ -443,6 +449,14 @@ def validate_skills(failures: list[str]) -> None:
             continue
 
         text = read(path)
+
+        line_count = len(text.splitlines())
+        if line_count > MAX_SKILL_MD_LINES:
+            failures.append(
+                f"{path.relative_to(ROOT)} is {line_count} lines; keep SKILL.md under "
+                f"{MAX_SKILL_MD_LINES} lines and move on-demand material into references/"
+            )
+
         fields = parse_frontmatter(text)
         if fields.get("name") != skill:
             failures.append(f"{path.relative_to(ROOT)} has wrong name")
