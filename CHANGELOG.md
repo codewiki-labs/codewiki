@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Changed the `reading-code-wiki` and `using-code-wiki` descriptions to enumerate concrete question triggers, so ordinary factual questions about project behavior load the wiki skills instead of bypassing them.
 - Made security and architecture source-derived concerns owned by product domains instead of mandatory Wiki domains or pages.
 - Added optional approved cross-domain policy Specs under `specs/policies/` and source-derived concern maps under `reference/views/`, with mandatory policy-to-view pairing and manifest-listed view-only support.
 - Added persistent `reference/coverage.json` feature closure and evidence-backed concern applicability, including valid securityless projects through `not_applicable`.

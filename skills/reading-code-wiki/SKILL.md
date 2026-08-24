@@ -1,6 +1,6 @@
 ---
 name: reading-code-wiki
-description: Use when starting project-related work in a repository that has a code-wiki, to recover approved intent and select minimal implementation context.
+description: Use when answering any question about a project's behavior, requirements, configuration values, schedules, limits, data flow, or design rationale in a repository that has a wiki/ directory, and before planning, reviewing, or changing code there. Recovers user-approved intent from wiki/specs/ and implementation navigation from wiki/reference/ instead of rediscovering them from source. Also use for questions like how something works, what a value or interval is, why it behaves this way, or where behavior is implemented.
 ---
 
 # Reading Code-Wiki
