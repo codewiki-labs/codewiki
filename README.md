@@ -19,7 +19,7 @@ Restart Codex, open a repository, start a new thread, and ask:
 Create a Code-Wiki V2 for this repository.
 ```
 
-The agent will inspect the current checkout, present a complete Spec-and-Reference Wiki proposal, and wait for one user approval before creating any files under `wiki/`.
+The agent will inspect the current checkout, present complete proposed Specs and the domain taxonomy, and wait for one user approval before creating any files under `wiki/`. The user does not need to review Reference content.
 
 ## Problem
 
@@ -30,12 +30,16 @@ Code-Wiki treats that missing context as project memory:
 - Why the project exists
 - Product priorities and global direction
 - Durable requirements and non-goals
-- Architecture and security invariants
+- Domain-owned architecture, security, and trust-boundary invariants
 - Important rationale
 - Acceptance Criteria
 - Navigation from each requirement domain to its implementation
 
 It stores **current intent**, not a transcript of everything a user once said. Git retains detailed change history.
+
+Initial creation also builds a noncanonical **Feature Surface Inventory** before the proposed taxonomy is finalized. Every important feature must be assigned to one primary domain or explicitly excluded with source-backed reasoning. After approval, this source-derived state is persisted in `reference/coverage.json`. A **coverage gate** blocks approval proposals that leave important features unassigned, shallow, or supported only by vague evidence.
+
+Code-Wiki uses **spec-only approval**: users approve behaviorally complete Specs and taxonomy, while agents generate and maintain source-grounded Reference. A separate **authority-leakage gate** rejects durable permissions, calculations, pricing precedence, invariants, lifecycle guarantees, failure policy, retention, or audit meaning that appears only in Reference.
 
 ## Authority Model
 
@@ -69,14 +73,18 @@ wiki/
 ├── specs/
 │   ├── index.md
 │   ├── project.md
-│   ├── architecture.md        # when approved
-│   ├── security.md            # when approved
+│   ├── policies/               # approved cross-domain policy only
+│   │   ├── architecture.md
+│   │   └── security.md
 │   └── domains/
 │       └── <domain>.md
 └── reference/
     ├── index.md
     ├── overview.md
-    ├── architecture.md
+    ├── coverage.json
+    ├── views/                  # applicable source-derived views
+    │   ├── architecture.md
+    │   └── security.md
     ├── data-flow.md
     ├── data-models.md
     ├── api-surface.md
@@ -84,7 +92,6 @@ wiki/
     ├── dependencies.md
     ├── commands.md
     ├── testing.md
-    ├── security.md
     ├── gotchas.md
     ├── glossary.md
     └── domains/
@@ -95,27 +102,34 @@ wiki/
 
 ### Specs
 
-Specs preserve approved meaning:
+Specs preserve approved meaning and determine correctness without requiring Reference:
 
 - Project purpose, priorities, global intent, constraints, and non-goals
-- Domain Intent, Requirements, Constraints, and Rationale
-- Architecture and security policies
-- Non-goals and testable Acceptance Criteria
-- Minimal `Related Domains` links
+- Stable requirement IDs plus domain Intent, actor permissions, calculations and policies, invariants, lifecycle and failure outcomes, retention and audit meaning, Constraints, and Rationale
+- Approved cross-domain policy under `specs/policies/` only when the rule genuinely spans domains
+- Non-goals and testable Acceptance Criteria, including hand-computed vectors for calculations when useful
+- Recursive `Required Context` links and nonrecursive `See Also` links
 
-Canonical Specs contain approved current requirements only. During initial creation, the complete Wiki proposal stays in the active design or approval flow until accepted; no Spec, Reference, empty skeleton, or persistent draft is written under `wiki/` first. Architecture and security Specs are omitted when no corresponding global intent has been approved; empty canonical placeholders are not created.
+Canonical Specs contain approved current requirements only. During initial creation, the complete Spec proposal stays in the active design or approval flow until accepted; no Spec, Reference, empty skeleton, or persistent draft is written under `wiki/` first. Security is a concern, not a mandatory domain: authentication, authorization, ownership, exposure, secrets, sensitive data, and trust boundaries live in their owning domain Specs. Empty global policy placeholders are not created.
 
 ### Reference
 
-Reference maps approved domains to the current implementation:
+Agent-facing Reference maps approved domains to the current implementation:
 
+- Important feature coverage and end-to-end traces
 - Entry points and source paths
 - Important symbols, routes, jobs, and data models
-- Runtime flow
+- `Spec Basis` links from stable requirement IDs to authorization and invariant enforcement
+- Runtime flow plus lifecycle, failure, usage, cost, audit, provider, retention, cancellation, and deletion implementation when applicable
+- Code-backed contract artifacts and pre-change checks
 - Tests and verification locations
 - Implementation details that make future inspection faster
 
-Every Spec has a corresponding Reference: project pairs with overview, the registries pair with each other, architecture and security pair when their Specs exist, and the Spec and Reference domain trees have identical relative file sets. Reference-only domain files are invalid. A logical domain may point to many packages, services, frontend areas, and tests. Cross-cutting Reference-only pages such as commands, configuration, testing, dependencies, and glossary do not need Specs.
+Every Spec has a corresponding Reference: project pairs with overview, the registries pair with each other, policies pair with same-named views, and the Spec and Reference domain trees have identical relative file sets. Reference-only domain files are invalid. A logical domain may point to many packages, services, frontend areas, and tests. Cross-cutting Reference-only views and operational pages such as commands, configuration, testing, dependencies, and glossary do not otherwise need Specs.
+
+Policy and view pairing is asymmetric by design: `specs/policies/<concern>.md` always requires `reference/views/<concern>.md`, while a source-derived view may exist without a policy when `coverage.json` lists it and the view does not invent durable intent. The manifest records every feature assignment plus explicit security and architecture applicability. Evidence-backed `not_applicable` means no important project-specific concern was found in the inspected scope, so no placeholder policy or view is required.
+
+Deep Reference remains descriptive. It records code-backed implementation evidence without promoting observed behavior into approved intent. The creation and audit skills judge depth by important-feature coverage, complete applicable traces, `Spec Basis`, and exact evidence rather than by page length, domain count, or file count.
 
 ## Default Workflow
 
@@ -123,15 +137,27 @@ For project-related work, the plugin follows this retrieval and change protocol:
 
 1. Recall `wiki/index.md` and concise `wiki/specs/project.md`.
 2. Use the domain registry to find directly relevant Specs.
-3. Read each selected Spec and its recursive `Related Domains` closure in full.
-4. Read the paired Reference pages.
+3. Read each selected Spec and its recursive `Required Context` closure in full; follow `See Also` only when directly relevant and never recursively.
+4. Consult `reference/coverage.json` for feature or concern applicability, then read paired domains and manifest-listed views needed by the task.
 5. Follow Reference into source code and verify current behavior.
 6. Decide whether the request changes durable intent.
 7. If needed, draft the exact Spec change and obtain user approval.
 8. Update canonical Specs, implement, and verify Acceptance Criteria.
-9. Refresh Reference when verified implementation organization changed.
+9. Refresh Reference, coverage evidence, and applicable views when verified implementation organization changed.
 
-Only the router and project memory are always read. Architecture, security, domains, and Reference pages are loaded when the task requires them.
+User-facing completion is a **Spec conformance matrix**: `requirement ID → verification result → pass or mismatch`. Agents may include source and Reference evidence when requested, but users do not need to inspect Reference to decide whether the implementation conforms.
+
+Only the router and project memory are always read. Policies, domains, coverage, views, and operational Reference pages are loaded when the task requires them.
+
+The plugin ships a **generated-Wiki validator** for exact domain pairs, policy/view pairing, manifest evidence, concern applicability, and typed links. From a Code-Wiki checkout or installed plugin root, point it at the target repository:
+
+```bash
+python3 scripts/validate_generated_wiki.py \
+  --repo-root /path/to/project \
+  --wiki-root /path/to/project/wiki
+```
+
+For Git repositories, `source_revision` is an immutable full commit ID. Later Wiki-only commits remain valid, while committed non-Wiki changes make coverage stale; uncommitted source produces a warning because it is outside the commit snapshot. This structural and semantic gate does not replace source inspection or product tests.
 
 An explicit request that supplies the exact requirement and asks for implementation counts as approval of that content. Ambiguous or conflicting durable requests require a proposed Spec change before implementation. One-off debugging commands, temporary test instructions, transient workarounds, and implementation plans are not project memory.
 
@@ -174,6 +200,8 @@ cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
 Install all skills so `using-code-wiki` can route to the supporting behaviors. The repository root is a plugin package, not a skill.
+
+Skills-only installation does not copy the bundled validator. Keep the cloned checkout when you want to run `scripts/validate_generated_wiki.py`, or install the full plugin payload.
 
 ## Manage The Codex Plugin
 

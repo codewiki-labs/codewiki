@@ -1,0 +1,21 @@
+# Model And Usage Governance
+
+## Requirements
+
+### Requirement: `MU-USAGE-001`
+
+Canonical usage dimensions must keep general, cache, and image tokens non-overlapping.
+General input excludes cache-read, cache-write, and image-input tokens.
+
+### Requirement: `MU-USAGE-002`
+
+Token costs divide each token count by 1,000,000 before applying its configured price.
+Web-search and image-generation counts use per-request prices.
+
+### Requirement: `MU-USAGE-004`
+
+Terminal usage from failed or interrupted calls must remain auditable.
+
+## Acceptance Criteria
+
+- Image-token pricing and per-image pricing are both applied when configured.

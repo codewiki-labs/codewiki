@@ -25,7 +25,7 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 
 - `using-code-wiki`: bootstrap, authority routing, durable-intent detection, and closeout.
 - `creating-code-wiki`: first creation or substantial V2 regeneration.
-- `reading-code-wiki`: global-memory recovery, domain selection, and related-domain closure.
+- `reading-code-wiki`: global-memory recovery, domain selection, and typed context closure.
 - `exploring-code-with-wiki`: targeted source verification through Reference.
 - `updating-code-wiki`: approval-gated Spec edits and code-grounded Reference refreshes.
 - `auditing-code-wiki`: authority, pairing, quality, and stale-content review.
@@ -34,10 +34,17 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 ## V2 Invariants
 
 - Approved Specs are normative over implementation.
+- Specs are the behaviorally complete user-facing contract; users approve Specs and taxonomy without reviewing Reference content.
 - Source code is authoritative for Reference.
-- Reference navigates to source and never replaces inspection.
+- Reference is the agent-facing implementation map; it navigates to source and never replaces inspection.
+- Stable requirement IDs connect Reference `Spec Basis`, implementation evidence, tests, and user-facing Spec conformance results.
+- Calculations, permissions, policy precedence, invariants, lifecycle and failure outcomes, retention, and audit meaning cannot exist only in Reference as authority leakage.
 - Specs and Reference share one logical domain taxonomy and exact domain pairing by relative path.
 - Reference-only domain files are invalid. The two domain trees have identical relative file sets.
+- Domain Specs own behavior, including security and trust-boundary behavior. `specs/policies` is reserved for approved cross-domain rules.
+- Every policy has a paired same-named page under `reference/views`; a source-derived view may exist without a policy only when the coverage manifest lists it and it does not invent durable intent.
+- `reference/coverage.json` persists source revision, feature assignments, exclusions, evidence, and explicit security and architecture applicability. Evidence-backed `not_applicable` concerns have no placeholder policy or view.
+- `Required Context` is recursively retrieved; `See Also` is nonrecursive. Legacy `Related Domains` is one-hop migration input only.
 - Code changes never silently change Specs.
 - Durable requirement changes pass an approval gate before canonical Spec edits or implementation.
 - Canonical Specs store semantically compacted current intent, not raw history.
@@ -63,6 +70,10 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 
 For every behavior change, update `scripts/validate_wiki_contract.py` and at least one scenario in `tests/skill-set-contract.md`; test scenarios are part of the contract, not optional notes.
 
+When the change affects generated-Wiki structure, manifest semantics, domain pairing, policy/view pairing, typed links, or authority boundaries, update `scripts/validate_generated_wiki.py` and `tests/test_generated_wiki_validator.py`. Validate actual generated artifacts, not only this package's phrases.
+
+When a change affects Spec sufficiency, feature discovery, Reference depth, evidence specificity, authority leakage, or audit completeness, update the semantic quality fixture manifest, paired Spec and Reference fixtures for shallow, complete, or authority-leakage candidates, and `scripts/validate_wiki_quality_fixtures.py` as applicable. Phrase presence alone is not sufficient evidence for these behaviors.
+
 Scenarios must cover, when relevant:
 
 - trigger clarity and boundary confusion
@@ -70,7 +81,13 @@ Scenarios must cover, when relevant:
 - Reference versus code
 - durable versus ephemeral user requests
 - exact-content approval versus a proposed change requiring approval
-- domain pairing and Related Domains closure
+- exact domain pairing, policy/view pairing, and view-only applicability
+- recursive `Required Context`, nonrecursive `See Also`, and legacy-link migration
+- securityless, domain-owned security, and approved global security-policy cases
+- `reference/coverage.json` feature closure, evidence, exclusions, and concern applicability
 - semantic compaction of current intent
 - Superpowers or other workflow integration
 - verifiable outputs and Reference freshness
+- Spec-only user approval and user-facing conformance review
+- behaviorally complete calculations, permissions, invariants, lifecycle, failure, retention, and audit rules
+- requirement-ID mapping from approved Specs to agent-facing Reference evidence

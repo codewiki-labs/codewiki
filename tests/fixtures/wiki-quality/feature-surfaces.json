@@ -1,0 +1,123 @@
+{
+  "trace_dimensions": [
+    "Spec Basis",
+    "Surface",
+    "API or Event",
+    "Authorization and Limits",
+    "Service and Provider",
+    "Persistence and Lifecycle",
+    "Usage, Cost and Audit",
+    "Failure and Recovery",
+    "Exact Tests"
+  ],
+  "features": [
+    {
+      "id": "poster-generation",
+      "importance": "important",
+      "domain": "workplace-tools",
+      "spec_requirements": [
+        {
+          "id": "WT-POSTER-001",
+          "evidence": [
+            "Poster generation must use an enabled poster type and an allowed configured image provider.",
+            "A completed poster generation must preserve the request inputs, model, and policy version as an auditable snapshot."
+          ]
+        }
+      ],
+      "evidence": [
+        "src/ui/PosterTool.tsx",
+        "src/api/poster.routes.ts",
+        "POST /api/jobs/poster/stream",
+        "requireAuth",
+        "recordPosterGeneration",
+        "tests/poster-generation.test.ts"
+      ]
+    },
+    {
+      "id": "provider-usage-accounting",
+      "importance": "important",
+      "domain": "model-usage",
+      "spec_requirements": [
+        {
+          "id": "MU-USAGE-001",
+          "evidence": [
+            "Canonical usage dimensions must keep general, cache, and image tokens non-overlapping.",
+            "General input excludes cache-read, cache-write, and image-input tokens."
+          ]
+        },
+        {
+          "id": "MU-USAGE-002",
+          "evidence": [
+            "Token costs divide each token count by 1,000,000 before applying its configured price.",
+            "Web-search and image-generation counts use per-request prices."
+          ]
+        },
+        {
+          "id": "MU-USAGE-003",
+          "evidence": [
+            "Configured image-token pricing excludes duplicate per-image charging."
+          ]
+        },
+        {
+          "id": "MU-USAGE-004",
+          "evidence": [
+            "Terminal usage from failed or interrupted calls must remain auditable."
+          ]
+        }
+      ],
+      "evidence": [
+        "src/usage/provider-usage.ts",
+        "normalizeGeminiUsage",
+        "computeCostBreakdown",
+        "llm_usage_events",
+        "tests/provider-usage.test.ts"
+      ]
+    },
+    {
+      "id": "admin-menu-authorization",
+      "importance": "important",
+      "domain": "identity-access",
+      "spec_requirements": [
+        {
+          "id": "IA-AUTH-001",
+          "evidence": [
+            "A MANAGER may access only explicitly assigned, non-administrator-only menus.",
+            "A USER cannot access administrator routes."
+          ]
+        },
+        {
+          "id": "IA-AUTH-002",
+          "evidence": [
+            "Every protected administrator operation requires step-up authentication."
+          ]
+        }
+      ],
+      "evidence": [
+        "src/auth/guards.ts",
+        "requireMenuStepup",
+        "menuPermissions",
+        "X-Admin-Stepup",
+        "tests/require-menu-stepup.test.ts"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "id": "security-baseline",
+      "policy": "security",
+      "feature_id": "security-enforcement-view",
+      "spec_requirements": [
+        {
+          "id": "SEC-R001",
+          "evidence": [
+            "Authentication secrets must never be written to application logs."
+          ]
+        }
+      ],
+      "evidence": [
+        "src/auth/guards.ts",
+        "redactSensitiveHeaders"
+      ]
+    }
+  ]
+}

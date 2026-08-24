@@ -41,8 +41,9 @@ ALLOWLIST=(
   "CHANGELOG.md"
   "CODE_OF_CONDUCT.md"
   "CONTRIBUTING.md"
-  "docs"
+  "docs/skill-set-design.md"
   "examples"
+  "scripts/validate_generated_wiki.py"
 )
 
 usage() {
@@ -285,7 +286,7 @@ if [[ $BOOTSTRAP -eq 1 ]]; then
   COMMIT_TITLE="bootstrap $PLUGIN_NAME v$PLUGIN_VERSION from upstream main @ $UPSTREAM_SHORT"
   PR_BODY="Initial bootstrap of the $PLUGIN_NAME plugin from upstream \`main\` @ \`$UPSTREAM_SHORT\` (v$PLUGIN_VERSION).
 
-Creates \`$DEST_REL/\` by copying the tracked plugin payload from upstream, including \`.codex-plugin/plugin.json\`, \`skills/\`, public docs, examples, and license files.
+Creates \`$DEST_REL/\` by copying the tracked plugin payload from upstream, including \`.codex-plugin/plugin.json\`, \`skills/\`, the generated-Wiki validator, public docs, examples, and license files.
 
 Run via: \`scripts/sync-to-codex-plugin.sh --bootstrap\`
 Upstream commit: $UPSTREAM_SHA"
@@ -293,7 +294,7 @@ else
   COMMIT_TITLE="sync $PLUGIN_NAME v$PLUGIN_VERSION from upstream main @ $UPSTREAM_SHORT"
   PR_BODY="Automated sync from $PLUGIN_NAME upstream \`main\` @ \`$UPSTREAM_SHORT\` (v$PLUGIN_VERSION).
 
-Copies the tracked plugin payload from upstream, including \`.codex-plugin/plugin.json\`, \`skills/\`, public docs, examples, and license files.
+Copies the tracked plugin payload from upstream, including \`.codex-plugin/plugin.json\`, \`skills/\`, the generated-Wiki validator, public docs, examples, and license files.
 
 Run via: \`scripts/sync-to-codex-plugin.sh\`
 Upstream commit: $UPSTREAM_SHA"
