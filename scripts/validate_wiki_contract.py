@@ -107,7 +107,7 @@ EXPECTED_SKILLS = {
         "coverage gate",
     ],
     "reading-code-wiki": [
-        "Use when starting project-related work in a repository that has a code-wiki",
+        "Use when answering any question about a project's behavior",
         "wiki/index.md",
         "wiki/specs/project.md",
         "wiki/specs/index.md",

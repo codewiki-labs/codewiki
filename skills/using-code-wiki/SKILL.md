@@ -1,6 +1,6 @@
 ---
 name: using-code-wiki
-description: Use when starting any conversation in a code repository or project workspace, before any response or action that depends on project context.
+description: Use when starting any conversation in a code repository or project workspace, before any response or action that depends on project context, including quick factual questions about how the project behaves or is configured. Checks for a repository-local wiki/ and hands off to reading-code-wiki for approved intent and navigation, creating-code-wiki when no wiki exists, updating-code-wiki before finishing work that changed intent or navigation, or auditing-code-wiki when the wiki looks unreliable. Use when unsure which code-wiki skill applies.
 ---
 
 # Using Code-Wiki
