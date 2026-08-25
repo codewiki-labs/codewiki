@@ -25,7 +25,10 @@ Run:
 python3 scripts/validate_wiki_contract.py
 python3 -m unittest tests/test_generated_wiki_validator.py tests/test_wiki_quality_fixtures.py tests/test_wiki_contract_semantic_integration.py
 bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
+claude plugin validate .
 ```
+
+`claude plugin validate .` checks the Claude Code manifests against the current Claude Code schema. Skip it if the Claude Code CLI is not installed; `validate_wiki_contract.py` still enforces this repository's own manifest contract.
 
 Maintainers with the Codex system skill validators installed should also run `quick_validate.py` for every `skills/*` directory and `validate_plugin.py` for the repository root.
 
@@ -51,16 +54,21 @@ Individual commits inside a PR branch are not checked — only the PR title is, 
 
 ## Plugin Packaging
 
-The repository root is a Codex plugin package, but each behavior unit still lives in `skills/<name>/SKILL.md`.
+The repository root is simultaneously a Codex plugin package and a Claude Code plugin package, but each behavior unit still lives in `skills/<name>/SKILL.md`. Packaging is per-platform; behavior is shared.
 
+- `skills/*/SKILL.md` must stay agent-neutral. No `AGENTS.md`, `CLAUDE.md`, `~/.codex`, `~/.claude`, tool names, or CLI names in skill bodies — only `wiki/**` relative paths. This is what lets one skill set serve both platforms.
 - Keep `.codex-plugin/plugin.json` focused on the existing skills payload.
 - Keep plugin and marketplace version, description, keywords, prompts, and shared interface metadata aligned.
+- Keep the shared fields of `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` identical: `name`, `version`, `description`, `license`, `keywords`, and `author.name`.
+- Do not put Codex-only `interface` or `policy` blocks in `.claude-plugin/`. Do not add a `skills` field there either — Claude Code discovers `./skills/` automatically.
 - Do not add `hooks`, `apps`, `mcpServers`, icons, logos, or screenshots unless the referenced files exist and pass validation.
 - Keep `scripts/sync-to-codex-plugin.sh` destination-agnostic. It must accept `--repo owner/name`, `--dest plugins/code-wiki`, and `--local PATH`.
 - Keep `scripts/validate_generated_wiki.py` in the synced runtime payload while excluding development-only scripts and tests.
 - Sync `docs/skill-set-design.md` as public documentation without shipping internal implementation plans.
+- Keep `.claude-plugin/` out of the Codex sync payload. The sync allowlist is opt-in, so new packaging directories stay excluded by default.
 - Update `tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` when sync payload rules change.
 - Preserve destination-owned `skills/**/agents/openai.yaml` metadata during sync.
+- Bump the version in `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` together, and update `EXPECTED_VERSION` in `scripts/validate_wiki_contract.py`.
 
 ## Adding A Skill
 
@@ -86,5 +94,5 @@ If the answer is no, add a checklist or section to an existing skill instead.
 - Updated generated-Wiki validator cases when domain pairing, policy/view pairing, typed links, coverage evidence, or concern applicability changed.
 - Ran `python3 scripts/validate_wiki_contract.py`.
 - Ran the generated-Wiki and semantic-quality unit tests.
-- Ran plugin validation if `.codex-plugin/plugin.json` or package structure changed.
+- Ran plugin validation if `.codex-plugin/plugin.json`, `.claude-plugin/`, or package structure changed.
 - Ran `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` if sync behavior changed.

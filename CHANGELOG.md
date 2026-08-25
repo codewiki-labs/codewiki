@@ -16,6 +16,13 @@
 - Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
 - Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
 - Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
+- Added Claude Code plugin packaging with `.claude-plugin/plugin.json` and a one-plugin `.claude-plugin/marketplace.json`, so the same skill set installs via `/plugin install code-wiki@code-wiki`.
+- Changed plugin metadata to describe coding agents rather than Codex specifically, and added the `claude-code` keyword.
+- Bumped plugin metadata to `0.3.0` across all four manifests.
+- Extended contract validation to cover the Claude Code manifests and to reject Codex-only `interface` and `policy` fields there.
+- Added a sync regression assertion that Claude packaging files stay out of the Codex payload.
+- Documented the three-layer packaging model and the agent-neutral skill-body invariant that lets one skill set serve both platforms.
+- Aligned the plugin and marketplace `category` values, which previously disagreed without being validated.
 - Changed initial Wiki creation to inspect the current checkout and wait for user approval before writing any canonical Wiki files.
 - Reframed Code-Wiki as repository-local persistent project memory.
 - Added normative user-approved Specs and descriptive code-backed Reference with separate authority rules.

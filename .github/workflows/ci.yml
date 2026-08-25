@@ -15,3 +15,6 @@ jobs:
 
       - name: Run contract validation
         run: python3 scripts/validate_wiki_contract.py
+
+      - name: Run plugin sync regression test
+        run: bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh

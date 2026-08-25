@@ -1,7 +1,7 @@
 {
   "name": "code-wiki",
-  "version": "0.2.0",
-  "description": "Persistent project memory and code navigation for Codex agents.",
+  "version": "0.3.0",
+  "description": "Persistent project memory and code navigation for coding agents.",
   "author": {
     "name": "code-wiki contributors"
   },
@@ -10,13 +10,14 @@
     "code-wiki",
     "skills",
     "codex",
+    "claude-code",
     "project-memory",
     "specifications"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "code-wiki",
-    "shortDescription": "Persistent project memory for Codex agents",
+    "shortDescription": "Persistent project memory for coding agents",
     "longDescription": "Preserve user-approved Specs across sessions, use Reference to navigate the current implementation, and verify source code against the approved project contract.",
     "developerName": "code-wiki contributors",
     "category": "Coding",

@@ -1,7 +1,7 @@
 name: Release
 
-# Push a tag like v0.2.1 to publish a GitHub Release.
-# The tag must match the version in .codex-plugin/plugin.json.
+# Push a tag like v0.3.1 to publish a GitHub Release.
+# The tag must match the version in every plugin and marketplace manifest.
 
 on:
   push:
@@ -16,14 +16,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify tag matches plugin version
+      - name: Verify tag matches every manifest version
+        env:
+          TAG_VERSION: ${{ github.ref_name }}
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          PLUGIN_VERSION="$(python3 -c 'import json; print(json.load(open(".codex-plugin/plugin.json"))["version"])')"
-          if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match plugin.json version $PLUGIN_VERSION" >&2
-            exit 1
-          fi
+          python3 - <<'PY'
+          import json, os, sys
+
+          tag = os.environ["TAG_VERSION"].removeprefix("v")
+          sources = {
+              ".codex-plugin/plugin.json": lambda d: d["version"],
+              ".claude-plugin/plugin.json": lambda d: d["version"],
+              ".agents/plugins/marketplace.json": lambda d: d["plugins"][0]["version"],
+              ".claude-plugin/marketplace.json": lambda d: d["plugins"][0]["version"],
+          }
+
+          failures = []
+          for path, pick in sources.items():
+              with open(path, encoding="utf-8") as handle:
+                  version = pick(json.load(handle))
+              if version != tag:
+                  failures.append(f"{path} declares {version}, expected {tag}")
+
+          if failures:
+              print(f"Tag {os.environ['TAG_VERSION']} does not match all manifests:", file=sys.stderr)
+              for failure in failures:
+                  print(f"- {failure}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"All manifests declare version {tag}.")
+          PY
 
       - name: Run contract validation
         run: python3 scripts/validate_wiki_contract.py

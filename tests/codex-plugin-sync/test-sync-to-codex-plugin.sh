@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 SYNC_SCRIPT_SOURCE="$REPO_ROOT/scripts/sync-to-codex-plugin.sh"
 BASH_UNDER_TEST="/bin/bash"
-MANIFEST_VERSION="0.2.0"
+MANIFEST_VERSION="0.3.0"
 FAILURES=0
 TEST_ROOT=""
 
@@ -172,6 +172,7 @@ write_upstream_fixture() {
 
     mkdir -p \
         "$repo/.codex-plugin" \
+        "$repo/.claude-plugin" \
         "$repo/.private-notes" \
         "$repo/.kimi-plugin" \
         "$repo/docs" \
@@ -192,6 +193,20 @@ EOF
 {
   "name": "code-wiki",
   "version": "$MANIFEST_VERSION"
+}
+EOF
+
+    cat > "$repo/.claude-plugin/plugin.json" <<EOF
+{
+  "name": "code-wiki",
+  "version": "$MANIFEST_VERSION"
+}
+EOF
+
+    cat > "$repo/.claude-plugin/marketplace.json" <<'EOF'
+{
+  "name": "code-wiki",
+  "plugins": []
 }
 EOF
 
@@ -264,6 +279,8 @@ EOF
 
     git -C "$repo" add \
         .codex-plugin/plugin.json \
+        .claude-plugin/plugin.json \
+        .claude-plugin/marketplace.json \
         .gitignore \
         .kimi-plugin/plugin.json \
         CHANGELOG.md \
@@ -611,6 +628,8 @@ main() {
     assert_not_contains "$preview_section" "scripts/dev-helper.sh" "Preview excludes development scripts"
     assert_not_contains "$preview_section" "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh" "Preview excludes tests"
     assert_not_contains "$preview_section" ".kimi-plugin/plugin.json" "Preview excludes unrelated manifests"
+    assert_not_contains "$preview_section" ".claude-plugin/plugin.json" "Preview excludes Claude Code manifest"
+    assert_not_contains "$preview_section" ".claude-plugin/marketplace.json" "Preview excludes Claude Code marketplace"
     assert_not_contains "$preview_section" ".private-notes/leak.txt" "Preview excludes ignored untracked files"
     assert_not_contains "$preview_section" "ignored-cache/" "Preview excludes pure ignored directories"
     assert_not_matches "$preview_section" "\\*deleting +skills/using-code-wiki/agents/openai\\.yaml" "Preview preserves destination-owned OpenAI agent metadata"

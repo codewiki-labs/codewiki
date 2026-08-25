@@ -162,9 +162,19 @@ Code-Wiki owns persistent WHAT, WHY, and WHERE. Superpowers owns HOW: brainstorm
 
 ## Distribution Shape
 
-The repository root is the Codex plugin package. `.codex-plugin/plugin.json` points to `./skills/`, while `.agents/plugins/marketplace.json` exposes the repository-backed plugin. The package remains skill-centered and does not declare hooks, apps, MCP servers, or visual assets that are not present.
+The package has three layers, and only the outermost one is platform-specific:
 
-The sync script publishes the manifest, skills, generated-Wiki validator, public docs, and examples while preserving destination-owned skill UI metadata and excluding development-only scripts and tests.
+| Layer | Contents | Agent coupling |
+| --- | --- | --- |
+| Packaging | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` | Per-platform |
+| Behavior | `skills/*/SKILL.md` | None |
+| Governance | `scripts/` (except the bundled `scripts/validate_generated_wiki.py`), `tests/`, `.github/` | Repository-only |
+
+This layering is the load-bearing invariant. Skill bodies name no agent, no CLI, no instruction file, and no tool — they reference only `wiki/**` relative paths. Because of that, one skill set installs unchanged on every supported agent, and adding a platform is packaging work rather than a fork of the behavior.
+
+The repository root is the plugin package for both platforms at once. `.codex-plugin/plugin.json` points `skills` at `./skills/` and carries Codex `interface` presentation metadata; `.agents/plugins/marketplace.json` exposes the repository-backed plugin to Codex. `.claude-plugin/plugin.json` stays minimal because Claude Code discovers `./skills/` on its own, and `.claude-plugin/marketplace.json` exposes the same repository as a one-plugin Claude Code marketplace. Shared identity fields are kept byte-identical across all four manifests; Codex-only `interface` and `policy` blocks never appear in the Claude manifests. The package remains skill-centered on both platforms and does not declare hooks, agents, apps, MCP servers, or visual assets that are not present.
+
+The sync script publishes the Codex manifest, skills, the generated-Wiki validator, public docs, and examples while preserving destination-owned skill UI metadata and excluding development-only scripts and tests. Its allowlist is opt-in, so Claude packaging files and repo-local governance files stay out of the Codex payload.
 
 ## Validation Strategy
 
@@ -172,7 +182,8 @@ The sync script publishes the manifest, skills, generated-Wiki validator, public
 
 - skill names, frontmatter trigger shape, and responsibility-specific V2 guidance
 - public V2 concepts and removal of V1-only structure guidance
-- plugin manifest fields and shared marketplace metadata
+- plugin manifest fields and shared marketplace metadata, for both the Codex and Claude Code manifests
+- that Codex-only presentation fields do not leak into the Claude Code manifests
 - sync regression-test presence and release version alignment
 
 `scripts/validate_wiki_quality_fixtures.py` checks the deterministic semantic subset:
