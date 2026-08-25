@@ -289,6 +289,32 @@ Required behavior:
 - Preserve only useful current rationale, such as support for large scanned documents.
 - Do not keep a chronological requirement transcript in the Wiki; Git owns detailed history.
 
+## Scenario: Oversized Wiki Page
+
+Given:
+
+```text
+wiki/specs/domains/billing.md has grown to 340 lines; wiki/reference/commands.md has grown to 260 lines.
+```
+
+Expected selection:
+
+- `reading-code-wiki` when the page is read during any task: end the response with a one-line oversize note, even for a short-answer request, without starting compaction
+- `auditing-code-wiki` when discovered during an audit
+- `updating-code-wiki` when discovered while completing project work
+
+Required behavior:
+
+- Treat each page larger than 200 lines as an oversize signal that triggers review; size is a review trigger, not an authority.
+- Do not edit either page first: present an oversize report naming each page, its line count, what inflates it, the meaning units involved, and a recommended repair.
+- Ask the user to choose per page: review the compaction together, split the domain, delegate to the agent, or accept the size.
+- For the oversized Spec domain, the user's recorded choice is the approval; without it, do not edit the canonical file.
+- Under delegation, inventory the page into discrete meaning units, classify each as keep, merge, or drop, and drop only source-restated, superseded, duplicated, or historical content.
+- Size alone never deletes an approved requirement; a unit whose meaning would have to change becomes a Proposed Spec Change instead of being compacted.
+- Report the kept, merged, and dropped dispositions in the closeout.
+- When the oversize was found during an audit and the user asks for repair, do not compact directly from the audit: hand off to the `updating-code-wiki` oversize flow and its choices.
+- A domain split maintains exact Spec/Reference pairing at the same relative paths and updates both registries.
+
 ## Scenario: Domain Pairing Audit
 
 User asks:
