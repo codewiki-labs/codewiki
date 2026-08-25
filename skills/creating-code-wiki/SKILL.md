@@ -107,45 +107,7 @@ Use `applicable` when active source contains a material project-specific boundar
 
 Each concern records `applicability`, `owning_domains`, `policy_path`, `view_path`, `reason`, and exact `evidence`. For `not_applicable`, require a non-empty reason and evidence, leave ownership and paths empty, and omit the view and policy files. For `applicable`, name at least one owning domain. A policy path is valid only when the paired view path exists.
 
-```json
-{
-  "source_revision": "<verified revision>",
-  "features": [
-    {
-      "feature_id": "account-sign-in",
-      "classification": "important",
-      "primary_domain": "identity-access",
-      "spec_basis": ["IDENTITY-R001"],
-      "surfaces": {
-        "ui": [],
-        "api": ["src/auth/login.ts"],
-        "jobs": [],
-        "providers": [],
-        "schemas": [],
-        "tests": ["tests/auth/login.test.ts"]
-      }
-    }
-  ],
-  "concerns": {
-    "security": {
-      "applicability": "applicable",
-      "owning_domains": ["identity-access"],
-      "policy_path": null,
-      "view_path": "reference/views/security.md",
-      "reason": "Authentication and session trust boundaries are active.",
-      "evidence": ["src/auth/login.ts"]
-    },
-    "architecture": {
-      "applicability": "not_applicable",
-      "owning_domains": [],
-      "policy_path": null,
-      "view_path": null,
-      "reason": "No material cross-domain architectural constraint was found.",
-      "evidence": ["src/main.ts"]
-    }
-  }
-}
-```
+A complete example manifest with both concern shapes is bundled at [references/coverage-example.json](references/coverage-example.json); read it when drafting `wiki/reference/coverage.json`.
 
 Each `surfaces` key is one of `ui`, `api`, `jobs`, `providers`, `schemas`, or `tests`, and its value is an array of repository-root-relative files. Evidence paths must exist. Important and supporting features require a primary domain plus exactly one of `spec_basis` or a concrete `observed_only_reason`; every supplied requirement ID must resolve exactly in the owning Spec. Important features require an independent paired-Reference feature trace. A supporting trace is optional, but when present its basis or observed-only label must agree with the manifest. Placeholders and exclusions require an explicit exclusion reason.
 
