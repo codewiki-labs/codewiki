@@ -4,7 +4,7 @@
 
 ### Feature: `provider-usage-accounting`
 
-- Spec Basis: `MU-USAGE-001`, `MU-USAGE-002`, `MU-USAGE-003`, `MU-USAGE-004`.
+- Spec Basis: `MU-USAGE-R001`, `MU-USAGE-R002`, `MU-USAGE-R003`, `MU-USAGE-R004`.
 - Surface: administrator usage reporting and pre-call limit checks consume the normalized usage ledger rather than provider-specific response shapes.
 - API or Event: model calls deliver terminal provider usage to the normalization boundary before the result is returned to callers.
 - Authorization and Limits: per-user limits are evaluated before billable calls; detailed ledger access remains an administrator boundary.

@@ -63,7 +63,7 @@ class WikiContractSemanticIntegrationTest(unittest.TestCase):
             )
             text = usage_spec.read_text(encoding="utf-8")
             usage_spec.write_text(
-                text.replace("MU-USAGE-003", "MU-USAGE-REMOVED", 1),
+                text.replace("MU-USAGE-R003", "MU-USAGE-REMOVED", 1),
                 encoding="utf-8",
             )
 
@@ -78,7 +78,7 @@ class WikiContractSemanticIntegrationTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(
             "semantic quality fixture: complete fixture: provider-usage-accounting: "
-            "missing approved Spec requirement MU-USAGE-003",
+            "missing approved Spec requirement MU-USAGE-R003",
             result.stdout + result.stderr,
         )
 

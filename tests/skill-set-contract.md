@@ -454,6 +454,36 @@ Required behavior:
 - Test both authority mismatch directions and the approval gate.
 - Keep every skill useful when read alone.
 
+## Scenario: Compact Spec Item Headings
+
+When Code-Wiki creates or updates approved requirements and Acceptance Criteria,
+required behavior is:
+
+- Retain the parent `## Requirements`, applicable requirement-bearing sections,
+  and `## Acceptance Criteria` so the document structure carries the item type.
+- Emit requirement and Acceptance Criterion headings as a backticked stable ID
+  only:
+
+  ```markdown
+  ### `QUIZ-R001`
+  ### `QUIZ-AC001`
+  ```
+- Require requirement IDs to end in `-R` plus three digits and Acceptance
+  Criterion IDs to end in `-AC` plus three digits.
+- Keep every Spec item ID unique within its Spec and reject duplicate compact or
+  legacy definitions of the same stable ID.
+- Ignore heading-shaped examples inside fenced Markdown when resolving Spec
+  items or Reference feature traces.
+- Never emit repeated `Requirement:` or `Acceptance Criterion:` labels in new
+  canonical Specs.
+- Continue resolving legacy headings that place `Requirement:` before the
+  backticked ID while an existing Wiki is migrated, but do not use that form in
+  templates or new output.
+- Reject a legacy label that contradicts its ID type, so `Requirement:` cannot
+  carry an `-ACddd` ID and `Acceptance Criterion:` cannot carry an `-Rddd` ID.
+- Carry the canonical heading rules in both creation and update workflows so
+  either skill remains correct when read alone.
+
 ## Scenario: Installable Codex Plugin
 
 User asks:

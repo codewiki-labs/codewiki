@@ -24,7 +24,7 @@ Its layers answer different questions:
 
 ## User And Agent Contract
 
-Domain Specs are behaviorally complete user-facing contracts. A Spec must define every applicable actor permission, calculation and unit, policy precedence, invariant, lifecycle and failure outcome, retention and audit meaning, and observable Acceptance Criterion needed to reimplement and validate behavior without Reference. Stable requirement IDs support conformance reporting.
+Domain Specs are behaviorally complete user-facing contracts. A Spec must define every applicable actor permission, calculation and unit, policy precedence, invariant, lifecycle and failure outcome, retention and audit meaning, and observable Acceptance Criterion needed to reimplement and validate behavior without Reference. Each Spec item uses a level-three heading containing only its backticked stable ID: requirement IDs end in `-R` plus three digits, Acceptance Criterion IDs end in `-AC` plus three digits, and the parent section carries the item type. IDs remain unique within a Spec; generated-Wiki validation ignores heading-shaped fenced examples, rejects duplicate definitions, and rejects a legacy label that contradicts its ID type. These stable IDs support conformance reporting without repeating labels in every heading.
 
 Reference is agent-facing. It maps each important feature's `Spec Basis` to current enforcement, paths, symbols, schemas, configuration, call flow, and exact tests. The replaceability rule sets the boundary: outcome-changing decisions belong in Spec; replaceable implementation details belong in Reference.
 

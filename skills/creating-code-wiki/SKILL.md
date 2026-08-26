@@ -148,7 +148,7 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ## Requirements
 
-### Requirement: `<DOMAIN>-R001`
+### `<DOMAIN>-R001`
 
 ## Actor And Permission Requirements
 
@@ -172,14 +172,14 @@ Keep `wiki/specs/project.md` short because every project session reads it.
 
 ## Acceptance Criteria
 
-### Acceptance Criterion: `<DOMAIN>-AC001`
+### `<DOMAIN>-AC001`
 
 ## Required Context
 
 ## See Also
 ```
 
-Use stable requirement IDs and Acceptance Criterion IDs so agents can map implementation and verification evidence back to the approved contract without restating it in Reference. The risk-driven sections are required when applicable and may be omitted when the domain genuinely has no such behavior. `Required Context` lists only Specs that must also be read to determine correctness and is traversed recursively. `See Also` is nonrecursive navigation for adjacent but non-required context. Keep both selective.
+Represent each requirement and Acceptance Criterion as a level-three heading containing only its backticked stable ID. Requirement IDs end in `-R` plus three digits and live under a requirement-bearing section; Acceptance Criterion IDs end in `-AC` plus three digits and live under `Acceptance Criteria`. Keep every Spec item ID unique within its Spec. This lets agents map implementation and verification evidence back to the approved contract without repeating type labels or restating it in Reference. The risk-driven sections are required when applicable and may be omitted when the domain genuinely has no such behavior. `Required Context` lists only Specs that must also be read to determine correctness and is traversed recursively. `See Also` is nonrecursive navigation for adjacent but non-required context. Keep both selective.
 
 ## Policy Spec And Concern View Templates
 
@@ -192,7 +192,7 @@ Use a policy only for approved behavior that genuinely spans domains:
 
 ## Requirements
 
-### Requirement: `<POLICY>-R001`
+### `<POLICY>-R001`
 
 ## Scope And Owning Domains
 
@@ -202,7 +202,7 @@ Use a policy only for approved behavior that genuinely spans domains:
 
 ## Acceptance Criteria
 
-### Acceptance Criterion: `<POLICY>-AC001`
+### `<POLICY>-AC001`
 
 ## Required Context
 

@@ -90,6 +90,10 @@ EXPECTED_SKILLS = {
         "behaviorally complete",
         "Users approve Specs and taxonomy, not Reference content.",
         "stable requirement IDs",
+        "level-three heading containing only its backticked stable ID",
+        "Requirement IDs end in `-R` plus three digits",
+        "Acceptance Criterion IDs end in `-AC` plus three digits",
+        "Keep every Spec item ID unique within its Spec",
         "## Actor And Permission Requirements",
         "## Security And Trust Boundaries",
         "## Calculation And Policy Contracts",
@@ -179,6 +183,11 @@ EXPECTED_SKILLS = {
         "authority leakage",
         "Spec Basis",
         "behaviorally complete",
+        "level-three heading containing only its backticked stable ID",
+        "Requirement IDs end in `-R` plus three digits",
+        "Acceptance Criterion IDs end in `-AC` plus three digits",
+        "Never emit `Requirement:` or `Acceptance Criterion:`",
+        "Keep every Spec item ID unique within its Spec",
         "Oversize Compaction",
         "larger than 200 lines as an oversize signal",
         "Size is a review trigger, not an authority",
@@ -384,6 +393,7 @@ CONTRACT_REQUIRED_PHRASES = [
     "## Scenario: Superpowers Is Available",
     "## Scenario: Superpowers Is Not Available",
     "## Scenario: Skill Maintenance",
+    "## Scenario: Compact Spec Item Headings",
     "## Scenario: Installable Codex Plugin",
     "## Scenario: Installable Claude Code Plugin",
     "## Scenario: User Forbids Wiki Use",
@@ -522,6 +532,31 @@ def validate_skills(failures: list[str]) -> None:
         for phrase in required_phrases:
             if phrase not in text:
                 failures.append(f"{path.relative_to(ROOT)} missing phrase: {phrase}")
+
+
+def validate_compact_spec_templates(failures: list[str]) -> None:
+    path = SKILLS / "creating-code-wiki" / "SKILL.md"
+    if not path.exists():
+        return
+
+    text = read(path)
+    for heading in (
+        "### `<DOMAIN>-R001`",
+        "### `<DOMAIN>-AC001`",
+        "### `<POLICY>-R001`",
+        "### `<POLICY>-AC001`",
+    ):
+        if heading not in text:
+            failures.append(
+                f"{path.relative_to(ROOT)} missing compact Spec heading: {heading}"
+            )
+
+    for verbose_heading in ("### Requirement:", "### Acceptance Criterion:"):
+        if verbose_heading in text:
+            failures.append(
+                f"{path.relative_to(ROOT)} must not emit verbose Spec heading: "
+                f"{verbose_heading}"
+            )
 
 
 def validate_package_files(failures: list[str]) -> None:
@@ -763,6 +798,7 @@ def main() -> int:
     failures: list[str] = []
 
     validate_skills(failures)
+    validate_compact_spec_templates(failures)
     validate_package_files(failures)
     validate_readme(failures)
     validate_behavioral_contract(failures)

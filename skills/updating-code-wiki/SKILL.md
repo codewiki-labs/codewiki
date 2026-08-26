@@ -23,6 +23,8 @@ Refresh Reference when verified source code, configuration, runtime flow, entry 
 
 Canonical Specs contain current approved intent only and remain behaviorally complete enough for a user to determine correct outcomes without Reference.
 
+Represent every requirement or Acceptance Criterion that is created or updated as a level-three heading containing only its backticked stable ID. Requirement IDs end in `-R` plus three digits and stay under `Requirements` or the applicable requirement-bearing section. Acceptance Criterion IDs end in `-AC` plus three digits and stay under `Acceptance Criteria`. Keep every Spec item ID unique within its Spec. Never emit `Requirement:` or `Acceptance Criterion:` labels in new canonical headings; when touching a legacy labeled heading, preserve its ID and meaning while migrating only the heading form.
+
 1. Identify affected project, domain, or cross-domain `specs/policies` Specs. Security-relevant product behavior normally belongs to its owning domain; add a policy only when an approved rule genuinely spans domains.
 2. Draft the exact semantic change with stable requirement IDs: current behavior, proposed behavior, permissions, calculations or policies, security and trust boundaries, invariants, lifecycle and failures, retention or audit meaning, constraints, important rationale, non-goals, hand-computed examples when useful, Acceptance Criteria, recursive `Required Context`, and nonrecursive `See Also`.
 3. Obtain user approval before editing canonical Specs or implementing a new requirement. Exact Spec content explicitly supplied with an implementation instruction is already approved.

@@ -4,7 +4,7 @@
 
 ### Feature: `poster-generation`
 
-- Spec Basis: `WT-POSTER-001`.
+- Spec Basis: `WT-POSTER-R001`.
 - Surface: `src/ui/PosterTool.tsx` collects the selected poster type, inputs, and generation request.
 - API or Event: `POST /api/jobs/poster/stream` is registered in `src/api/poster.routes.ts` and streams start, partial-image, completion, and error events.
 - Authorization and Limits: `requireAuth` establishes the current user before provider selection, upload persistence, or generation.

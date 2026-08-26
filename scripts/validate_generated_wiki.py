@@ -22,6 +22,21 @@ CLASSIFICATIONS = {"important", "supporting", "placeholder", "excluded"}
 SURFACE_KEYS = {"ui", "api", "jobs", "providers", "schemas", "tests"}
 CONCERN_APPLICABILITY = {"applicable", "not_applicable"}
 REQUIRED_CONCERNS = {"architecture", "security"}
+REQUIREMENT_SECTIONS = {
+    "Requirements",
+    "Actor And Permission Requirements",
+    "Security And Trust Boundaries",
+    "Calculation And Policy Contracts",
+    "Domain Invariants",
+    "Lifecycle And Side Effects",
+    "Failure And Recovery Requirements",
+    "Data, Retention And Audit Requirements",
+    "Invariants",
+    "Failure And Audit Requirements",
+}
+REQUIREMENT_ID = re.compile(r".+-R\d{3}$")
+ACCEPTANCE_CRITERION_ID = re.compile(r".+-AC\d{3}$")
+FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 
 
 def relative_markdown_files(root: Path) -> set[str]:
@@ -110,22 +125,198 @@ def validate_evidence(
     return failures
 
 
+def _mask_markdown_fences(text: str) -> str:
+    """Mask fenced code while preserving offsets and line boundaries."""
+    masked: list[str] = []
+    fence_character: Optional[str] = None
+    fence_length = 0
+    for line in text.splitlines(keepends=True):
+        visible = line.rstrip("\r\n")
+        if fence_character is None:
+            opening = FENCE_OPEN.match(visible)
+            if opening:
+                marker = opening.group(1)
+                fence_character = marker[0]
+                fence_length = len(marker)
+                masked.append(re.sub(r"[^\r\n]", " ", line))
+                continue
+            masked.append(line)
+            continue
+
+        closing = re.fullmatch(
+            rf" {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*",
+            visible,
+        )
+        masked.append(re.sub(r"[^\r\n]", " ", line))
+        if closing:
+            fence_character = None
+            fence_length = 0
+    return "".join(masked)
+
+
 def feature_block(text: str, feature_id: str) -> Optional[str]:
+    structure = _mask_markdown_fences(text)
     match = re.search(
-        rf"(?ms)^### Feature: `{re.escape(feature_id)}`\s*$\n"
-        rf"(.*?)(?=^### Feature: `|^## |\Z)",
-        text,
+        rf"(?m)^### Feature: `{re.escape(feature_id)}`[ \t]*$",
+        structure,
     )
-    return match.group(1) if match else None
+    if not match:
+        return None
+    body_start = match.end()
+    if structure[body_start : body_start + 1] == "\n":
+        body_start += 1
+    boundary = re.search(
+        r"(?m)^(?:### Feature: `|## )",
+        structure[body_start:],
+    )
+    body_end = body_start + boundary.start() if boundary else len(text)
+    return structure[body_start:body_end]
+
+
+def _parent_level_two_section(text: str, offset: int) -> Optional[str]:
+    matches = list(re.finditer(r"(?m)^## (?!#)(.+?)\s*$", text[:offset]))
+    return matches[-1].group(1).strip() if matches else None
+
+
+def _heading_block(
+    text: str,
+    structure: str,
+    match: re.Match[str],
+) -> str:
+    body_start = match.end()
+    if structure[body_start : body_start + 1] == "\n":
+        body_start += 1
+    boundary = re.search(r"(?m)^(?:### |## )", structure[body_start:])
+    body_end = body_start + boundary.start() if boundary else len(text)
+    return text[body_start:body_end]
+
+
+def requirement_block(text: str, requirement_id: str) -> Optional[str]:
+    structure = _mask_markdown_fences(text)
+    matches: list[re.Match[str]] = []
+    if REQUIREMENT_ID.fullmatch(requirement_id):
+        compact = re.compile(
+            rf"(?m)^### `{re.escape(requirement_id)}`[ \t]*\r?$",
+        )
+        for match in compact.finditer(structure):
+            if (
+                _parent_level_two_section(structure, match.start())
+                in REQUIREMENT_SECTIONS
+            ):
+                matches.append(match)
+
+    if not ACCEPTANCE_CRITERION_ID.fullmatch(requirement_id):
+        legacy = re.compile(
+            rf"(?m)^### Requirement: `{re.escape(requirement_id)}`[ \t]*\r?$",
+        )
+        for match in legacy.finditer(structure):
+            if (
+                _parent_level_two_section(structure, match.start())
+                in REQUIREMENT_SECTIONS
+            ):
+                matches.append(match)
+    if len(matches) != 1:
+        return None
+    return _heading_block(text, structure, matches[0])
 
 
 def requirement_exists(text: str, requirement_id: str) -> bool:
-    return bool(
-        re.search(
-            rf"(?m)^### Requirement: `{re.escape(requirement_id)}`\s*$",
-            text,
-        )
-    )
+    return requirement_block(text, requirement_id) is not None
+
+
+def validate_spec_item_headings(wiki_root: Path) -> list[str]:
+    failures: list[str] = []
+    specs_root = wiki_root / "specs"
+    for typed_root in (specs_root / "domains", specs_root / "policies"):
+        paths = sorted(typed_root.rglob("*.md")) if typed_root.is_dir() else []
+        for path in paths:
+            relative = path.relative_to(wiki_root).as_posix()
+            text = path.read_text(encoding="utf-8")
+            structure = _mask_markdown_fences(text)
+            item_headings = list(
+                re.finditer(
+                    r"(?m)^### (?:(Requirement|Acceptance Criterion): )?"
+                    r"`([^`\n]+)`[ \t]*\r?$",
+                    structure,
+                )
+            )
+            seen_item_ids: set[str] = set()
+            for match in item_headings:
+                legacy_label = match.group(1)
+                item_id = match.group(2)
+                if legacy_label is None and not (
+                    REQUIREMENT_ID.fullmatch(item_id)
+                    or ACCEPTANCE_CRITERION_ID.fullmatch(item_id)
+                ):
+                    continue
+                if (
+                    legacy_label == "Requirement"
+                    and ACCEPTANCE_CRITERION_ID.fullmatch(item_id)
+                ):
+                    failures.append(
+                        f"{relative}: acceptance criterion ID {item_id} cannot "
+                        "use legacy Requirement label"
+                    )
+                elif (
+                    legacy_label == "Acceptance Criterion"
+                    and REQUIREMENT_ID.fullmatch(item_id)
+                ):
+                    failures.append(
+                        f"{relative}: requirement ID {item_id} cannot use "
+                        "legacy Acceptance Criterion label"
+                    )
+                if item_id in seen_item_ids:
+                    failures.append(
+                        f"{relative}: duplicate Spec item ID {item_id}"
+                    )
+                else:
+                    seen_item_ids.add(item_id)
+
+            for match in re.finditer(
+                r"(?m)^### `([^`\n]+)`[ \t]*\r?$",
+                structure,
+            ):
+                item_id = match.group(1)
+                section = _parent_level_two_section(structure, match.start())
+                if section == "Acceptance Criteria":
+                    if REQUIREMENT_ID.fullmatch(item_id):
+                        failures.append(
+                            f"{relative}: requirement ID {item_id} cannot appear "
+                            "under Acceptance Criteria"
+                        )
+                    elif not ACCEPTANCE_CRITERION_ID.fullmatch(item_id):
+                        failures.append(
+                            f"{relative}: compact Spec item ID {item_id} under "
+                            "Acceptance Criteria must end with -AC followed by "
+                            "three digits"
+                        )
+                elif section in REQUIREMENT_SECTIONS:
+                    if ACCEPTANCE_CRITERION_ID.fullmatch(item_id):
+                        failures.append(
+                            f"{relative}: acceptance criterion ID {item_id} must "
+                            "appear under Acceptance Criteria"
+                        )
+                    elif not REQUIREMENT_ID.fullmatch(item_id):
+                        failures.append(
+                            f"{relative}: compact Spec item ID {item_id} under "
+                            f"{section} must end with -R followed by three digits"
+                        )
+                elif ACCEPTANCE_CRITERION_ID.fullmatch(item_id):
+                    failures.append(
+                        f"{relative}: acceptance criterion ID {item_id} must "
+                        "appear under Acceptance Criteria"
+                    )
+                elif REQUIREMENT_ID.fullmatch(item_id):
+                    failures.append(
+                        f"{relative}: requirement ID {item_id} must appear under "
+                        "a requirement-bearing section"
+                    )
+                else:
+                    failures.append(
+                        f"{relative}: compact Spec item ID {item_id} must end "
+                        "with -R or -AC followed by three digits"
+                    )
+    return failures
 
 
 def backticked_ids(text: str) -> set[str]:
@@ -656,6 +847,7 @@ def validate_generated_wiki(repo_root: Path, wiki_root: Path) -> list[str]:
     failures.extend(coverage_failures)
     failures.extend(validate_domain_pairs(wiki_root))
     failures.extend(validate_domain_links(wiki_root))
+    failures.extend(validate_spec_item_headings(wiki_root))
     if not coverage_failures:
         source_revision = coverage.get("source_revision")
         if not isinstance(source_revision, str) or not source_revision.strip():
