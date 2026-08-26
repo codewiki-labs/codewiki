@@ -1,8 +1,29 @@
+<div align="center">
+
 # Code-Wiki
 
-`code-wiki` gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
+### Persistent project memory for coding agents
 
-It preserves user-approved intent and requirements across sessions, maps those requirements to the current codebase, and keeps implementation aligned with the approved specification instead of letting code silently redefine it.
+Preserve approved intent across sessions, navigate directly from requirements to code, and keep implementation aligned with the project contract.
+
+[![Version](https://img.shields.io/badge/version-0.3.0-2563EB)](.codex-plugin/plugin.json)
+[![Codex Plugin](https://img.shields.io/badge/Codex-plugin-111827)](#codex)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](#claude-code)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+🇺🇸 **English** | 🇰🇷 [한국어](docs/README.ko.md)
+
+[Install](#install) · [How it works](#how-code-wiki-works) · [Daily use](#use-it-in-daily-work) · [Wiki structure](#wiki-structure) · [Contributing](#contributing)
+
+</div>
+
+> Code-Wiki gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
+
+| Approved intent | Verified implementation | Durable navigation |
+| --- | --- | --- |
+| Specs preserve what the project **should** do. | Source inspection establishes what the project **does** now. | Reference connects every requirement domain to current code and tests. |
+
+Code-Wiki keeps implementation aligned with approved specifications instead of allowing code drift to silently redefine the project.
 
 ## Prerequisites
 
@@ -68,7 +89,7 @@ The agent will:
 
 Users approve Specs and taxonomy; they do not need to review implementation-oriented Reference content. If the checkout changes while the proposal is being reviewed, the agent rechecks source drift before writing the Wiki.
 
-## Problem
+## Why Code-Wiki
 
 Agents commonly reconstruct a project's purpose, constraints, requirements, and code paths in every new session. Source inspection can recover what exists, but it cannot reliably recover why the user chose that behavior, which constraints must survive future changes, or where the project is heading.
 
@@ -87,6 +108,21 @@ It stores **current intent**, not a transcript of everything a user once said. G
 Initial creation also builds a noncanonical **Feature Surface Inventory** before the proposed taxonomy is finalized. Every important feature must be assigned to one primary domain or explicitly excluded with source-backed reasoning. After approval, this source-derived state is persisted in `reference/coverage.json`. A **coverage gate** blocks approval proposals that leave important features unassigned, shallow, or supported only by vague evidence.
 
 Code-Wiki uses **spec-only approval**: users approve behaviorally complete Specs and taxonomy, while agents generate and maintain source-grounded Reference. A separate **authority-leakage gate** rejects durable permissions, calculations, pricing precedence, invariants, lifecycle guarantees, failure policy, retention, or audit meaning that appears only in Reference.
+
+## How Code-Wiki Works
+
+```text
+User-approved intent          Current checkout
+        │                           │
+        ▼                           ▼
+      Specs ── conformance ──> Source code
+        │                           │
+        └──── requirement IDs ─────┤
+                                    ▼
+                              Reference map
+```
+
+Specs answer what the project should do. Source code and observed runtime state answer what it currently does. Reference makes that implementation fast to find, but never overrides either authority. This separation lets agents recover context efficiently without turning accidental implementation details into permanent requirements.
 
 ## Authority Model
 

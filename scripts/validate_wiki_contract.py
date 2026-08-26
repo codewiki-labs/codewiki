@@ -268,6 +268,7 @@ PACKAGE_FILES = [
     "CONTRIBUTING.md",
     "CODE_OF_CONDUCT.md",
     "CHANGELOG.md",
+    "docs/README.ko.md",
     "docs/skill-set-design.md",
     "examples/basic-workflow.md",
     "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh",
