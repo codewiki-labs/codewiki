@@ -20,7 +20,7 @@ body:
   - type: dropdown
     id: contract-impact
     attributes:
-      label: Does this change the V2 contract?
+      label: Does this change the package contract?
       description: Authority split, approval gates, Spec/Reference pairing, or the wiki/ layout.
       options:
         - "No — wording or docs only"

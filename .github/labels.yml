@@ -21,7 +21,7 @@
   description: How a skill steers the agent
 - name: "area: contract"
   color: "b60205"
-  description: V2 contract, validator, or contract scenarios
+  description: Package contract, validator, or contract scenarios
 - name: "area: packaging"
   color: "5319e7"
   description: Plugin manifests, marketplace, sync script

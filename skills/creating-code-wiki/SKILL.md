@@ -5,7 +5,7 @@ description: Use when initializing or substantially regenerating a repository-lo
 
 # Creating Code-Wiki
 
-Create a V2 Wiki whose Specs are a behaviorally complete user-facing contract and whose Reference is an agent-facing implementation map. Users approve Specs and taxonomy, not Reference content.
+Create a Wiki whose Specs are a behaviorally complete user-facing contract and whose Reference is an agent-facing implementation map. Users approve Specs and taxonomy, not Reference content.
 
 ## Separate The Evidence
 
@@ -366,7 +366,7 @@ When regenerating a V1 or stale Wiki, preserve any demonstrably user-approved cu
 
 ## Quality Bar
 
-A useful V2 Wiki lets a user answer from Specs alone:
+A useful Wiki lets a user answer from Specs alone:
 
 - Why does this project exist and where is it going?
 - What must remain true for this task and why?

@@ -15,7 +15,7 @@
 - Reframed Reference as an agent-facing implementation map using stable requirement IDs and `Spec Basis`, with no user approval requirement for source-grounded refreshes.
 - Added authority-leakage fixtures that reject billing or other durable rules present only in Reference.
 - Changed initial approval from a complete Spec-and-Reference review to user approval of Specs and taxonomy only.
-- Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
+- Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the Spec/Reference authority split.
 - Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
 - Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
 - Added oversize handling for wiki pages: any page larger than 200 lines is an oversize signal that triggers a report-first review — the agent reports what inflates the page and asks the user to review the compaction together, split the domain, delegate, or accept the size; delegated compaction follows a meaning-unit inventory protocol that only drops source-restated, superseded, duplicated, or historical content and reports kept/merged/dropped dispositions, and size alone never deletes an approved requirement.

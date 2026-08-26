@@ -1,7 +1,7 @@
 # Default owners — automatically requested for review on every PR.
 * @zvvony
 
-# The contract validator and its test scenarios guard the V2 contract;
+# The contract validator and its test scenarios guard the package contract;
 # changes here always need owner review.
 /scripts/validate_wiki_contract.py @zvvony
 /tests/ @zvvony
