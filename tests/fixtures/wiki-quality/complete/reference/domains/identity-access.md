@@ -4,7 +4,7 @@
 
 ### Feature: `admin-menu-authorization`
 
-- Spec Basis: `IA-AUTH-001`, `IA-AUTH-002`.
+- Spec Basis: `IA-AUTH-R001`, `IA-AUTH-R002`.
 - Surface: administrator routes and menu navigation expose only the management areas allowed for the current actor.
 - API or Event: protected route handlers attach `requireMenuStepup` from `src/auth/guards.ts` with the exact menu key they enforce.
 - Authorization and Limits: the guard verifies JWT identity, reloads the active user, grants all known menus to ADMIN, checks MANAGER `menuPermissions`, rejects administrator-only menus, and verifies `X-Admin-Stepup` for the same user.

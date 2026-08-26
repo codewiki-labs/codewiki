@@ -12,7 +12,10 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from validate_generated_wiki import validate_generated_wiki  # noqa: E402
+from validate_generated_wiki import (  # noqa: E402
+    requirement_block,
+    validate_generated_wiki,
+)
 
 
 class GeneratedWikiValidatorTest(unittest.TestCase):
@@ -39,9 +42,15 @@ class GeneratedWikiValidatorTest(unittest.TestCase):
 
 ## Requirements
 
-### Requirement: `CORE-R001`
+### `CORE-R001`
 
 The core operation returns a successful result.
+
+## Acceptance Criteria
+
+### `CORE-AC001`
+
+The core operation succeeds.
 
 ## Required Context
 
@@ -131,6 +140,286 @@ The core operation returns a successful result.
 
         self.assertEqual(failures, [])
 
+    def test_compact_requirement_heading_resolves_spec_basis(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Requirements\n\n### `CORE-R001`",
+                    "## Domain Invariants\n\n### `CORE-R001`",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertEqual(failures, [])
+
+    def test_compact_acceptance_heading_under_acceptance_criteria_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertEqual(failures, [])
+
+    def test_legacy_requirement_heading_still_resolves_spec_basis(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, coverage = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "### `CORE-R001`",
+                    "### Requirement: `CORE-001`",
+                ),
+                encoding="utf-8",
+            )
+            reference = wiki / "reference" / "domains" / "core.md"
+            reference.write_text(
+                reference.read_text(encoding="utf-8").replace(
+                    "CORE-R001",
+                    "CORE-001",
+                ),
+                encoding="utf-8",
+            )
+            coverage = deepcopy(coverage)
+            coverage["features"][0]["spec_basis"] = ["CORE-001"]
+            self.save_coverage(wiki, coverage)
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertEqual(failures, [])
+
+    def test_fenced_requirement_example_does_not_resolve_spec_basis(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "### `CORE-R001`\n\n"
+                    "The core operation returns a successful result.",
+                    "### `CORE-R002`\n\n"
+                    "A different approved requirement.\n\n"
+                    "```markdown\n"
+                    "### `CORE-R001`\n\n"
+                    "Example text is not approved intent.\n"
+                    "```",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "core-operation: unknown Spec Basis CORE-R001 in "
+            "specs/domains/core.md",
+            failures,
+        )
+
+    def test_duplicate_compact_spec_item_id_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Required Context",
+                    "### `CORE-R001`\n\n"
+                    "A conflicting duplicate requirement.\n\n"
+                    "## Required Context",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: duplicate Spec item ID CORE-R001",
+            failures,
+        )
+
+    def test_requirement_lookup_refuses_duplicate_definitions(self) -> None:
+        text = """# Core
+
+## Requirements
+
+### `CORE-R001`
+
+First definition.
+
+### Requirement: `CORE-R001`
+
+Second definition.
+"""
+
+        self.assertIsNone(requirement_block(text, "CORE-R001"))
+
+    def test_duplicate_untyped_legacy_requirement_id_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Required Context",
+                    "### Requirement: `CORE-001`\n\n"
+                    "First legacy definition.\n\n"
+                    "### Requirement: `CORE-001`\n\n"
+                    "Second legacy definition.\n\n"
+                    "## Required Context",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: duplicate Spec item ID CORE-001",
+            failures,
+        )
+
+    def test_requirement_lookup_preserves_fenced_normative_body(self) -> None:
+        text = """# Core
+
+## Calculation And Policy Contracts
+
+### `CORE-R001`
+
+```text
+cost = tokens / 1_000_000 * unit_price
+```
+"""
+
+        block = requirement_block(text, "CORE-R001")
+
+        self.assertIsNotNone(block)
+        self.assertIn("cost = tokens / 1_000_000 * unit_price", block)
+
+    def test_legacy_requirement_label_cannot_resolve_acceptance_id(self) -> None:
+        text = """# Core
+
+## Requirements
+
+### Requirement: `CORE-AC001`
+
+This is not a requirement ID.
+"""
+
+        self.assertIsNone(requirement_block(text, "CORE-AC001"))
+
+    def test_legacy_requirement_label_rejects_acceptance_id(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Required Context",
+                    "### Requirement: `CORE-AC999`\n\n"
+                    "This is not a requirement ID.\n\n"
+                    "### Acceptance Criterion: `CORE-R999`\n\n"
+                    "This is not an acceptance criterion ID.\n\n"
+                    "## Required Context",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: acceptance criterion ID CORE-AC999 "
+            "cannot use legacy Requirement label",
+            failures,
+        )
+        self.assertIn(
+            "specs/domains/core.md: requirement ID CORE-R999 cannot use "
+            "legacy Acceptance Criterion label",
+            failures,
+        )
+
+    def test_requirement_id_under_acceptance_criteria_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Requirements\n\n### `CORE-R001`",
+                    "## Acceptance Criteria\n\n### `CORE-R001`",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: requirement ID CORE-R001 cannot appear "
+            "under Acceptance Criteria",
+            failures,
+        )
+
+    def test_acceptance_id_outside_acceptance_criteria_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "The core operation returns a successful result.",
+                    "The core operation returns a successful result.\n\n"
+                    "### `CORE-AC001`\n\nThe operation succeeds.",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: acceptance criterion ID CORE-AC001 must "
+            "appear under Acceptance Criteria",
+            failures,
+        )
+
+    def test_compact_spec_item_id_must_encode_its_kind(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "The core operation returns a successful result.",
+                    "The core operation returns a successful result.\n\n"
+                    "### `CORE-001`\n\nAmbiguous contract item.",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: compact Spec item ID CORE-001 under "
+            "Requirements must end with -R followed by three digits",
+            failures,
+        )
+
+    def test_ambiguous_compact_spec_item_outside_contract_section_is_rejected(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            spec = wiki / "specs" / "domains" / "core.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8").replace(
+                    "## Required Context",
+                    "## Constraints\n\n### `CORE-001`\n\nAmbiguous contract item.\n\n"
+                    "## Required Context",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "specs/domains/core.md: compact Spec item ID CORE-001 must end "
+            "with -R or -AC followed by three digits",
+            failures,
+        )
+
     def test_important_feature_must_exist_in_its_domain_reference(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             repo, wiki, _ = self.make_candidate(Path(temp_dir))
@@ -148,6 +437,51 @@ The core operation returns a successful result.
         self.assertIn(
             "core-operation: missing Reference feature trace "
             "in reference/domains/core.md",
+            failures,
+        )
+
+    def test_fenced_feature_example_is_not_a_reference_trace(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            reference = wiki / "reference" / "domains" / "core.md"
+            reference.write_text(
+                reference.read_text(encoding="utf-8").replace(
+                    "### Feature: `core-operation`\n\n"
+                    "- Spec Basis: `CORE-R001`",
+                    "```markdown\n"
+                    "### Feature: `core-operation`\n\n"
+                    "- Spec Basis: `CORE-R001`\n"
+                    "```",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "core-operation: missing Reference feature trace "
+            "in reference/domains/core.md",
+            failures,
+        )
+
+    def test_fenced_spec_basis_is_not_reference_trace_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo, wiki, _ = self.make_candidate(Path(temp_dir))
+            reference = wiki / "reference" / "domains" / "core.md"
+            reference.write_text(
+                reference.read_text(encoding="utf-8").replace(
+                    "- Spec Basis: `CORE-R001`",
+                    "```markdown\n"
+                    "- Spec Basis: `CORE-R001`\n"
+                    "```",
+                ),
+                encoding="utf-8",
+            )
+
+            failures = validate_generated_wiki(repo, wiki)
+
+        self.assertIn(
+            "core-operation: Reference feature trace missing Spec Basis CORE-R001",
             failures,
         )
 

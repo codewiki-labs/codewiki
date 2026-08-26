@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replaced repeated `Requirement:` and `Acceptance Criterion:` level-three labels with compact backticked `-Rddd` and `-ACddd` IDs, while retaining section-aware compatibility for legacy requirement headings, ignoring fenced examples, rejecting duplicate Spec item IDs, and rejecting legacy labels that contradict their ID type.
 - Changed the `reading-code-wiki` and `using-code-wiki` descriptions to enumerate concrete question triggers, so ordinary factual questions about project behavior load the wiki skills instead of bypassing them.
 - Made security and architecture source-derived concerns owned by product domains instead of mandatory Wiki domains or pages.
 - Added optional approved cross-domain policy Specs under `specs/policies/` and source-derived concern maps under `reference/views/`, with mandatory policy-to-view pairing and manifest-listed view-only support.

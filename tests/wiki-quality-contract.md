@@ -1,6 +1,6 @@
 # Code-Wiki Semantic Quality Fixture Contract
 
-The fixture validates the deterministic subset of Spec sufficiency, authority separation, feature assignment, and trace completeness. It proves that approved requirement IDs, behavioral evidence, `Spec Basis`, required trace dimensions, and exact implementation evidence cannot be replaced by Reference-only policy, folder names, wildcard symbols, one-line flows, or generic test labels.
+The fixture validates the deterministic subset of Spec sufficiency, authority separation, feature assignment, and trace completeness. It uses compact ID-only level-three headings for approved `-Rddd` requirements and `-ACddd` Acceptance Criteria, and proves that requirement IDs, behavioral evidence, `Spec Basis`, required trace dimensions, and exact implementation evidence cannot be replaced by Reference-only policy, folder names, wildcard symbols, one-line flows, or generic test labels.
 
 It does not prove that an agent discovered every feature in an arbitrary repository or that prose claims are true. `creating-code-wiki` and `auditing-code-wiki` still require source inspection and judgment; the fixture prevents regressions in the explicit output contract.
 
@@ -18,7 +18,7 @@ The complete Reference describes observed implementation only. Desired behavior 
 
 ## Authority-Leakage Candidate Must Fail
 
-The authority-leakage candidate puts image-token versus per-image pricing exclusivity in Reference while omitting its approved Spec requirement. The validator must report `MU-USAGE-003` as missing even though the Reference trace is otherwise deep and exact.
+The authority-leakage candidate puts image-token versus per-image pricing exclusivity in Reference while omitting its approved Spec requirement. The validator must report `MU-USAGE-R003` as missing even though the Reference trace is otherwise deep and exact.
 
 It also places a cross-domain authentication-secret logging rule in
 `reference/views/security.md` without an approved

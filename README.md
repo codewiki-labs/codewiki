@@ -114,7 +114,7 @@ wiki/
 Specs preserve approved meaning and determine correctness without requiring Reference:
 
 - Project purpose, priorities, global intent, constraints, and non-goals
-- Stable requirement IDs plus domain Intent, actor permissions, calculations and policies, invariants, lifecycle and failure outcomes, retention and audit meaning, Constraints, and Rationale
+- Compact ID-only level-three headings for stable requirement (`-Rddd`) and Acceptance Criterion (`-ACddd`) IDs, plus domain Intent, actor permissions, calculations and policies, invariants, lifecycle and failure outcomes, retention and audit meaning, Constraints, and Rationale
 - Approved cross-domain policy under `specs/policies/` only when the rule genuinely spans domains
 - Non-goals and testable Acceptance Criteria, including hand-computed vectors for calculations when useful
 - Recursive `Required Context` links and nonrecursive `See Also` links
