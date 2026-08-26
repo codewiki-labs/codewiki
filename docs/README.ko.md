@@ -55,12 +55,14 @@ codex plugin list
 
 ### Claude Code
 
-Claude Code 안에서 다음 명령을 실행합니다.
+터미널에서 다음 명령을 실행합니다.
 
-```text
-/plugin marketplace add codewiki-labs/codewiki
-/plugin install code-wiki@code-wiki
+```bash
+claude plugin marketplace add codewiki-labs/codewiki
+claude plugin install code-wiki@code-wiki
 ```
+
+Claude Code 세션 안에서는 `/plugin`이 같은 마켓플레이스·설치 흐름을 대화형으로 엽니다.
 
 셸에서 설치 상태를 확인합니다.
 
@@ -350,9 +352,9 @@ codex plugin add code-wiki@code-wiki
 
 Claude Code:
 
-```text
-/plugin marketplace update code-wiki
-/plugin update code-wiki
+```bash
+claude plugin marketplace update code-wiki
+claude plugin update code-wiki
 ```
 
 수동 설치에서는 체크아웃을 pull한 다음 해당 복사 명령을 다시 실행합니다. Codex를 재시작하거나 Claude Code에서 `/reload-plugins`를 실행한 뒤 새 세션을 시작해 현재 스킬 지침을 다시 불러오세요.
@@ -368,9 +370,9 @@ codex plugin marketplace remove code-wiki
 
 Claude Code:
 
-```text
-/plugin uninstall code-wiki
-/plugin marketplace remove code-wiki
+```bash
+claude plugin uninstall code-wiki
+claude plugin marketplace remove code-wiki
 ```
 
 플러그인을 삭제해도 프로젝트의 `wiki/` 디렉터리는 삭제되지 않습니다.

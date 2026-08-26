@@ -55,12 +55,14 @@ codex plugin list
 
 ### Claude Code
 
-Run these commands inside Claude Code:
+Run these commands in a terminal:
 
-```text
-/plugin marketplace add codewiki-labs/codewiki
-/plugin install code-wiki@code-wiki
+```bash
+claude plugin marketplace add codewiki-labs/codewiki
+claude plugin install code-wiki@code-wiki
 ```
+
+Inside a running Claude Code session, `/plugin` opens the same marketplace and install flow interactively.
 
 Confirm the installation from a shell:
 
@@ -351,9 +353,9 @@ codex plugin add code-wiki@code-wiki
 
 Claude Code:
 
-```text
-/plugin marketplace update code-wiki
-/plugin update code-wiki
+```bash
+claude plugin marketplace update code-wiki
+claude plugin update code-wiki
 ```
 
 For a manual installation, pull the checkout and repeat the relevant copy command. Restart Codex or run `/reload-plugins` in Claude Code, then start a new session so active skill instructions are reloaded.
@@ -369,9 +371,9 @@ codex plugin marketplace remove code-wiki
 
 Claude Code:
 
-```text
-/plugin uninstall code-wiki
-/plugin marketplace remove code-wiki
+```bash
+claude plugin uninstall code-wiki
+claude plugin marketplace remove code-wiki
 ```
 
 Removing the plugin does not delete project `wiki/` directories.
