@@ -1,4 +1,4 @@
-# Basic Code-Wiki V2 Workflow Examples
+# Basic Code-Wiki Workflow Examples
 
 ## Project Work Without Explicit Invocation
 

@@ -28,7 +28,7 @@
     ],
     "brandColor": "#2563EB",
     "defaultPrompt": [
-      "Create a Code-Wiki V2 project memory for this repository.",
+      "Create Code-Wiki project memory for this repository.",
       "Recall approved Specs before changing this project.",
       "Refresh Code-Wiki Reference after this implementation change."
     ]

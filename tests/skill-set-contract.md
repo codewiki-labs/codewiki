@@ -1,4 +1,4 @@
-# Code-Wiki V2 Skill Set Contract
+# Code-Wiki Skill Set Contract
 
 This file records behavioral scenarios for the package. `scripts/validate_wiki_contract.py` enforces the deterministic structural subset.
 
@@ -28,7 +28,7 @@ Required behavior:
 - For implementation or bug-fix work, include `reference/testing.md` unless selected domains already provide complete verification paths.
 - Before completion, verify the implementation against approved Acceptance Criteria and refresh stale Reference.
 
-## Scenario: First V2 Wiki
+## Scenario: First Wiki
 
 User asks:
 
@@ -489,7 +489,7 @@ required behavior is:
 User asks:
 
 ```text
-Package Code-Wiki V2 so Codex users can install it as a plugin.
+Package Code-Wiki so Codex users can install it as a plugin.
 ```
 
 Required result:
@@ -504,7 +504,7 @@ Required result:
 User asks:
 
 ```text
-Package Code-Wiki V2 so Claude Code users can install it as a plugin.
+Package Code-Wiki so Claude Code users can install it as a plugin.
 ```
 
 Required result:

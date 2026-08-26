@@ -253,7 +253,7 @@ to local checks and audit examples.
 - [x] **Step 3: Record the unreleased change**
 
 Add concise Unreleased entries without changing the existing `0.2.0` package
-version because this branch is already the unreleased V2 line.
+version because this branch is already the unreleased development line.
 
 - [x] **Step 4: Run package validation**
 

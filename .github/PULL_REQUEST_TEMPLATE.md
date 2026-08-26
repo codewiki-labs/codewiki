@@ -19,7 +19,7 @@
 
 ## Contract impact
 
-<!-- The V2 contract = authority split (Specs > code > Reference), approval gates,
+<!-- The package contract = authority split (Specs > code > Reference), approval gates,
      Spec/Reference domain pairing, and the wiki/ layout. Pick exactly one. -->
 
 - [ ] Does **not** change the contract — wording, docs, or tooling only

@@ -1,36 +1,95 @@
-# Code-Wiki V2
+<div align="center">
 
-`code-wiki` gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
+# Code-Wiki
 
-It preserves user-approved intent and requirements across sessions, maps those requirements to the current codebase, and keeps implementation aligned with the approved specification instead of letting code silently redefine it.
+### Persistent project memory for coding agents
 
-## Quickstart
+Preserve approved intent across sessions, navigate directly from requirements to code, and keep implementation aligned with the project contract.
 
-Register the public marketplace and install the plugin.
+[![Version](https://img.shields.io/badge/version-0.3.0-2563EB)](.codex-plugin/plugin.json)
+[![Codex Plugin](https://img.shields.io/badge/Codex-plugin-111827)](#codex)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757)](#claude-code)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**Codex plugin**
+🇺🇸 **English** | 🇰🇷 [한국어](docs/README.ko.md)
+
+[Install](#install) · [How it works](#how-code-wiki-works) · [Daily use](#use-it-in-daily-work) · [Wiki structure](#wiki-structure) · [Contributing](#contributing)
+
+</div>
+
+> Code-Wiki gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
+
+| Approved intent | Verified implementation | Durable navigation |
+| --- | --- | --- |
+| Specs preserve what the project **should** do. | Source inspection establishes what the project **does** now. | Reference connects every requirement domain to current code and tests. |
+
+Code-Wiki keeps implementation aligned with approved specifications instead of allowing code drift to silently redefine the project.
+
+## Prerequisites
+
+Choose one supported host:
+
+- Codex with the `codex plugin` command available
+- Claude Code with plugin marketplace support
+- A compatible agent that can load standalone `SKILL.md` directories
+
+The target project should be a local repository. Git is strongly recommended because Code-Wiki records the inspected source revision and uses it to detect stale Reference coverage. Python 3 is needed only when you run the bundled generated-Wiki validator manually.
+
+## Install
+
+Register the public marketplace, then install the plugin.
+
+### Codex
 
 ```bash
 codex plugin marketplace add codewiki-labs/codewiki
 codex plugin add code-wiki@code-wiki
 ```
 
-**Claude Code plugin** — run these inside Claude Code:
+Confirm that the marketplace and plugin are visible:
+
+```bash
+codex plugin marketplace list
+codex plugin list
+```
+
+### Claude Code
+
+Run these commands inside Claude Code:
 
 ```text
 /plugin marketplace add codewiki-labs/codewiki
 /plugin install code-wiki@code-wiki
 ```
 
-Then start a fresh session in a repository and ask:
+Confirm the installation from a shell:
 
-```text
-Create a Code-Wiki V2 for this repository.
+```bash
+claude plugin details code-wiki
 ```
 
-The agent will inspect the current checkout, present complete proposed Specs and the domain taxonomy, and wait for one user approval before creating any files under `wiki/`. The user does not need to review Reference content.
+The details should show the same seven skills listed below.
 
-## Problem
+## First-Time Setup
+
+Restart Codex or run `/reload-plugins` in Claude Code so the newly installed skills are loaded. Then open the target repository, start a fresh session, and ask:
+
+```text
+Create Code-Wiki project memory for this repository.
+```
+
+The agent will:
+
+1. Inspect source, configuration, routes, schemas, runtime composition, and focused tests in the current checkout.
+2. Inventory important feature surfaces and propose a domain taxonomy.
+3. Present behaviorally complete Specs for review without writing a draft `wiki/` tree.
+4. Wait for one approval covering canonical creation, Specs, and taxonomy.
+5. Write approved Specs and generate source-grounded Reference under `wiki/`.
+6. Validate domain pairing, coverage evidence, concern applicability, and typed links.
+
+Users approve Specs and taxonomy; they do not need to review implementation-oriented Reference content. If the checkout changes while the proposal is being reviewed, the agent rechecks source drift before writing the Wiki.
+
+## Why Code-Wiki
 
 Agents commonly reconstruct a project's purpose, constraints, requirements, and code paths in every new session. Source inspection can recover what exists, but it cannot reliably recover why the user chose that behavior, which constraints must survive future changes, or where the project is heading.
 
@@ -50,9 +109,24 @@ Initial creation also builds a noncanonical **Feature Surface Inventory** before
 
 Code-Wiki uses **spec-only approval**: users approve behaviorally complete Specs and taxonomy, while agents generate and maintain source-grounded Reference. A separate **authority-leakage gate** rejects durable permissions, calculations, pricing precedence, invariants, lifecycle guarantees, failure policy, retention, or audit meaning that appears only in Reference.
 
+## How Code-Wiki Works
+
+```text
+User-approved intent          Current checkout
+        │                           │
+        ▼                           ▼
+      Specs ── conformance ──> Source code
+        │                           │
+        └──── requirement IDs ─────┤
+                                    ▼
+                              Reference map
+```
+
+Specs answer what the project should do. Source code and observed runtime state answer what it currently does. Reference makes that implementation fast to find, but never overrides either authority. This separation lets agents recover context efficiently without turning accidental implementation details into permanent requirements.
+
 ## Authority Model
 
-Code-Wiki V2 has different authorities for different questions:
+Code-Wiki has different authorities for different questions:
 
 | Question | Authority | If it conflicts |
 | --- | --- | --- |
@@ -158,17 +232,59 @@ User-facing completion is a **Spec conformance matrix**: `requirement ID → ver
 
 Only the router and project memory are always read. Policies, domains, coverage, views, and operational Reference pages are loaded when the task requires them.
 
-The plugin ships a **generated-Wiki validator** for exact domain pairs, policy/view pairing, manifest evidence, concern applicability, and typed links. From a Code-Wiki checkout or installed plugin root, point it at the target repository:
+An explicit request that supplies the exact requirement and asks for implementation counts as approval of that content. Ambiguous or conflicting durable requests require a proposed Spec change before implementation. One-off debugging commands, temporary test instructions, transient workarounds, and implementation plans are not project memory.
+
+## Use It In Daily Work
+
+After the initial Wiki exists, ordinary repository requests automatically trigger the bootstrap skill when project context matters. You do not need to name Code-Wiki every time.
+
+### Ask About The Project
+
+```text
+How are public search permissions decided?
+```
+
+The agent recalls global project intent, loads the smallest complete Spec context, follows paired Reference into current source, and answers from verified implementation evidence.
+
+### Change Existing Behavior
+
+```text
+Change document exports so they preserve the original filename.
+```
+
+For a durable behavior change, the agent identifies the affected requirements. If the request is exact enough, it counts as approval of that content; otherwise the agent proposes the precise Spec change before editing canonical Specs or implementation. Completion is reported against stable requirement and Acceptance Criterion IDs.
+
+### Fix A Spec/Code Mismatch
+
+```text
+The approved upload Spec says 200 MB, but the validator enforces 100 MB. Fix it.
+```
+
+The approved Spec remains authoritative, so the implementation is changed and verified. If Reference points to stale code while the implementation is correct, only Reference is refreshed.
+
+### Refresh Or Audit Project Memory
+
+```text
+Refresh Code-Wiki Reference after these implementation changes.
+```
+
+```text
+Audit this Code-Wiki for stale paths, missing feature coverage, and authority leakage.
+```
+
+Reference refreshes derived implementation facts without requiring approval. Audits report findings first; they do not silently rewrite approved Specs. Wiki pages larger than 200 lines are reported as compaction candidates, and size alone never authorizes deleting approved meaning.
+
+### Validate A Generated Wiki Manually
+
+From a Code-Wiki checkout or installed plugin root, run:
 
 ```bash
 python3 scripts/validate_generated_wiki.py \
-  --repo-root /path/to/project \
-  --wiki-root /path/to/project/wiki
+  --repo-root /absolute/path/to/project \
+  --wiki-root /absolute/path/to/project/wiki
 ```
 
-For Git repositories, `source_revision` is an immutable full commit ID. Later Wiki-only commits remain valid, while committed non-Wiki changes make coverage stale; uncommitted source produces a warning because it is outside the commit snapshot. This structural and semantic gate does not replace source inspection or product tests.
-
-An explicit request that supplies the exact requirement and asks for implementation counts as approval of that content. Ambiguous or conflicting durable requests require a proposed Spec change before implementation. One-off debugging commands, temporary test instructions, transient workarounds, and implementation plans are not project memory.
+Exit code `0` means the structural and semantic checks passed. A nonzero exit reports exact pairing, manifest, evidence, link, or freshness failures. For Git repositories, `source_revision` must be an immutable full commit ID. Later Wiki-only commits remain valid, committed non-Wiki changes make coverage stale, and uncommitted source produces a warning because it falls outside the recorded commit snapshot. The validator complements source inspection and project tests; it does not replace them.
 
 ## With Superpowers
 
@@ -184,7 +300,7 @@ Code-Wiki does not replace Superpowers or permanently store one-off implementati
 | Skill | When to use |
 | --- | --- |
 | `using-code-wiki` | Bootstrap project work, recover memory, apply authority rules, and route the task. |
-| `creating-code-wiki` | Create or substantially regenerate a V2 Wiki. |
+| `creating-code-wiki` | Create or substantially regenerate a Wiki. |
 | `reading-code-wiki` | Recover global intent and the smallest complete requirement-domain closure. |
 | `exploring-code-with-wiki` | Follow Reference to inspect and compare current code with approved Specs. |
 | `updating-code-wiki` | Apply approved Spec changes or refresh descriptive Reference. |
@@ -197,28 +313,28 @@ Users do not need to explicitly say “use Code-Wiki” during ordinary reposito
 
 See [Basic workflow examples](examples/basic-workflow.md) for creation, retrieval, mismatch, approval, update, and audit scenarios.
 
-## Manual Skills Installation
+## Standalone Skills Installation
 
-A plugin install is the recommended method. For another compatible agent or a standalone setup, copy all skill directories into that agent's skill directory:
+A plugin install is recommended because it includes the validator and package metadata. For a compatible agent or a skills-only setup, clone the repository and copy every skill directory.
 
 ```bash
 git clone https://github.com/codewiki-labs/codewiki.git
 cd codewiki
 
-# Codex
+# Codex: install for the current user
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
 
-# Claude Code, for every project
+# Claude Code: install for the current user
 mkdir -p "$HOME/.claude/skills"
 cp -R skills/* "$HOME/.claude/skills/"
 
-# Claude Code, for one project only
+# Claude Code: install only for one project
 mkdir -p /path/to/project/.claude/skills
 cp -R skills/* /path/to/project/.claude/skills/
 ```
 
-Install all skills so `using-code-wiki` can route to the supporting behaviors. The repository root is a plugin package, not a skill.
+Install all seven skills so `using-code-wiki` can route to the supporting behaviors. Copying only the router produces an incomplete installation. Existing directories with the same names are replaced or merged by `cp`, so review local modifications before upgrading a manual installation.
 
 Skills-only installation does not copy the bundled validator. Keep the cloned checkout when you want to run `scripts/validate_generated_wiki.py`, or install the full plugin payload.
 
@@ -240,7 +356,7 @@ Claude Code:
 /plugin update code-wiki
 ```
 
-Start a new session so the current skills are loaded.
+For a manual installation, pull the checkout and repeat the relevant copy command. Restart Codex or run `/reload-plugins` in Claude Code, then start a new session so active skill instructions are reloaded.
 
 ### Remove
 
@@ -266,7 +382,8 @@ Codex:
 
 ```bash
 codex plugin marketplace list
-codex plugin list --available
+codex plugin list
+codex plugin list --available --json
 ```
 
 Claude Code:
@@ -276,11 +393,11 @@ claude plugin list
 claude plugin details code-wiki
 ```
 
-`claude plugin details code-wiki` should list all seven skills. If an installed plugin was updated while the agent was running, run `/reload-plugins` in Claude Code or restart Codex, then begin a new session.
+If the plugin is installed but its skills are missing, verify that the plugin and marketplace manifests report version `0.3.0`, refresh the marketplace, reinstall the plugin, and start a new session. For a standalone installation, confirm that all seven `skills/<name>/SKILL.md` files exist in the host's skill directory. Skills-only installations do not include `scripts/validate_generated_wiki.py`.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for skill boundaries, V2 contract expectations, and local validation.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for skill boundaries, contract expectations, and local validation.
 
 ## License
 

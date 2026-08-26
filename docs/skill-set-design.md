@@ -1,4 +1,4 @@
-# Code-Wiki V2 Skill Set Design
+# Code-Wiki Skill Set Design
 
 ## Product Definition
 
@@ -34,7 +34,7 @@ For example, canonical usage dimensions, non-overlap rules, per-million-token fo
 
 Creation, memory retrieval, source tracing, canonical updates, auditing, and package maintenance occur at different times and have different failure modes. A small bootstrap skill routes among them without loading every detailed instruction for every request.
 
-The V2 migration keeps seven skills. It changes their shared contract rather than introducing a parallel V2 router or a separate Spec-management skill.
+The current design keeps seven skills. It changes their shared contract rather than introducing a parallel router or a separate Spec-management skill.
 
 ```text
 skills/
@@ -59,7 +59,7 @@ skills/
 | Skill | Owns | Does not own |
 | --- | --- | --- |
 | `using-code-wiki` | bootstrap, authority routing, durable-intent detection, sub-skill selection, closeout | detailed page writing or source tracing |
-| `creating-code-wiki` | first creation, substantial regeneration, V2 structure, initial approval boundary | ordinary post-change maintenance |
+| `creating-code-wiki` | first creation, substantial regeneration, current structure, initial approval boundary | ordinary post-change maintenance |
 | `reading-code-wiki` | always-read memory, domain registry selection, typed context closure, concern applicability | implementation truth |
 | `exploring-code-with-wiki` | Reference-guided source inspection and two-direction mismatch handling | approving or inferring requirements |
 | `updating-code-wiki` | approved Spec compaction and code-grounded Reference refresh | broad quality audits |
@@ -113,7 +113,7 @@ user or operator surface
 → exact tests
 ```
 
-Deep Reference restores the useful operational depth of the earlier module format inside the V2 authority model: authorization and invariant enforcement, lifecycle and failure implementation, usage/cost/audit implementation, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
+Deep Reference restores the useful operational depth of the earlier module format inside the authority model: authorization and invariant enforcement, lifecycle and failure implementation, usage/cost/audit implementation, dependencies, contract artifacts, verification, and pre-change guidance. Risk-driven sections are included only when supported by source; a non-applicable dimension requires a concrete reason rather than boilerplate.
 
 The Spec sufficiency gate checks whether users can determine correct behavior without Reference. The authority-leakage gate rejects durable policy found only in Reference, including concern views. The Reference coverage gate checks important-feature assignment, `Spec Basis`, trace completeness, repository-root-relative paths, exact evidence, concern applicability, policy/view pairing, and typed links. None uses arbitrary page-length, line-count, token-count, domain-count, or file-count thresholds.
 
@@ -180,8 +180,8 @@ The sync script publishes the Codex manifest, skills, the generated-Wiki validat
 
 `scripts/validate_wiki_contract.py` checks:
 
-- skill names, frontmatter trigger shape, and responsibility-specific V2 guidance
-- public V2 concepts and removal of V1-only structure guidance
+- skill names, frontmatter trigger shape, and responsibility-specific guidance
+- public concepts and removal of legacy structure guidance
 - plugin manifest fields and shared marketplace metadata, for both the Codex and Claude Code manifests
 - that Codex-only presentation fields do not leak into the Claude Code manifests
 - sync regression-test presence and release version alignment
