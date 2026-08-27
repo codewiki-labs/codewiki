@@ -270,6 +270,28 @@ PACKAGE_FILES = [
     "CHANGELOG.md",
     "docs/README.ko.md",
     "docs/skill-set-design.md",
+    "pyproject.toml",
+    "codewiki/__init__.py",
+    "codewiki/__main__.py",
+    "codewiki/cli.py",
+    "codewiki/formatting.py",
+    "codewiki/server.py",
+    "codewiki/core/__init__.py",
+    "codewiki/core/errors.py",
+    "codewiki/core/markdown.py",
+    "codewiki/core/models.py",
+    "codewiki/core/repository.py",
+    "codewiki/core/search.py",
+    "codewiki/core/service.py",
+    "codewiki/web/__init__.py",
+    "codewiki/web/static/index.html",
+    "codewiki/web/static/app.js",
+    "codewiki/web/static/styles.css",
+    "scripts/install-to-kiro.sh",
+    "tests/kiro-skills-install/test-install-to-kiro.sh",
+    "tests/test_codewiki_core.py",
+    "tests/test_codewiki_cli.py",
+    "tests/test_codewiki_server.py",
     "examples/basic-workflow.md",
     "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh",
     "tests/skill-set-contract.md",
@@ -424,6 +446,7 @@ PLUGIN_KEYWORDS = [
     "skills",
     "codex",
     "claude-code",
+    "kiro-cli",
     "project-memory",
     "specifications",
 ]
@@ -467,6 +490,16 @@ SYNC_TEST_PHRASES = [
     "preserves destination-owned OpenAI agent metadata",
     "Dirty local apply exits with failure",
     "Clean no-op local apply exits successfully",
+    "Preview includes shared CodeWiki Core",
+    "Preview includes CLI package metadata",
+]
+
+KIRO_INSTALL_TEST_PHRASES = [
+    "KIRO_HOME",
+    "--project",
+    "--dry-run",
+    "expected seven skills",
+    "unrelated skill changed",
 ]
 
 
@@ -809,6 +842,20 @@ def validate_sync_test(failures: list[str]) -> None:
         failures.append(f"{path.relative_to(ROOT)} must be executable")
 
 
+def validate_kiro_install_test(failures: list[str]) -> None:
+    installer = ROOT / "scripts" / "install-to-kiro.sh"
+    test_path = ROOT / "tests" / "kiro-skills-install" / "test-install-to-kiro.sh"
+    for path in (installer, test_path):
+        if not path.exists():
+            return
+        if not path.stat().st_mode & 0o111:
+            failures.append(f"{path.relative_to(ROOT)} must be executable")
+    text = read(test_path)
+    for phrase in KIRO_INSTALL_TEST_PHRASES:
+        if phrase not in text:
+            failures.append(f"{test_path.relative_to(ROOT)} missing phrase: {phrase}")
+
+
 def main() -> int:
     failures: list[str] = []
 
@@ -858,6 +905,7 @@ def main() -> int:
             validate_claude_marketplace_contract(claude_marketplace, claude_plugin, failures)
 
     validate_sync_test(failures)
+    validate_kiro_install_test(failures)
 
     if failures:
         print("Code-Wiki skill-set contract failed:")

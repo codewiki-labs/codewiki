@@ -1,0 +1,50 @@
+{
+  "source_revision": "fixture-non-git-revision",
+  "features": [
+    {
+      "feature_id": "quiz-creation",
+      "classification": "important",
+      "primary_domain": "quiz",
+      "spec_basis": [
+        "QUIZ-R001",
+        "QUIZ-R002"
+      ],
+      "surfaces": {
+        "ui": [],
+        "api": [
+          "src/services/quiz.py"
+        ],
+        "jobs": [],
+        "providers": [],
+        "schemas": [],
+        "tests": [
+          "tests/test_quiz.py"
+        ]
+      }
+    }
+  ],
+  "concerns": {
+    "security": {
+      "applicability": "not_applicable",
+      "owning_domains": [],
+      "policy_path": null,
+      "view_path": null,
+      "reason": "The local fixture has no identity or privileged boundary.",
+      "evidence": [
+        "src/services/quiz.py"
+      ]
+    },
+    "architecture": {
+      "applicability": "applicable",
+      "owning_domains": [
+        "quiz"
+      ],
+      "policy_path": null,
+      "view_path": null,
+      "reason": "The fixture maps one domain to one service boundary.",
+      "evidence": [
+        "src/services/quiz.py"
+      ]
+    }
+  }
+}

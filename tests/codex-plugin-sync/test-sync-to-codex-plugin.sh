@@ -175,6 +175,8 @@ write_upstream_fixture() {
         "$repo/.claude-plugin" \
         "$repo/.private-notes" \
         "$repo/.kimi-plugin" \
+        "$repo/codewiki/core" \
+        "$repo/codewiki/web/static" \
         "$repo/docs" \
         "$repo/docs/superpowers/plans" \
         "$repo/examples" \
@@ -262,6 +264,40 @@ EOF
 print("generated Wiki validator")
 EOF
 
+    cat > "$repo/codewiki/__init__.py" <<'EOF'
+"""codewiki fixture"""
+EOF
+
+    cat > "$repo/codewiki/core/markdown.py" <<'EOF'
+"""shared markdown parser fixture"""
+EOF
+
+    cat > "$repo/codewiki/server.py" <<'EOF'
+"""CodeWiki HTTP server fixture"""
+EOF
+
+    cat > "$repo/codewiki/web/__init__.py" <<'EOF'
+"""CodeWiki Web Viewer fixture"""
+EOF
+
+    cat > "$repo/codewiki/web/static/index.html" <<'EOF'
+<!doctype html><title>CodeWiki fixture</title>
+EOF
+
+    cat > "$repo/codewiki/web/static/app.js" <<'EOF'
+"use strict";
+EOF
+
+    cat > "$repo/codewiki/web/static/styles.css" <<'EOF'
+:root { color: black; }
+EOF
+
+    cat > "$repo/pyproject.toml" <<'EOF'
+[project]
+name = "codewiki"
+version = "0.3.0"
+EOF
+
     cat > "$repo/tests/codex-plugin-sync/test-sync-to-codex-plugin.sh" <<'EOF'
 #!/usr/bin/env sh
 echo sync test
@@ -292,10 +328,18 @@ EOF
         CONTRIBUTING.md \
         LICENSE \
         README.md \
+        codewiki/__init__.py \
+        codewiki/core/markdown.py \
+        codewiki/server.py \
+        codewiki/web/__init__.py \
+        codewiki/web/static/index.html \
+        codewiki/web/static/app.js \
+        codewiki/web/static/styles.css \
         docs/README.ko.md \
         docs/skill-set-design.md \
         docs/superpowers/plans/internal-plan.md \
         examples/basic-workflow.md \
+        pyproject.toml \
         scripts/dev-helper.sh \
         scripts/validate_generated_wiki.py \
         scripts/sync-to-codex-plugin.sh \
@@ -361,6 +405,8 @@ write_synced_destination_fixture() {
 
     mkdir -p \
         "$repo/plugins/code-wiki/.codex-plugin" \
+        "$repo/plugins/code-wiki/codewiki/core" \
+        "$repo/plugins/code-wiki/codewiki/web/static" \
         "$repo/plugins/code-wiki/docs" \
         "$repo/plugins/code-wiki/examples" \
         "$repo/plugins/code-wiki/scripts" \
@@ -408,6 +454,40 @@ EOF
     cat > "$repo/plugins/code-wiki/scripts/validate_generated_wiki.py" <<'EOF'
 #!/usr/bin/env python3
 print("generated Wiki validator")
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/__init__.py" <<'EOF'
+"""codewiki fixture"""
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/core/markdown.py" <<'EOF'
+"""shared markdown parser fixture"""
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/server.py" <<'EOF'
+"""CodeWiki HTTP server fixture"""
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/web/__init__.py" <<'EOF'
+"""CodeWiki Web Viewer fixture"""
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/web/static/index.html" <<'EOF'
+<!doctype html><title>CodeWiki fixture</title>
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/web/static/app.js" <<'EOF'
+"use strict";
+EOF
+
+    cat > "$repo/plugins/code-wiki/codewiki/web/static/styles.css" <<'EOF'
+:root { color: black; }
+EOF
+
+    cat > "$repo/plugins/code-wiki/pyproject.toml" <<'EOF'
+[project]
+name = "codewiki"
+version = "0.3.0"
 EOF
 
     cat > "$repo/plugins/code-wiki/skills/using-code-wiki/SKILL.md" <<'EOF'
@@ -635,6 +715,10 @@ main() {
     assert_not_contains "$preview_section" "docs/superpowers/plans/internal-plan.md" "Preview excludes internal implementation plans"
     assert_contains "$preview_section" "examples/basic-workflow.md" "Preview includes examples"
     assert_contains "$preview_section" "scripts/validate_generated_wiki.py" "Preview includes generated-Wiki validator"
+    assert_contains "$preview_section" "codewiki/core/markdown.py" "Preview includes shared CodeWiki Core"
+    assert_contains "$preview_section" "codewiki/server.py" "Preview includes CodeWiki HTTP server"
+    assert_contains "$preview_section" "codewiki/web/static/index.html" "Preview includes bundled Web Viewer assets"
+    assert_contains "$preview_section" "pyproject.toml" "Preview includes CLI package metadata"
     assert_not_contains "$preview_section" "scripts/dev-helper.sh" "Preview excludes development scripts"
     assert_not_contains "$preview_section" "tests/codex-plugin-sync/test-sync-to-codex-plugin.sh" "Preview excludes tests"
     assert_not_contains "$preview_section" ".kimi-plugin/plugin.json" "Preview excludes unrelated manifests"

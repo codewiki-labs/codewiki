@@ -24,7 +24,7 @@
   description: Package contract, validator, or contract scenarios
 - name: "area: packaging"
   color: "5319e7"
-  description: Plugin manifests, marketplace, sync script
+  description: Plugin manifests, marketplaces, Kiro installer, sync script
 - name: "area: ci"
   color: "fbca04"
   description: Workflows, templates, repository tooling

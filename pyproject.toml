@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codewiki"
+version = "0.3.0"
+description = "Query CodeWiki Specs and their implementation traces."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "code-wiki contributors" }]
+dependencies = []
+
+[project.scripts]
+codewiki = "codewiki.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["codewiki", "codewiki.*"]
+
+[tool.setuptools.package-data]
+"codewiki.web" = ["static/*.html", "static/*.css", "static/*.js"]

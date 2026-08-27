@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added `codewiki serve`, a stdlib-only read-only Web Viewer with a Spec-first Overview, three-pane Explorer, selected-entity Local Trace Map, Core lexical Search, Git-aware Changes, source excerpts, secure JSON APIs, and buildless packaged assets.
+- Redesigned the Web Viewer with a calm blue-and-white product hierarchy, flat neutral layers, larger system typography, explicit interaction states, and responsive Spec-first navigation inspired by the supplied Toss reference without bundling proprietary font assets.
+- Added English and Korean Web Viewer localization with browser-language detection, a persisted accessible header selector, translated navigation and application states, and unchanged Core-provided Spec/source content.
+- Added a reusable stdlib-only CodeWiki Core and read-only `codewiki` CLI for index, entity lookup, bidirectional Spec/code trace, raw Wiki reads, deterministic lexical search, agent context, Git-aware status, trace validation, doctor diagnostics, and structured JSON output.
+- Added Kiro CLI installation support for all seven agent-neutral skills, including user-level `KIRO_HOME`, workspace-local `.kiro/skills`, refresh-safe copying, documentation, and regression coverage.
 - Reorganized the public README around a clearer product overview, installation path, authority model, and daily workflows; added a full Korean README with reciprocal language navigation and included it in the Codex plugin payload.
 - Replaced repeated `Requirement:` and `Acceptance Criterion:` level-three labels with compact backticked `-Rddd` and `-ACddd` IDs, while retaining section-aware compatibility for legacy requirement headings, ignoring fenced examples, rejecting duplicate Spec item IDs, and rejecting legacy labels that contradict their ID type.
 - Changed the `reading-code-wiki` and `using-code-wiki` descriptions to enumerate concrete question triggers, so ordinary factual questions about project behavior load the wiki skills instead of bypassing them.

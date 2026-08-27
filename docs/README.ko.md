@@ -13,11 +13,11 @@
 
 🇺🇸 [English](../README.md) | 🇰🇷 **한국어**
 
-[설치](#설치) · [작동 방식](#code-wiki의-작동-방식) · [일상적인-사용](#일상적인-사용) · [wiki-구조](#wiki-구조) · [기여](#기여)
+[설치](#설치) · [작동 방식](#code-wiki의-작동-방식) · [일상적인 사용](#일상적인-사용) · [CLI 및 Web Viewer](#cli와-core) · [Wiki 구조](#wiki-구조) · [기여](#기여)
 
 </div>
 
-> Code-Wiki는 코딩 에이전트에 **저장소 로컬 기반의 지속 가능한 프로젝트 메모리**를 제공합니다. 하나의 저장소에서 Codex와 Claude Code 플러그인을 함께 배포하며, 두 플러그인은 동일한 7개 스킬을 설치합니다.
+> Code-Wiki는 코딩 에이전트에 **저장소 로컬 기반의 지속 가능한 프로젝트 메모리**를 제공합니다. Codex와 Claude Code 플러그인으로 배포되며, 동일한 7개 에이전트 중립적 스킬을 Kiro CLI에도 직접 설치할 수 있습니다.
 
 | 승인된 의도 | 검증된 구현 | 지속 가능한 탐색 |
 | --- | --- | --- |
@@ -31,13 +31,14 @@ Code-Wiki는 코드의 변화가 프로젝트 의미를 조용히 덮어쓰지 �
 
 - `codex plugin` 명령을 사용할 수 있는 Codex
 - 플러그인 마켓플레이스를 지원하는 Claude Code
+- 사용자 또는 워크스페이스 단위로 스킬을 불러올 수 있는 Kiro CLI
 - 독립적인 `SKILL.md` 디렉터리를 불러올 수 있는 호환 에이전트
 
-대상 프로젝트는 로컬 저장소여야 합니다. Code-Wiki는 검사한 소스 리비전을 기록하고 이를 기준으로 오래된 Reference 커버리지를 감지하므로 Git 사용을 강력히 권장합니다. Python 3는 번들된 Wiki 검증기를 직접 실행할 때만 필요합니다.
+대상 프로젝트는 로컬 저장소여야 합니다. Code-Wiki는 검사한 소스 리비전을 기록하고 이를 기준으로 오래된 Reference 커버리지를 감지하므로 Git 사용을 강력히 권장합니다. CLI와 Web Viewer에는 Python 3.10 이상이 필요하며, 그 외에는 번들된 Wiki 검증기를 직접 실행할 때만 Python 3가 필요합니다.
 
 ## 설치
 
-공개 마켓플레이스를 등록한 다음 플러그인을 설치합니다.
+사용하는 코딩 에이전트에 맞는 설치 방법을 선택합니다.
 
 ### Codex
 
@@ -72,9 +73,21 @@ claude plugin details code-wiki
 
 상세 정보에 아래에 설명된 7개 스킬이 모두 표시되어야 합니다.
 
+### Kiro CLI
+
+저장소를 복제하고 현재 사용자에게 7개 스킬을 설치합니다.
+
+```bash
+git clone https://github.com/codewiki-labs/codewiki.git
+cd codewiki
+./scripts/install-to-kiro.sh
+```
+
+설치기는 `${KIRO_HOME:-$HOME/.kiro}/skills`를 사용합니다. 특정 워크스페이스에만 설치하려면 `./scripts/install-to-kiro.sh --project /path/to/project`를 실행하세요. 이 명령은 `/path/to/project/.kiro/skills` 아래에 설치합니다. 다른 Kiro 스킬을 변경하지 않고 Code-Wiki를 갱신하려면 최신 체크아웃에서 설치기를 다시 실행하세요.
+
 ## 최초 설정
 
-새로 설치한 스킬을 불러오도록 Codex를 재시작하거나 Claude Code에서 `/reload-plugins`를 실행하세요. 그다음 대상 저장소를 열고 새 세션에서 다음과 같이 요청합니다.
+새로 설치한 스킬을 불러오도록 Codex 또는 Kiro CLI를 재시작하거나 Claude Code에서 `/reload-plugins`를 실행하세요. 그다음 대상 저장소를 열고 새 세션에서 다음과 같이 요청합니다.
 
 ```text
 이 저장소를 위한 Code-Wiki 프로젝트 메모리를 만들어줘.
@@ -287,6 +300,81 @@ python3 scripts/validate_generated_wiki.py \
 
 종료 코드 `0`은 구조·의미 검사를 통과했다는 뜻입니다. 0이 아닌 종료 코드는 짝, manifest, 근거, 링크 또는 최신성 오류를 구체적으로 출력합니다. Git 저장소의 `source_revision`은 변경 불가능한 전체 커밋 ID여야 합니다. 이후 Wiki만 바꾼 커밋은 유효하지만 Wiki 외의 커밋된 변경은 커버리지를 오래된 상태로 만들며, 커밋하지 않은 소스는 기록된 스냅샷 밖의 상태라는 경고를 발생시킵니다. 이 검증기는 소스 검사와 프로젝트 테스트를 보완하지만 대체하지 않습니다.
 
+## CLI와 Core
+
+저장소는 재사용 가능한 Python Core 기반의 읽기 전용 `codewiki` CLI도 제공합니다. Python 3.10 이상 환경에서 체크아웃으로부터 설치합니다.
+
+```bash
+python3 -m pip install .
+codewiki --version
+```
+
+`wiki/index.md`가 있는 저장소 내부의 어느 디렉터리에서든 명령을 실행할 수 있습니다. 또는 명령 앞에 `codewiki --repo-root /path/to/project ...`를 붙여 루트를 명시하세요.
+
+```bash
+codewiki index
+codewiki search "quiz validation"
+codewiki show QUIZ-R001
+codewiki trace QUIZ-R001
+codewiki trace src/services/quiz.py
+codewiki trace symbol:QuizService.createQuiz
+codewiki read specs/domains/quiz.md
+codewiki context QUIZ-R001
+codewiki status
+codewiki validate
+codewiki validate QUIZ-R001
+codewiki doctor
+codewiki serve
+```
+
+`trace`는 기록된 Spec과 코드의 관계를 양방향으로 탐색합니다. `context`는 작업을 시작하는 에이전트를 위해 일치하는 Spec 엔터티, 관련 Acceptance Criteria 또는 Requirements, Wiki 문서, 구현 참조와 범위가 제한된 소스 발췌를 결합합니다. `read`는 human 모드에서 요청한 Markdown을 변경 없이 출력합니다.
+
+### Web Viewer
+
+Code-Wiki 저장소 내부의 어느 디렉터리에서든 읽기 전용 Spec 우선 Viewer를 시작할 수 있습니다.
+
+```bash
+codewiki serve                         # http://127.0.0.1:8000
+codewiki serve --open
+codewiki serve --port 8080
+codewiki serve --host 0.0.0.0
+```
+
+Viewer에는 세 가지 주요 영역이 있습니다.
+
+- **Overview**는 Specs, Requirement와 Acceptance Criterion 수, 추적 커버리지, 연결되지 않은 엔터티, 검증 결과와 Wiki 동기화 상태를 보여줍니다.
+- **Explorer**는 기능별 Spec 인덱스, 구조화된 Requirement/Acceptance Criterion 내용, 구현 참조, 범위가 제한된 소스 발췌, 관련 테스트와 선택된 엔터티의 Local Trace Map을 하나의 3단 화면에 배치합니다.
+- **Changes**는 Git이 보고한 변경 파일을 기록된 영향 Spec 엔터티에 연결하며, 영향을 추측하지 않고 명시적으로 `unknown`을 보고합니다.
+
+헤더 검색은 `codewiki search`와 동일한 결정론적 Core 어휘 검색을 사용합니다. Requirement, Acceptance Criterion 또는 Spec 문서를 선택하면 Explorer에서 열립니다. 번들 프런트엔드에는 Markdown 파서, 검색 인덱스, 그래프 데이터베이스 또는 쓰기 API가 없습니다. `/api/` 아래의 읽기 전용 JSON endpoint(`index`, `spec`, `trace`, `context`, `search`, `status`, `validate`, `read`, `doctor`)를 통해 재사용 가능한 Core를 호출합니다.
+
+인터페이스는 영어와 한국어를 지원합니다. 첫 방문에서는 브라우저 선호 언어를 따르며 `ko`이면 한국어를 선택합니다. 헤더의 언어 선택기는 명시적인 선택을 브라우저 로컬 저장소에 보존합니다. Spec 본문, 식별자, 경로, Core 진단 근거와 소스 발췌는 기계 번역하지 않고 기록된 언어를 유지합니다.
+
+기본 bind 주소는 localhost입니다. `--host 0.0.0.0`은 인증 없는 읽기 전용 Viewer와 추적된 소스 발췌를 주변 네트워크에 의도적으로 노출하므로 신뢰할 수 있는 네트워크에서만 사용하세요.
+
+모든 하위 명령에 `--json`을 붙이면 ANSI나 human 형식이 없는 하나의 파싱 가능한 JSON 값을 출력합니다.
+
+```bash
+codewiki show QUIZ-R001 --json
+codewiki trace src/services/quiz.py --json
+codewiki search "quiz validation" --json
+codewiki context QUIZ-R001 --json
+```
+
+빈 검색은 성공한 빈 결과입니다. 사람이 읽는 오류는 stderr로 출력되고 JSON 오류는 stdout에 하나의 객체로 출력됩니다. 종료 상태 `1`은 validate 또는 doctor 발견 사항, `2`는 초기화 또는 사용법 실패, `3`은 대상이나 문서를 찾지 못한 경우, `4`는 유효하지 않은 Wiki 데이터를 뜻합니다.
+
+CLI에는 파싱이나 추적 로직이 들어 있지 않습니다. 향후 MCP adapter를 포함한 Python 통합은 subprocess로 CLI를 호출하지 않고 동일한 구조화 Core를 직접 import합니다.
+
+```python
+from codewiki import CodeWiki
+
+wiki = CodeWiki.open(repo_root="/path/to/project")
+result = wiki.get_context("QUIZ-R001")
+payload = result.to_dict()
+```
+
+v1 어휘 검색은 결정론적이며 메모리 안에서 동작합니다. 정확한 ID, 정확한 경로 또는 심볼, 제목이나 구문 일치, 모든 쿼리 토큰, 부분 토큰 일치 순으로 순위를 정합니다. `status`는 가능한 경우 `reference/coverage.json`과 Git을 사용하며 최신성을 확인할 수 없을 때 추측하지 않고 `unknown`을 보고합니다. `validate`는 LLM을 호출하거나 소스 인덱스를 만들지 않고 구조적 추적 링크, 참조 파일과 어휘로 검증 가능한 심볼을 확인합니다.
+
 ## Superpowers와 함께 사용하기
 
 Code-Wiki와 Superpowers는 서로 다른 책임을 담당합니다.
@@ -326,6 +414,14 @@ cd codewiki
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
 
+# Kiro CLI: 현재 사용자에게 설치
+mkdir -p "${KIRO_HOME:-$HOME/.kiro}/skills"
+cp -R skills/* "${KIRO_HOME:-$HOME/.kiro}/skills/"
+
+# Kiro CLI: 특정 프로젝트에만 설치
+mkdir -p /path/to/project/.kiro/skills
+cp -R skills/* /path/to/project/.kiro/skills/
+
 # Claude Code: 현재 사용자에게 설치
 mkdir -p "$HOME/.claude/skills"
 cp -R skills/* "$HOME/.claude/skills/"
@@ -357,7 +453,14 @@ claude plugin marketplace update code-wiki
 claude plugin update code-wiki
 ```
 
-수동 설치에서는 체크아웃을 pull한 다음 해당 복사 명령을 다시 실행합니다. Codex를 재시작하거나 Claude Code에서 `/reload-plugins`를 실행한 뒤 새 세션을 시작해 현재 스킬 지침을 다시 불러오세요.
+Kiro CLI:
+
+```bash
+git -C /path/to/codewiki pull --ff-only
+/path/to/codewiki/scripts/install-to-kiro.sh
+```
+
+수동 설치에서는 체크아웃을 pull한 다음 해당 복사 명령을 다시 실행합니다. Codex 또는 Kiro CLI를 재시작하거나 Claude Code에서 `/reload-plugins`를 실행한 뒤 새 세션을 시작해 현재 스킬 지침을 다시 불러오세요.
 
 ### 삭제
 
@@ -375,7 +478,16 @@ claude plugin uninstall code-wiki
 claude plugin marketplace remove code-wiki
 ```
 
-플러그인을 삭제해도 프로젝트의 `wiki/` 디렉터리는 삭제되지 않습니다.
+Kiro CLI에서는 Code-Wiki의 7개 스킬 디렉터리만 삭제합니다.
+
+```bash
+kiro_skills="${KIRO_HOME:-$HOME/.kiro}/skills"
+for skill in using-code-wiki creating-code-wiki reading-code-wiki exploring-code-with-wiki updating-code-wiki auditing-code-wiki writing-code-wiki-skills; do
+  rm -rf "$kiro_skills/$skill"
+done
+```
+
+플러그인이나 복사한 스킬을 삭제해도 프로젝트의 `wiki/` 디렉터리는 삭제되지 않습니다.
 
 ### 문제 해결
 
@@ -394,7 +506,9 @@ claude plugin list
 claude plugin details code-wiki
 ```
 
-플러그인이 설치됐지만 스킬이 보이지 않으면 플러그인과 마켓플레이스 manifest가 버전 `0.3.0`을 가리키는지 확인하고, 마켓플레이스를 갱신한 뒤 플러그인을 다시 설치하고 새 세션을 시작하세요. 독립형 설치에서는 호스트의 스킬 디렉터리에 7개 `skills/<name>/SKILL.md` 파일이 모두 존재하는지 확인하세요. 스킬 전용 설치에는 `scripts/validate_generated_wiki.py`가 포함되지 않습니다.
+Kiro CLI에서는 설치 후 새 채팅 세션을 시작하고 `/context show`로 전역 또는 워크스페이스 스킬 경로의 7개 파일이 모두 로드됐는지 확인하세요. `/using-code-wiki`를 사용해 bootstrap을 직접 시작할 수 있습니다.
+
+플러그인이 설치됐지만 스킬이 보이지 않으면 플러그인과 마켓플레이스 manifest가 버전 `0.3.0`을 가리키는지 확인하고, 마켓플레이스를 갱신한 뒤 플러그인을 다시 설치하고 새 세션을 시작하세요. 독립형 설치에서는 호스트의 스킬 디렉터리에 7개 `skills/<name>/SKILL.md` 파일이 모두 존재하는지 확인하세요. 에이전트가 실행 중일 때 설치된 플러그인이나 복사된 스킬을 갱신했다면 Claude Code에서 `/reload-plugins`를 실행하거나 Codex 또는 Kiro CLI를 재시작한 뒤 새 세션을 시작하세요. 스킬 전용 설치에는 `scripts/validate_generated_wiki.py`가 포함되지 않습니다.
 
 ## 기여
 

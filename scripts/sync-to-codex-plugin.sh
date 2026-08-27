@@ -36,6 +36,8 @@ UPSTREAM="$(cd "$SCRIPT_DIR/.." && pwd)"
 ALLOWLIST=(
   ".codex-plugin"
   "skills"
+  "codewiki"
+  "pyproject.toml"
   "README.md"
   "LICENSE"
   "CHANGELOG.md"
