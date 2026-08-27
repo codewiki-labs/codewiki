@@ -242,6 +242,10 @@ EOF
 # Skill Set Design
 EOF
 
+    cat > "$repo/docs/README.ko.md" <<'EOF'
+# Code-Wiki
+EOF
+
     cat > "$repo/docs/superpowers/plans/internal-plan.md" <<'EOF'
 # Internal Implementation Plan
 EOF
@@ -331,6 +335,7 @@ EOF
         codewiki/web/static/index.html \
         codewiki/web/static/app.js \
         codewiki/web/static/styles.css \
+        docs/README.ko.md \
         docs/skill-set-design.md \
         docs/superpowers/plans/internal-plan.md \
         examples/basic-workflow.md \
@@ -436,6 +441,10 @@ EOF
 
     cat > "$repo/plugins/code-wiki/docs/skill-set-design.md" <<'EOF'
 # Skill Set Design
+EOF
+
+    cat > "$repo/plugins/code-wiki/docs/README.ko.md" <<'EOF'
+# Code-Wiki
 EOF
 
     cat > "$repo/plugins/code-wiki/examples/basic-workflow.md" <<'EOF'
@@ -700,6 +709,7 @@ main() {
     assert_contains "$preview_section" ".codex-plugin/plugin.json" "Preview includes manifest path"
     assert_contains "$preview_section" "skills/using-code-wiki/SKILL.md" "Preview includes bootstrap skill"
     assert_contains "$preview_section" "README.md" "Preview includes README"
+    assert_contains "$preview_section" "docs/README.ko.md" "Preview includes Korean README"
     assert_contains "$preview_section" "LICENSE" "Preview includes license"
     assert_contains "$preview_section" "docs/skill-set-design.md" "Preview includes docs"
     assert_not_contains "$preview_section" "docs/superpowers/plans/internal-plan.md" "Preview excludes internal implementation plans"

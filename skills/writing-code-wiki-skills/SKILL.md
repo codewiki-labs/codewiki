@@ -5,7 +5,7 @@ description: Use when modifying the Code-Wiki skill set, its boundaries, package
 
 # Writing Code-Wiki Skills
 
-Keep skills small, task-specific, testable, and usable without private project context while preserving the V2 authority and memory contract.
+Keep skills small, task-specific, testable, and usable without private project context while preserving the authority and memory contract.
 
 ## Split Criteria
 
@@ -24,14 +24,14 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 ## Required Boundaries
 
 - `using-code-wiki`: bootstrap, authority routing, durable-intent detection, and closeout.
-- `creating-code-wiki`: first creation or substantial V2 regeneration.
+- `creating-code-wiki`: first creation or substantial regeneration.
 - `reading-code-wiki`: global-memory recovery, domain selection, and typed context closure.
 - `exploring-code-with-wiki`: targeted source verification through Reference.
 - `updating-code-wiki`: approval-gated Spec edits and code-grounded Reference refreshes.
 - `auditing-code-wiki`: authority, pairing, quality, and stale-content review.
 - `writing-code-wiki-skills`: maintenance of this package.
 
-## V2 Invariants
+## Contract Invariants
 
 - Approved Specs are normative over implementation.
 - Specs are the behaviorally complete user-facing contract; users approve Specs and taxonomy without reviewing Reference content.
@@ -62,7 +62,7 @@ Do not create a new skill when the behavior is a small checklist, always used wi
 
 - Every skill lives at `skills/<skill-name>/SKILL.md`.
 - Each skill must be useful when read alone.
-- Repeated common rules may be summarized, but no skill may reverse the V2 authority model.
+- Repeated common rules may be summarized, but no skill may reverse the authority model.
 - Do not claim behavior that is absent from the skill files.
 - Keep the two always-read Wiki pages concise and task-specific retrieval selective.
 

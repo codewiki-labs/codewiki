@@ -43,6 +43,7 @@ ALLOWLIST=(
   "CHANGELOG.md"
   "CODE_OF_CONDUCT.md"
   "CONTRIBUTING.md"
+  "docs/README.ko.md"
   "docs/skill-set-design.md"
   "examples"
   "scripts/validate_generated_wiki.py"

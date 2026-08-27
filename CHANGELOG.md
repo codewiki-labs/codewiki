@@ -5,9 +5,9 @@
 - Added `codewiki serve`, a stdlib-only read-only Web Viewer with a Spec-first Overview, three-pane Explorer, selected-entity Local Trace Map, Core lexical Search, Git-aware Changes, source excerpts, secure JSON APIs, and buildless packaged assets.
 - Redesigned the Web Viewer with a calm blue-and-white product hierarchy, flat neutral layers, larger system typography, explicit interaction states, and responsive Spec-first navigation inspired by the supplied Toss reference without bundling proprietary font assets.
 - Added English and Korean Web Viewer localization with browser-language detection, a persisted accessible header selector, translated navigation and application states, and unchanged Core-provided Spec/source content.
-
 - Added a reusable stdlib-only CodeWiki Core and read-only `codewiki` CLI for index, entity lookup, bidirectional Spec/code trace, raw Wiki reads, deterministic lexical search, agent context, Git-aware status, trace validation, doctor diagnostics, and structured JSON output.
 - Added Kiro CLI installation support for all seven agent-neutral skills, including user-level `KIRO_HOME`, workspace-local `.kiro/skills`, refresh-safe copying, documentation, and regression coverage.
+- Reorganized the public README around a clearer product overview, installation path, authority model, and daily workflows; added a full Korean README with reciprocal language navigation and included it in the Codex plugin payload.
 - Replaced repeated `Requirement:` and `Acceptance Criterion:` level-three labels with compact backticked `-Rddd` and `-ACddd` IDs, while retaining section-aware compatibility for legacy requirement headings, ignoring fenced examples, rejecting duplicate Spec item IDs, and rejecting legacy labels that contradict their ID type.
 - Changed the `reading-code-wiki` and `using-code-wiki` descriptions to enumerate concrete question triggers, so ordinary factual questions about project behavior load the wiki skills instead of bypassing them.
 - Made security and architecture source-derived concerns owned by product domains instead of mandatory Wiki domains or pages.
@@ -21,7 +21,7 @@
 - Reframed Reference as an agent-facing implementation map using stable requirement IDs and `Spec Basis`, with no user approval requirement for source-grounded refreshes.
 - Added authority-leakage fixtures that reject billing or other durable rules present only in Reference.
 - Changed initial approval from a complete Spec-and-Reference review to user approval of Specs and taxonomy only.
-- Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the V2 Spec/Reference authority split.
+- Restored deep code-backed domain Reference sections for permissions, invariants, lifecycle, failures, contract artifacts, and verification while preserving the Spec/Reference authority split.
 - Added a pre-canonical Feature Surface Inventory, important-feature assignment, end-to-end trace, and coverage completion gates.
 - Added semantic quality fixtures that reject shallow symbol lists and one-line flows for important features.
 - Added oversize handling for wiki pages: any page larger than 200 lines is an oversize signal that triggers a report-first review — the agent reports what inflates the page and asks the user to review the compaction together, split the domain, delegate, or accept the size; delegated compaction follows a meaning-unit inventory protocol that only drops source-restated, superseded, duplicated, or historical content and reports kept/merged/dropped dispositions, and size alone never deletes an approved requirement.

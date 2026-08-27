@@ -8,7 +8,7 @@ Thank you for improving code-wiki skills.
 - Do not split a skill only for visual symmetry.
 - Do not add broad claims that are not implemented in the skill files.
 - Keep `description` focused on when to use the skill.
-- Preserve the V2 authority split: approved Specs are normative, while source is authoritative for Reference.
+- Preserve the authority split: approved Specs are normative, while source is authoritative for Reference.
 - Keep Specs behaviorally complete for user-only review and Reference agent-facing with requirement-ID implementation mappings.
 - Treat permissions, calculations, policy precedence, invariants, lifecycle and failure outcomes, retention, and audit meaning found only in Reference as authority leakage.
 - Preserve exact Spec/Reference domain pairing, policy/view pairing, and source-derived feature and concern coverage in `reference/coverage.json`.
@@ -66,6 +66,7 @@ The repository root is simultaneously a Codex plugin package, a Claude Code plug
 - Keep `scripts/sync-to-codex-plugin.sh` destination-agnostic. It must accept `--repo owner/name`, `--dest plugins/code-wiki`, and `--local PATH`.
 - Keep `scripts/validate_generated_wiki.py` in the synced runtime payload while excluding development-only scripts and tests.
 - Keep the stdlib-only `codewiki/` Core and `pyproject.toml` in that payload: the validator reuses `codewiki.core.markdown`, the CLI imports the Core directly, and future adapters must not invoke the CLI as a subprocess.
+- Keep `README.md` and `docs/README.ko.md` aligned and include both in the synced runtime payload.
 - Update `tests/test_codewiki_core.py`, `tests/test_codewiki_cli.py`, and the Codex sync fixture when Core, CLI, parser, JSON, or payload behavior changes.
 - Sync `docs/skill-set-design.md` as public documentation without shipping internal implementation plans.
 - Keep `.claude-plugin/` and `scripts/install-to-kiro.sh` out of the Codex sync payload. The sync allowlist is opt-in, so new packaging files stay excluded by default.
@@ -91,7 +92,7 @@ If the answer is no, add a checklist or section to an existing skill instead.
 ## Pull Request Checklist
 
 - Updated or added `skills/<name>/SKILL.md`.
-- Added or updated a V2 authority, approval, retrieval, or pairing scenario.
+- Added or updated an authority, approval, retrieval, or pairing scenario.
 - Updated `README.md` if the public skill list changed.
 - Updated `docs/skill-set-design.md` if boundaries changed.
 - Updated `tests/skill-set-contract.md`.

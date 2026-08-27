@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the Code-Wiki V2 skill-set package contract."""
+"""Validate the Code-Wiki skill-set package contract."""
 
 from pathlib import Path
 import json
@@ -268,6 +268,7 @@ PACKAGE_FILES = [
     "CONTRIBUTING.md",
     "CODE_OF_CONDUCT.md",
     "CHANGELOG.md",
+    "docs/README.ko.md",
     "docs/skill-set-design.md",
     "pyproject.toml",
     "codewiki/__init__.py",
@@ -331,7 +332,7 @@ FORBIDDEN_FILES = [
     "agents/openai.yaml",
 ]
 
-V2_CONTENT_FILES = [
+LEGACY_STRUCTURE_CONTENT_FILES = [
     "README.md",
     "CONTRIBUTING.md",
     "docs/skill-set-design.md",
@@ -384,9 +385,9 @@ README_PHRASES = [
 ]
 
 CONTRACT_REQUIRED_PHRASES = [
-    "# Code-Wiki V2 Skill Set Contract",
+    "# Code-Wiki Skill Set Contract",
     "## Scenario: Project Work Without An Explicit Code-Wiki Mention",
-    "## Scenario: First V2 Wiki",
+    "## Scenario: First Wiki",
     "## Scenario: Feature Surface Coverage During Creation",
     "## Scenario: Spec-Only User Approval",
     "## Scenario: Usage Calculation Is Normative",
@@ -601,7 +602,7 @@ def validate_package_files(failures: list[str]) -> None:
         if (ROOT / rel).exists():
             failures.append(f"forbidden compatibility file still exists: {rel}")
 
-    for rel in V2_CONTENT_FILES:
+    for rel in LEGACY_STRUCTURE_CONTENT_FILES:
         path = ROOT / rel
         if not path.exists():
             continue
@@ -609,6 +610,20 @@ def validate_package_files(failures: list[str]) -> None:
         for phrase in FORBIDDEN_V1_GUIDANCE:
             if phrase in text:
                 failures.append(f"{rel} contains V1-only guidance: {phrase}")
+
+    legacy_version_label = "V" + "2"
+    ignored_parts = {".git", ".idea", "__pycache__"}
+    for path in ROOT.rglob("*"):
+        if not path.is_file() or ignored_parts.intersection(path.parts):
+            continue
+        try:
+            text = read(path)
+        except UnicodeDecodeError:
+            continue
+        if legacy_version_label in text:
+            failures.append(
+                f"{path.relative_to(ROOT)} contains legacy version label"
+            )
 
 
 def validate_readme(failures: list[str]) -> None:
@@ -618,7 +633,7 @@ def validate_readme(failures: list[str]) -> None:
     text = read(path).lower()
     for phrase in README_PHRASES:
         if phrase not in text:
-            failures.append(f"README.md missing V2 topic: {phrase}")
+            failures.append(f"README.md missing topic: {phrase}")
 
 
 def validate_behavioral_contract(failures: list[str]) -> None:
@@ -893,12 +908,12 @@ def main() -> int:
     validate_kiro_install_test(failures)
 
     if failures:
-        print("Code-Wiki V2 skill-set contract failed:")
+        print("Code-Wiki skill-set contract failed:")
         for failure in failures:
             print(f"- {failure}")
         return 1
 
-    print("Code-Wiki V2 skill-set contract passed.")
+    print("Code-Wiki skill-set contract passed.")
     return 0
 
 
