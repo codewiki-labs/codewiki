@@ -162,19 +162,22 @@ Code-Wiki owns persistent WHAT, WHY, and WHERE. Superpowers owns HOW: brainstorm
 
 ## Distribution Shape
 
-The package has three layers, and only the outermost one is platform-specific:
+The package has four layers, and only the outermost one is platform-specific:
 
 | Layer | Contents | Agent coupling |
 | --- | --- | --- |
-| Packaging | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` | Per-platform |
+| Packaging | `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `scripts/install-to-kiro.sh` | Per-platform |
 | Behavior | `skills/*/SKILL.md` | None |
-| Governance | `scripts/` (except the bundled `scripts/validate_generated_wiki.py`), `tests/`, `.github/` | Repository-only |
+| Core tooling | `codewiki/`, `pyproject.toml`, bundled `scripts/validate_generated_wiki.py` | None |
+| Governance | Other `scripts/`, plus `tests/` and `.github/` | Repository-only |
 
-This layering is the load-bearing invariant. Skill bodies name no agent, no CLI, no instruction file, and no tool — they reference only `wiki/**` relative paths. Because of that, one skill set installs unchanged on every supported agent, and adding a platform is packaging work rather than a fork of the behavior.
+This layering is the load-bearing invariant. Skill bodies name no agent, no CLI, no instruction file, and no tool — they reference only `wiki/**` relative paths. The Python Core is likewise adapter-neutral: the CLI and future MCP integrations consume its structured results directly. Because behavior and query logic stay platform-neutral, adding a platform does not require a fork of either layer.
 
-The repository root is the plugin package for both platforms at once. `.codex-plugin/plugin.json` points `skills` at `./skills/` and carries Codex `interface` presentation metadata; `.agents/plugins/marketplace.json` exposes the repository-backed plugin to Codex. `.claude-plugin/plugin.json` stays minimal because Claude Code discovers `./skills/` on its own, and `.claude-plugin/marketplace.json` exposes the same repository as a one-plugin Claude Code marketplace. Shared identity fields are kept byte-identical across all four manifests; Codex-only `interface` and `policy` blocks never appear in the Claude manifests. The package remains skill-centered on both platforms and does not declare hooks, agents, apps, MCP servers, or visual assets that are not present.
+The repository root is the plugin package for Codex and Claude Code and the installation source for Kiro CLI. `.codex-plugin/plugin.json` points `skills` at `./skills/` and carries Codex `interface` presentation metadata; `.agents/plugins/marketplace.json` exposes the repository-backed plugin to Codex. `.claude-plugin/plugin.json` stays minimal because Claude Code discovers `./skills/` on its own, and `.claude-plugin/marketplace.json` exposes the same repository as a one-plugin Claude Code marketplace. Shared identity fields are kept byte-identical across all four manifests; Codex-only `interface` and `policy` blocks never appear in the Claude manifests.
 
-The sync script publishes the Codex manifest, skills, the generated-Wiki validator, public docs, and examples while preserving destination-owned skill UI metadata and excluding development-only scripts and tests. Its allowlist is opt-in, so Claude packaging files and repo-local governance files stay out of the Codex payload.
+Kiro CLI consumes the same `SKILL.md` format without a Code-Wiki-specific manifest. `scripts/install-to-kiro.sh` copies all seven source skill directories to the documented user-level `${KIRO_HOME:-$HOME/.kiro}/skills` path or to a workspace's `.kiro/skills` path. The installer is intentionally a copy boundary rather than a second behavior tree: re-running it refreshes Code-Wiki files while unrelated skills remain untouched, and a new Kiro session loads the result.
+
+The Codex sync script publishes the Codex manifest, skills, the shared `codewiki/` Core and CLI package metadata, the generated-Wiki validator, public docs, and examples while preserving destination-owned skill UI metadata and excluding development-only scripts and tests. The generated validator and CLI both use `codewiki.core.markdown`; adapters receive structured Core dataclasses and never invoke another adapter as a subprocess. The allowlist is opt-in, so Claude packaging files, the Kiro source-checkout installer, and repo-local governance files stay out of the Codex payload.
 
 ## Validation Strategy
 
@@ -184,6 +187,7 @@ The sync script publishes the Codex manifest, skills, the generated-Wiki validat
 - public V2 concepts and removal of V1-only structure guidance
 - plugin manifest fields and shared marketplace metadata, for both the Codex and Claude Code manifests
 - that Codex-only presentation fields do not leak into the Claude Code manifests
+- Kiro CLI installation paths, all-seven-skill copying, refresh behavior, and unrelated-skill preservation
 - sync regression-test presence and release version alignment
 
 `scripts/validate_wiki_quality_fixtures.py` checks the deterministic semantic subset:
@@ -201,6 +205,8 @@ The sync script publishes the Codex manifest, skills, the generated-Wiki validat
 - coverage-manifest source revision, feature assignment, exclusions, exact evidence, and required concern entries
 - policy/view pairing, manifest-listed view-only cases, and evidence-backed `not_applicable`
 - recursive `Required Context`, nonrecursive `See Also`, and rejection of legacy ambiguous links
+
+`tests/test_codewiki_core.py` and `tests/test_codewiki_cli.py` use a small repository fixture to check structured index/show results, bidirectional path and symbol traces, exact-ID/phrase/token/Korean search ranking, raw reads, assembled context, conservative Git freshness, file and symbol validation, parseable JSON, exit codes, root discovery, and compatibility with the generated-Wiki validator CLI.
 
 `tests/skill-set-contract.md` records behavioral scenarios that are not fully captured by structural validation. Skill changes must update both deterministic checks and at least one relevant scenario.
 

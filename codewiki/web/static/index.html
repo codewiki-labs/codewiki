@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Explore CodeWiki Specs and their implementation traceability." data-i18n-content="Explore CodeWiki Specs and their implementation traceability.">
+  <title>CodeWiki · Spec Traceability</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="Skip to content">Skip to content</a>
+  <header class="app-header">
+    <a class="brand" href="#/overview" aria-label="CodeWiki Overview" data-i18n-aria-label="CodeWiki Overview">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span>
+        <strong>CodeWiki</strong>
+        <small data-i18n="Specs to code">Specs to code</small>
+      </span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary navigation" data-i18n-aria-label="Primary navigation">
+      <a href="#/overview" data-nav="overview" data-i18n="Overview">Overview</a>
+      <a href="#/explorer" data-nav="explorer" data-i18n="Explorer">Explorer</a>
+      <a href="#/changes" data-nav="changes" data-i18n="Changes">Changes</a>
+    </nav>
+    <form class="global-search" id="global-search" role="search">
+      <label class="sr-only" for="global-search-input" data-i18n="Search requirements, acceptance criteria, and Specs">Search requirements, acceptance criteria, and Specs</label>
+      <span class="search-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-4-4"></path>
+        </svg>
+      </span>
+      <input id="global-search-input" name="q" type="search" autocomplete="off" placeholder="Search requirements, Specs, or code" data-i18n-placeholder="Search requirements, Specs, or code">
+      <button type="submit" data-i18n="Search">Search</button>
+    </form>
+    <label class="language-picker" for="language-select">
+      <span class="sr-only" data-i18n="Language">Language</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18M12 3c2.3 2.5 3.5 5.5 3.5 9s-1.2 6.5-3.5 9c-2.3-2.5-3.5-5.5-3.5-9S9.7 5.5 12 3Z"></path>
+      </svg>
+      <select id="language-select" aria-label="Language" data-i18n-aria-label="Language">
+        <option value="en" lang="en">English</option>
+        <option value="ko" lang="ko">한국어</option>
+      </select>
+    </label>
+    <a class="header-status status-neutral" id="header-status" href="#/changes" aria-label="Open CodeWiki status" data-i18n-aria-label="Open CodeWiki status">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span data-i18n="Loading status">Loading status</span>
+    </a>
+  </header>
+  <div class="app-announcer sr-only" id="app-announcer" role="status" aria-live="polite"></div>
+  <main class="app-main" id="main-content" tabindex="-1">
+    <section class="loading-page" aria-label="Loading CodeWiki" data-i18n-aria-label="Loading CodeWiki">
+      <div class="loading-mark" aria-hidden="true">CW</div>
+      <p data-i18n="Loading the Spec map…">Loading the Spec map…</p>
+    </section>
+  </main>
+  <noscript>
+    <div class="noscript-message">
+      <span lang="en">The CodeWiki Web Viewer requires JavaScript. The CLI remains fully available.</span>
+      <span lang="ko">CodeWiki 웹 뷰어에는 JavaScript가 필요합니다. CLI는 계속 사용할 수 있습니다.</span>
+    </div>
+  </noscript>
+</body>
+</html>

@@ -1,7 +1,7 @@
 name: Release
 
 # Push a tag like v0.3.1 to publish a GitHub Release.
-# The tag must match the version in every plugin and marketplace manifest.
+# The tag must match every plugin manifest and Python package version.
 
 on:
   push:
@@ -16,35 +16,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify tag matches every manifest version
+      - name: Verify tag matches every package version
         env:
           TAG_VERSION: ${{ github.ref_name }}
         run: |
           python3 - <<'PY'
-          import json, os, sys
+          import json, os, re, sys
 
           tag = os.environ["TAG_VERSION"].removeprefix("v")
-          sources = {
+          json_sources = {
               ".codex-plugin/plugin.json": lambda d: d["version"],
               ".claude-plugin/plugin.json": lambda d: d["version"],
               ".agents/plugins/marketplace.json": lambda d: d["plugins"][0]["version"],
               ".claude-plugin/marketplace.json": lambda d: d["plugins"][0]["version"],
           }
+          text_sources = {
+              "pyproject.toml": r'(?m)^version\s*=\s*"([^"]+)"\s*$',
+              "codewiki/__init__.py": r'(?m)^__version__\s*=\s*"([^"]+)"\s*$',
+          }
 
           failures = []
-          for path, pick in sources.items():
+          for path, pick in json_sources.items():
               with open(path, encoding="utf-8") as handle:
                   version = pick(json.load(handle))
               if version != tag:
                   failures.append(f"{path} declares {version}, expected {tag}")
+          for path, pattern in text_sources.items():
+              with open(path, encoding="utf-8") as handle:
+                  match = re.search(pattern, handle.read())
+              if match is None:
+                  failures.append(f"{path} has no parseable version")
+              elif match.group(1) != tag:
+                  failures.append(
+                      f"{path} declares {match.group(1)}, expected {tag}"
+                  )
 
           if failures:
-              print(f"Tag {os.environ['TAG_VERSION']} does not match all manifests:", file=sys.stderr)
+              print(f"Tag {os.environ['TAG_VERSION']} does not match all package versions:", file=sys.stderr)
               for failure in failures:
                   print(f"- {failure}", file=sys.stderr)
               sys.exit(1)
 
-          print(f"All manifests declare version {tag}.")
+          print(f"All package versions declare {tag}.")
           PY
 
       - name: Run contract validation

@@ -1,12 +1,12 @@
 # Code-Wiki V2
 
-`code-wiki` gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin from this one repository, and both install the same seven skills.
+`code-wiki` gives coding agents **repository-local persistent project memory**. It ships as both a Codex plugin and a Claude Code plugin, and the same seven agent-neutral skills install directly into Kiro CLI.
 
 It preserves user-approved intent and requirements across sessions, maps those requirements to the current codebase, and keeps implementation aligned with the approved specification instead of letting code silently redefine it.
 
 ## Quickstart
 
-Register the public marketplace and install the plugin.
+Use the installation method for your coding agent.
 
 **Codex plugin**
 
@@ -21,6 +21,16 @@ codex plugin add code-wiki@code-wiki
 /plugin marketplace add codewiki-labs/codewiki
 /plugin install code-wiki@code-wiki
 ```
+
+**Kiro CLI skills** — clone this repository and install for the current user:
+
+```bash
+git clone https://github.com/codewiki-labs/codewiki.git
+cd codewiki
+./scripts/install-to-kiro.sh
+```
+
+The Kiro installer uses `${KIRO_HOME:-$HOME/.kiro}/skills`. For one workspace only, use `./scripts/install-to-kiro.sh --project /path/to/project`, which installs under `/path/to/project/.kiro/skills`. Re-run the installer from an updated checkout to refresh Code-Wiki without changing unrelated Kiro skills.
 
 Then start a fresh session in a repository and ask:
 
@@ -158,6 +168,83 @@ User-facing completion is a **Spec conformance matrix**: `requirement ID → ver
 
 Only the router and project memory are always read. Policies, domains, coverage, views, and operational Reference pages are loaded when the task requires them.
 
+## CLI And Core
+
+The repository also provides a read-only `codewiki` CLI backed by a reusable Python Core. Install it from a checkout with Python 3.10 or newer:
+
+```bash
+python3 -m pip install .
+codewiki --version
+```
+
+Run commands from any directory inside a repository that contains `wiki/index.md`, or pass an explicit root before the command with `codewiki --repo-root /path/to/project ...`.
+
+```bash
+codewiki index
+codewiki search "quiz validation"
+codewiki show QUIZ-R001
+codewiki trace QUIZ-R001
+codewiki trace src/services/quiz.py
+codewiki trace symbol:QuizService.createQuiz
+codewiki read specs/domains/quiz.md
+codewiki context QUIZ-R001
+codewiki status
+codewiki validate
+codewiki validate QUIZ-R001
+codewiki doctor
+codewiki serve
+```
+
+`trace` explores recorded Spec-to-code relationships in either direction. `context` combines the matched Spec entities, related Acceptance Criteria or Requirements, Wiki documents, implementation references, and bounded source excerpts for an agent starting work. `read` emits the requested Markdown unchanged in human mode.
+
+### Web Viewer
+
+Start the read-only, Spec-first viewer from any directory inside a CodeWiki repository:
+
+```bash
+codewiki serve                         # http://127.0.0.1:8000
+codewiki serve --open
+codewiki serve --port 8080
+codewiki serve --host 0.0.0.0
+```
+
+The viewer has three primary areas:
+
+- **Overview** presents Specs, Requirement and Acceptance Criterion counts, trace coverage, unlinked entities, validation, and Wiki synchronization state.
+- **Explorer** keeps the functional Spec index, structured Requirement/Acceptance Criterion content, implementation references, bounded source excerpts, related tests, and a selected-entity Local Trace Map in one three-pane view.
+- **Changes** maps Git-reported changed files to recorded affected Spec entities and explicitly reports `unknown` rather than inferring impact.
+
+The header search uses the same deterministic Core lexical search as `codewiki search`; selecting a Requirement, Acceptance Criterion, or Spec document opens it in Explorer. The bundled frontend has no Markdown parser, search index, graph database, or write API. It calls the reusable Core through read-only JSON endpoints under `/api/` (`index`, `spec`, `trace`, `context`, `search`, `status`, `validate`, `read`, and `doctor`).
+
+The interface supports English and Korean. On the first visit it follows the browser's preferred language (`ko` selects Korean); the language selector in the header stores an explicit choice in local browser storage. Spec text, identifiers, paths, Core diagnostic evidence, and source excerpts remain in their recorded language instead of being machine-translated.
+
+The default bind address is localhost. `--host 0.0.0.0` deliberately exposes the unauthenticated read-only viewer—and its traced source excerpts—to the surrounding network, so use it only on a trusted network.
+
+Append `--json` to any subcommand for one parseable JSON value with no ANSI or human formatting:
+
+```bash
+codewiki show QUIZ-R001 --json
+codewiki trace src/services/quiz.py --json
+codewiki search "quiz validation" --json
+codewiki context QUIZ-R001 --json
+```
+
+An empty search is a successful empty result. Human-readable errors go to stderr; JSON errors are a single object on stdout. Exit status `1` means validation or doctor findings, `2` means initialization or usage failure, `3` means a target or document was not found, and `4` means invalid Wiki data.
+
+The CLI contains no parsing or trace logic. Python integrations, including a future MCP adapter, import the same structured Core directly instead of invoking a subprocess:
+
+```python
+from codewiki import CodeWiki
+
+wiki = CodeWiki.open(repo_root="/path/to/project")
+result = wiki.get_context("QUIZ-R001")
+payload = result.to_dict()
+```
+
+The v1 lexical search is deterministic and in-memory: exact IDs rank before exact paths or symbols, then title or phrase matches, all query tokens, and partial token matches. `status` uses `reference/coverage.json` and Git when available; it reports `unknown` rather than guessing when freshness cannot be established. `validate` checks structural trace links, referenced files, and lexically verifiable symbols without calling an LLM or building a source index.
+
+## Generated-Wiki Validator
+
 The plugin ships a **generated-Wiki validator** for exact domain pairs, policy/view pairing, manifest evidence, concern applicability, and typed links. From a Code-Wiki checkout or installed plugin root, point it at the target repository:
 
 ```bash
@@ -209,6 +296,14 @@ cd codewiki
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R skills/* "${CODEX_HOME:-$HOME/.codex}/skills/"
 
+# Kiro CLI, for the current user
+mkdir -p "${KIRO_HOME:-$HOME/.kiro}/skills"
+cp -R skills/* "${KIRO_HOME:-$HOME/.kiro}/skills/"
+
+# Kiro CLI, for one project only
+mkdir -p /path/to/project/.kiro/skills
+cp -R skills/* /path/to/project/.kiro/skills/
+
 # Claude Code, for every project
 mkdir -p "$HOME/.claude/skills"
 cp -R skills/* "$HOME/.claude/skills/"
@@ -240,6 +335,13 @@ Claude Code:
 /plugin update code-wiki
 ```
 
+Kiro CLI — update the source checkout, then refresh the copied skills:
+
+```bash
+git -C /path/to/codewiki pull --ff-only
+/path/to/codewiki/scripts/install-to-kiro.sh
+```
+
 Start a new session so the current skills are loaded.
 
 ### Remove
@@ -258,7 +360,16 @@ Claude Code:
 /plugin marketplace remove code-wiki
 ```
 
-Removing the plugin does not delete project `wiki/` directories.
+Kiro CLI — remove only the seven Code-Wiki skill directories:
+
+```bash
+kiro_skills="${KIRO_HOME:-$HOME/.kiro}/skills"
+for skill in using-code-wiki creating-code-wiki reading-code-wiki exploring-code-with-wiki updating-code-wiki auditing-code-wiki writing-code-wiki-skills; do
+  rm -rf "$kiro_skills/$skill"
+done
+```
+
+Removing the plugin or skills does not delete project `wiki/` directories.
 
 ### Troubleshooting
 
@@ -276,7 +387,9 @@ claude plugin list
 claude plugin details code-wiki
 ```
 
-`claude plugin details code-wiki` should list all seven skills. If an installed plugin was updated while the agent was running, run `/reload-plugins` in Claude Code or restart Codex, then begin a new session.
+Kiro CLI: begin a new chat session after installing and use `/context show` to confirm that all seven files under the global or workspace `skills` path are loaded. Invoke `/using-code-wiki` to bootstrap directly.
+
+`claude plugin details code-wiki` should list all seven skills. If an installed plugin or copied skill was updated while the agent was running, run `/reload-plugins` in Claude Code or restart Codex or Kiro CLI, then begin a new session.
 
 ## Contributing
 

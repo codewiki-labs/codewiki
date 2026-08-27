@@ -23,8 +23,9 @@ Run:
 
 ```bash
 python3 scripts/validate_wiki_contract.py
-python3 -m unittest tests/test_generated_wiki_validator.py tests/test_wiki_quality_fixtures.py tests/test_wiki_contract_semantic_integration.py
+python3 -m unittest tests/test_codewiki_core.py tests/test_codewiki_cli.py tests/test_codewiki_server.py tests/test_generated_wiki_validator.py tests/test_wiki_quality_fixtures.py tests/test_wiki_contract_semantic_integration.py
 bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
+bash tests/kiro-skills-install/test-install-to-kiro.sh
 claude plugin validate .
 ```
 
@@ -54,9 +55,9 @@ Individual commits inside a PR branch are not checked — only the PR title is, 
 
 ## Plugin Packaging
 
-The repository root is simultaneously a Codex plugin package and a Claude Code plugin package, but each behavior unit still lives in `skills/<name>/SKILL.md`. Packaging is per-platform; behavior is shared.
+The repository root is simultaneously a Codex plugin package, a Claude Code plugin package, and the source for Kiro CLI skill installation, but each behavior unit still lives in `skills/<name>/SKILL.md`. Packaging is per-platform; behavior is shared.
 
-- `skills/*/SKILL.md` must stay agent-neutral. No `AGENTS.md`, `CLAUDE.md`, `~/.codex`, `~/.claude`, tool names, or CLI names in skill bodies — only `wiki/**` relative paths. This is what lets one skill set serve both platforms.
+- `skills/*/SKILL.md` must stay agent-neutral. No `AGENTS.md`, `CLAUDE.md`, `~/.codex`, `~/.claude`, `~/.kiro`, tool names, or CLI names in skill bodies — only `wiki/**` relative paths. This is what lets one skill set serve every supported platform.
 - Keep `.codex-plugin/plugin.json` focused on the existing skills payload.
 - Keep plugin and marketplace version, description, keywords, prompts, and shared interface metadata aligned.
 - Keep the shared fields of `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` identical: `name`, `version`, `description`, `license`, `keywords`, and `author.name`.
@@ -64,11 +65,15 @@ The repository root is simultaneously a Codex plugin package and a Claude Code p
 - Do not add `hooks`, `apps`, `mcpServers`, icons, logos, or screenshots unless the referenced files exist and pass validation.
 - Keep `scripts/sync-to-codex-plugin.sh` destination-agnostic. It must accept `--repo owner/name`, `--dest plugins/code-wiki`, and `--local PATH`.
 - Keep `scripts/validate_generated_wiki.py` in the synced runtime payload while excluding development-only scripts and tests.
+- Keep the stdlib-only `codewiki/` Core and `pyproject.toml` in that payload: the validator reuses `codewiki.core.markdown`, the CLI imports the Core directly, and future adapters must not invoke the CLI as a subprocess.
+- Update `tests/test_codewiki_core.py`, `tests/test_codewiki_cli.py`, and the Codex sync fixture when Core, CLI, parser, JSON, or payload behavior changes.
 - Sync `docs/skill-set-design.md` as public documentation without shipping internal implementation plans.
-- Keep `.claude-plugin/` out of the Codex sync payload. The sync allowlist is opt-in, so new packaging directories stay excluded by default.
+- Keep `.claude-plugin/` and `scripts/install-to-kiro.sh` out of the Codex sync payload. The sync allowlist is opt-in, so new packaging files stay excluded by default.
+- Keep `scripts/install-to-kiro.sh` limited to copying the canonical seven skill directories into `${KIRO_HOME:-$HOME/.kiro}/skills` or a workspace's `.kiro/skills`; do not introduce a second Kiro-specific skill tree.
+- Update `tests/kiro-skills-install/test-install-to-kiro.sh` when Kiro installation behavior changes.
 - Update `tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` when sync payload rules change.
 - Preserve destination-owned `skills/**/agents/openai.yaml` metadata during sync.
-- Bump the version in `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` together, and update `EXPECTED_VERSION` in `scripts/validate_wiki_contract.py`.
+- Bump the version in `.codex-plugin/plugin.json`, `.agents/plugins/marketplace.json`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `pyproject.toml`, and `codewiki/__init__.py` together, and update `EXPECTED_VERSION` in `scripts/validate_wiki_contract.py`.
 
 ## Adding A Skill
 
@@ -94,5 +99,7 @@ If the answer is no, add a checklist or section to an existing skill instead.
 - Updated generated-Wiki validator cases when domain pairing, policy/view pairing, typed links, coverage evidence, or concern applicability changed.
 - Ran `python3 scripts/validate_wiki_contract.py`.
 - Ran the generated-Wiki and semantic-quality unit tests.
+- Ran the Core/CLI tests and at least one installed or `python3 -m codewiki` smoke command when CLI behavior changed.
 - Ran plugin validation if `.codex-plugin/plugin.json`, `.claude-plugin/`, or package structure changed.
+- Ran `bash tests/kiro-skills-install/test-install-to-kiro.sh` if Kiro installation behavior changed.
 - Ran `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` if sync behavior changed.

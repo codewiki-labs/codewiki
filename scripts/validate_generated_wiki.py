@@ -10,6 +10,19 @@ import sys
 from typing import Any, Optional
 
 
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+if str(PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(PACKAGE_ROOT))
+
+from codewiki.core.markdown import (  # noqa: E402
+    _parent_level_two_section,
+    feature_block,
+    mask_markdown_fences as _mask_markdown_fences,
+    requirement_block,
+    requirement_exists,
+)
+
+
 CORE_FILES = (
     "index.md",
     "specs/index.md",
@@ -36,7 +49,6 @@ REQUIREMENT_SECTIONS = {
 }
 REQUIREMENT_ID = re.compile(r".+-R\d{3}$")
 ACCEPTANCE_CRITERION_ID = re.compile(r".+-AC\d{3}$")
-FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 
 
 def relative_markdown_files(root: Path) -> set[str]:
@@ -123,105 +135,6 @@ def validate_evidence(
         elif not path.is_file():
             failures.append(f"{owner}: evidence path does not exist: {value}")
     return failures
-
-
-def _mask_markdown_fences(text: str) -> str:
-    """Mask fenced code while preserving offsets and line boundaries."""
-    masked: list[str] = []
-    fence_character: Optional[str] = None
-    fence_length = 0
-    for line in text.splitlines(keepends=True):
-        visible = line.rstrip("\r\n")
-        if fence_character is None:
-            opening = FENCE_OPEN.match(visible)
-            if opening:
-                marker = opening.group(1)
-                fence_character = marker[0]
-                fence_length = len(marker)
-                masked.append(re.sub(r"[^\r\n]", " ", line))
-                continue
-            masked.append(line)
-            continue
-
-        closing = re.fullmatch(
-            rf" {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*",
-            visible,
-        )
-        masked.append(re.sub(r"[^\r\n]", " ", line))
-        if closing:
-            fence_character = None
-            fence_length = 0
-    return "".join(masked)
-
-
-def feature_block(text: str, feature_id: str) -> Optional[str]:
-    structure = _mask_markdown_fences(text)
-    match = re.search(
-        rf"(?m)^### Feature: `{re.escape(feature_id)}`[ \t]*$",
-        structure,
-    )
-    if not match:
-        return None
-    body_start = match.end()
-    if structure[body_start : body_start + 1] == "\n":
-        body_start += 1
-    boundary = re.search(
-        r"(?m)^(?:### Feature: `|## )",
-        structure[body_start:],
-    )
-    body_end = body_start + boundary.start() if boundary else len(text)
-    return structure[body_start:body_end]
-
-
-def _parent_level_two_section(text: str, offset: int) -> Optional[str]:
-    matches = list(re.finditer(r"(?m)^## (?!#)(.+?)\s*$", text[:offset]))
-    return matches[-1].group(1).strip() if matches else None
-
-
-def _heading_block(
-    text: str,
-    structure: str,
-    match: re.Match[str],
-) -> str:
-    body_start = match.end()
-    if structure[body_start : body_start + 1] == "\n":
-        body_start += 1
-    boundary = re.search(r"(?m)^(?:### |## )", structure[body_start:])
-    body_end = body_start + boundary.start() if boundary else len(text)
-    return text[body_start:body_end]
-
-
-def requirement_block(text: str, requirement_id: str) -> Optional[str]:
-    structure = _mask_markdown_fences(text)
-    matches: list[re.Match[str]] = []
-    if REQUIREMENT_ID.fullmatch(requirement_id):
-        compact = re.compile(
-            rf"(?m)^### `{re.escape(requirement_id)}`[ \t]*\r?$",
-        )
-        for match in compact.finditer(structure):
-            if (
-                _parent_level_two_section(structure, match.start())
-                in REQUIREMENT_SECTIONS
-            ):
-                matches.append(match)
-
-    if not ACCEPTANCE_CRITERION_ID.fullmatch(requirement_id):
-        legacy = re.compile(
-            rf"(?m)^### Requirement: `{re.escape(requirement_id)}`[ \t]*\r?$",
-        )
-        for match in legacy.finditer(structure):
-            if (
-                _parent_level_two_section(structure, match.start())
-                in REQUIREMENT_SECTIONS
-            ):
-                matches.append(match)
-    if len(matches) != 1:
-        return None
-    return _heading_block(text, structure, matches[0])
-
-
-def requirement_exists(text: str, requirement_id: str) -> bool:
-    return requirement_block(text, requirement_id) is not None
 
 
 def validate_spec_item_headings(wiki_root: Path) -> list[str]:

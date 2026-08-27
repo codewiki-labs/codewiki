@@ -37,4 +37,5 @@ body:
       placeholder: |
         Codex CLI version:
         Claude Code version:
-        code-wiki plugin version: 0.3.0
+        Kiro CLI version:
+        code-wiki plugin/skills version: 0.3.0

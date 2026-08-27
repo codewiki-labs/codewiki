@@ -9,7 +9,7 @@
 - [ ] Skill behavior change (`skills/*/SKILL.md`)
 - [ ] New skill
 - [ ] Contract / validator change (`scripts/validate_wiki_contract.py`, `tests/skill-set-contract.md`)
-- [ ] Plugin packaging (`.codex-plugin/`, `.agents/`, `.claude-plugin/`, sync script)
+- [ ] Distribution packaging (`.codex-plugin/`, `.agents/`, `.claude-plugin/`, Kiro installer, sync script)
 - [ ] Docs only (README, examples, design notes)
 - [ ] CI / repository tooling
 
@@ -44,6 +44,7 @@
 
 - [ ] `python3 scripts/validate_wiki_contract.py` passes
 - [ ] `bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh` passes (required if sync or packaging changed)
+- [ ] `bash tests/kiro-skills-install/test-install-to-kiro.sh` passes (required if Kiro installation changed)
 - [ ] Manually exercised the changed skill with an agent (describe the scenario below, or state why not applicable)
 
 <!-- Manual scenario, if any: prompt given, skill invoked, observed behavior. -->

@@ -516,6 +516,22 @@ Required result:
 - The same `skills/*/SKILL.md` files serve both platforms without agent-specific edits.
 - Claude packaging files stay out of the Codex sync payload.
 
+## Scenario: Installable Kiro CLI Skills
+
+User asks:
+
+```text
+Install the current Code-Wiki skill set for Kiro CLI.
+```
+
+Required result:
+
+- `scripts/install-to-kiro.sh` copies the same seven `skills/*` directories without modifying their agent-neutral `SKILL.md` bodies.
+- The default destination is `${KIRO_HOME:-$HOME/.kiro}/skills`; an empty `KIRO_HOME` falls back to `$HOME/.kiro/skills`.
+- `--project /path/to/project` installs under `/path/to/project/.kiro/skills` for workspace-only use, and `--dry-run` does not create files.
+- Reinstallation refreshes the seven Code-Wiki skill directories while preserving unrelated Kiro skills and extra files.
+- Users start a new Kiro CLI chat session after installation and can invoke `/using-code-wiki` directly.
+
 ## Scenario: User Forbids Wiki Use
 
 User asks:

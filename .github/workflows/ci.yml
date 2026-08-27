@@ -13,8 +13,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
       - name: Run contract validation
         run: python3 scripts/validate_wiki_contract.py
+
+      - name: Run Python unit tests
+        run: >-
+          python3 -m unittest
+          tests/test_codewiki_core.py
+          tests/test_codewiki_cli.py
+          tests/test_codewiki_server.py
+          tests/test_generated_wiki_validator.py
+          tests/test_wiki_quality_fixtures.py
+          tests/test_wiki_contract_semantic_integration.py
+
+      - name: Run Kiro skills installer regression test
+        run: bash tests/kiro-skills-install/test-install-to-kiro.sh
 
       - name: Run plugin sync regression test
         run: bash tests/codex-plugin-sync/test-sync-to-codex-plugin.sh
